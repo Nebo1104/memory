@@ -4,38 +4,211 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interrogation Room</title>
+  
   <style>
-    /* Базові стилі для сцени, щоб скрипт не ламався */
-    body { background-color: #161311; color: #212121; font-family: monospace; padding: 20px; }
-    .bar { width: 100px; background: #333; height: 10px; display: inline-block; margin-left: 10px; }
-    .fill { height: 100%; background: #ff4444; }
-    .btn-continue, .options button { display: block; width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; }
-    
-    /* СТИЛЬ ШТАМПУ — ТЕПЕР ВІН СХОВАНИЙ ЗА ЗАМОВЧУВАННЯМ */
-    #stamp {
-      display: none;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: #ff4444;
-      border: 3px solid #ff4444;
-      padding: 10px;
-      font-weight: bold;
-      transform: rotate(-5deg);
+    body { 
+      background-color: #161311; 
+      font-family: 'Special Elite', 'Courier New', monospace; 
+      color: #212121; 
+      padding: 20px; 
+      line-height: 1.5;
+      margin: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+      overflow-y: auto;
+      position: relative;
     }
 
-    /* СТИЛІ ДЛЯ МОДАЛЬНОГО ВІКНО ЕМОЦІЙНОЇ ПАУЗИ */
+    /* ЗАДНЯ КАРТИНКА (ВСТАВТЕ СВОЄ ПОСИЛАННЯ ВСЕРЕДИНУ url('')) */
+    .scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('hhttps://raw.githubusercontent.com/Nebo1104/memory/game/vstup.png'); /* <--- СЮДИ ВСТАВТЕ ВАШЕ БЕКГРАУНДНЕ ПОСИЛАННЯ */
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15; 
+      z-index: -2;
+    }
+
+    /* АТМОСФЕРНЕ МЕРЕХТІННЯ ЛАМПИ НАД СЦЕНОЮ */
+    .lamp-flicker {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 20%, rgba(255, 235, 180, 0.08) 0%, transparent 60%);
+      z-index: -1;
+      pointer-events: none;
+      animation: flickerAnim 4s infinite;
+    }
+
+    @keyframes flickerAnim {
+      0%, 100% { opacity: 1; }
+      5% { opacity: 0.7; }
+      10% { opacity: 1; }
+      12% { opacity: 0.5; }
+      14% { opacity: 0.9; }
+      30% { opacity: 1; }
+      32% { opacity: 0.4; }
+      34% { opacity: 1; }
+    }
+
+    /* ІНТЕРФЕЙСНА ПАНЕЛЬ ГРИ */
+    #ui-panel {
+      max-width: 620px; 
+      width: 100%;
+      border: 3px double #1a1715; 
+      padding: 30px; 
+      background: #f8f5ee; 
+      box-shadow: 12px 12px 0px rgba(26, 23, 21, 0.9);
+      border-radius: 2px;
+      margin: 20px auto;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stat-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .stat-item {
+      flex: 1;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .bar {
+      width: 100%;
+      background: #e0dbd1;
+      height: 8px;
+      margin-top: 4px;
+      border: 1px solid #1a1715;
+    }
+
+    .fill {
+      height: 100%;
+      background: #8a3333;
+      transition: width 0.3s ease;
+    }
+
+    .speech-box {
+      background: rgba(33, 33, 33, 0.05); 
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      border-left: 4px solid #1a1715;
+    }
+
+    .explanation {
+      display: none;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      border-left: 4px solid transparent;
+    }
+
+    .exp-correct {
+      background: rgba(43, 92, 143, 0.06);
+      border-left-color: #2b5c8f;
+      color: #2b5c8f;
+    }
+
+    .exp-danger {
+      background: rgba(138, 51, 51, 0.06);
+      border-left-color: #8a3333;
+      color: #8a3333;
+    }
+
+    .options button, .btn-continue {
+      display: block; 
+      width: 100%; 
+      background: #1a1715; 
+      border: 2px solid #1a1715; 
+      color: #f8f5ee; 
+      padding: 12px; 
+      text-align: left; 
+      cursor: pointer;
+      font-family: 'Special Elite', 'Courier New', monospace;
+      font-size: 13px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .options button:hover, .btn-continue:hover {
+      background: #8a3333; 
+      border-color: #8a3333;
+      color: #ffffff;
+    }
+
+    .btn-continue {
+      text-align: center;
+      font-weight: bold;
+      background: #2b5c8f;
+      border-color: #2b5c8f;
+    }
+    
+    .btn-continue:hover {
+      background: #1e436b;
+      border-color: #1e436b;
+    }
+
+    .protocol-overlay {
+      max-width: 620px;
+      margin: 20px auto;
+      color: #555;
+      font-size: 12px;
+      border-top: 1px dashed #ccc;
+      padding-top: 15px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ФІНАЛЬНИЙ ЧЕРВОНИЙ ШТАМП */
+    .missing-stamp {
+      display: none;
+      border: 3px solid #8a3333;
+      color: #8a3333;
+      font-size: 14px;
+      padding: 6px 12px;
+      font-weight: bold;
+      transform: rotate(-5deg);
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      letter-spacing: 2px;
+      z-index: 20;
+    }
+
+    .shake {
+      animation: shakeAnim 0.3s ease-in-out;
+    }
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* СТИЛІ МОДАЛЬНОГО ВІКНА ЕМОЦІЙНОЇ ПАУЗИ */
     .interlude-modal {
       display: none; 
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(16, 13, 11, 0.95);
+      background: rgba(22, 19, 17, 0.95);
       z-index: 2000;
       align-items: center;
       justify-content: center;
       padding: 20px;
       box-sizing: border-box;
-      font-family: 'Special Elite', 'Courier New', monospace;
     }
 
     .interlude-content {
@@ -47,7 +220,6 @@
       box-shadow: 12px 12px 0px rgba(138, 51, 51, 0.3);
       box-sizing: border-box;
       color: #212121;
-      line-height: 1.6;
     }
 
     .interlude-header {
@@ -94,6 +266,7 @@
       font-size: 13px;
       text-transform: uppercase;
       cursor: pointer;
+      text-align: center;
       transition: all 0.2s ease;
     }
 
@@ -109,7 +282,6 @@
 <div class="scene"></div>
 <div class="lamp-flicker"></div>
 <div class="missing-stamp" id="stamp">MISSING 1941</div>
-<div class="protocol-overlay" id="protocol-text"><p style="letter-spacing: 3px; opacity: 0.3;">USSR. NKVD CASE №942</p></div>
 
 <div id="ui-panel">
     <div class="stat-group">
@@ -124,7 +296,11 @@
     <div id="options-box" class="options"></div>
 </div>
 
-<!-- МОДАЛЬНЕ ВІКНО: ЕМОЦІЙНА ПАУЗА ТА ІСТОРИЧНИЙ КОНТЕКСТ -->
+<div class="protocol-overlay" id="protocol-text">
+    <p style="letter-spacing: 3px; opacity: 0.3; margin-top: 0;">USSR. NKVD CASE №942</p>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО -->
 <div class="interlude-modal" id="emotionalInterlude">
   <div class="interlude-content">
     <div class="interlude-header">A Moment of Reflection</div>
@@ -240,30 +416,27 @@
         const ui = document.getElementById('ui-panel');
         ui.innerHTML = `
             <div class="speech-box">
-                <h2 style="color:#ff4444; margin:0; font-size:1.4em;">SENTENCED</h2>
-                <p style="font-size:12px; color:#ccc; line-height:1.4;">
+                <h2 style="color:#ff4444; margin:0; font-size:1.4em; font-weight:bold;">SENTENCED</h2>
+                <p style="font-size:13px; color:#1a1715; line-height:1.5; margin-top:10px;">
                     Petro was arrested under Art. 54-10. During the 1941 evacuation from <b>Novocherkassk</b>, he vanished. 
                     Official searches in 1942 yielded nothing. He was gone.
                 </p>
-                <p style="font-size:11px; color:#888; border-top:1px solid #333; padding-top:10px;">
+                <p style="font-size:12px; color:#555; border-top:1px dashed #1a1715; padding-top:10px; margin-top:10px;">
                     1958: His son Mykola is a soldier dreaming of becoming a pilot, but the sky is closed to him. He must fight for the truth.
                 </p>
-                <button onclick="showEmotionalInterlude()" class="btn-continue" style="width:100%; border:none; padding:12px; margin-top:10px;">PROCEED TO 1958</button>
+                <button onclick="showEmotionalInterlude()" class="btn-continue" style="width:100%; padding:14px; margin-top:15px;">PROCEED TO 1958</button>
             </div>
         `;
     }
 
-    // Функція показу вікна
     function showEmotionalInterlude() {
         document.getElementById('emotionalInterlude').style.display = 'flex';
     }
 
-    // Функція переходу на наступний рівень
     function executeFinalRedirect() {
         window.location.href = 'letter.html';
     }
 
-    // Запускаємо перший крок гри
     renderStep();
 </script>
 
