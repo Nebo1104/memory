@@ -1,0 +1,118 @@
+<!-- Connecting authentic typewriter font from Google Fonts -->
+<link rel="preconnect" href="googleapis.com">
+<link rel="preconnect" href="gstatic.com" crossorigin>
+<link href="googleapis.com" rel="stylesheet">
+
+<style>
+  body { 
+    background-image: url('example.com'); /* <--- INSERT BACKGROUND IMAGE LINK HERE */
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    font-family: 'Special Elite', 'Courier New', monospace; 
+    font-weight: bold; 
+    color: #212121; 
+    padding: 10px; 
+    line-height: 1.4;
+    margin: 0;
+    overflow: hidden; /* Prevents scrollbars */
+  }
+  
+  .interlude-card { 
+    max-width: 580px; 
+    margin: 40px auto; 
+    border: 2px solid #b5a994; 
+    padding: 25px; 
+    background: rgba(250, 248, 245, 0.92); 
+    box-shadow: 4px 4px 0px #cbd2c3;
+  }
+  
+  .stage-indicator {
+    font-size: 12px;
+    color: #8a3333; /* Red archive marker color */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+  }
+
+  .interlude-title {
+    font-size: 20px;
+    color: #1a1715;
+    margin-bottom: 20px;
+    border-bottom: 2px dashed #d3cbc0;
+    padding-bottom: 10px;
+  }
+
+  .context-section {
+    background: rgba(245, 240, 230, 0.6);
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    border-left: 3px solid #7d7265;
+  }
+
+  .preview-section {
+    background: rgba(253, 245, 245, 0.6);
+    padding: 12px;
+    margin-bottom: 20px;
+    border-left: 3px solid #8a3333;
+    font-size: 13px;
+  }
+
+  .box-header {
+    font-size: 14px;
+    color: #1a1715;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .choices button { 
+    display: block; 
+    width: 100%; 
+    background: rgba(253, 252, 251, 0.95); 
+    border: 1px solid #a89985; 
+    color: #212121; 
+    padding: 12px; 
+    text-align: center; 
+    cursor: pointer;
+    font-family: 'Special Elite', 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .choices button:hover { 
+    background: #ebdcc7; 
+    color: #4a3820;
+    transform: translateX(3px);
+  }
+</style>
+
+<div class="interlude-card">
+  <div class="stage-indicator">Transition: Stage 1 → Stage 2</div>
+  <div class="interlude-title">REFLECTING THE SILENCE</div>
+  
+  <!-- WHY IT HAPPENED: Historical and psychological context -->
+  <div class="context-section">
+    <span class="box-header">WHY IT HAPPENED:</span>
+    The conversation with Grandfather led into a wall of repeating phrases, fear, and alcohol. This is exactly how the Soviet terror functioned on a family level. It forced the generation of eyewitnesses to completely erase their memory and replace it with a single, safe, short myth to survive and protect their children. Asking them for details is futile—their silence was a shield.
+  </div>
+
+  <!-- WHAT AWAITS YOU NEXT: Preview of the next game stage -->
+  <div class="preview-section">
+    <span class="box-header">WHAT AWAITS YOU NEXT:</span>
+    To find the fragments of the shattered truth, you must leave the kitchen and enter the state archives. In the next stage, you will get access to the actual criminal investigation file from July 1941. You will have to read between the lines of the NKVD interrogation protocols, search warrants, and formal charges to see the real tragedy behind the official bureaucratic ink.
+  </div>
+
+  <div class="choices">
+    <button onclick="proceedToNextGame()">Open the Archive File</button>
+  </div>
+</div>
+
+<script>
+  function proceedToNextGame() {
+    window.location.href = 'game2.html'; /* <--- NEXT GAME MODULE FILE NAME */
+  }
+</script>

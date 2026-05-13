@@ -1,0 +1,258 @@
+<style>
+  body { 
+    background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/main/IMG-20260513-WA0000.jpg'); /* <--- СЮДИ ВСТАВИТИ ПОСИЛАННЯ НА КАРТИНКУ */
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    color: #3a3530; 
+    font-family: 'Courier New', monospace; 
+    padding: 20px; 
+    line-height: 1.4;
+  }
+  .kitchen-table { 
+    max-width: 600px; 
+    margin: 20px auto; 
+    border: 1px solid #d3cbc0; 
+    padding: 20px; 
+    background: rgba(250, 248, 245, 0.96); 
+    box-shadow: 4px 4px 0px #e2dacd;
+    transition: all 0.3s ease;
+  }
+  .ambient-desc {
+    color: #7d7265;
+    font-style: italic;
+    margin-bottom: 15px;
+    font-size: 13px;
+    border-bottom: 1px solid #eae4d9;
+    padding-bottom: 10px;
+  }
+  
+  .fade-in {
+    opacity: 0;
+    transform: translateY(5px);
+    animation: fadeInEffect 0.5s forwards ease-out;
+  }
+  
+  @keyframes fadeInEffect {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .log-entry { margin-bottom: 12px; font-size: 14px; }
+  .player { color: #2b5c8f; font-weight: bold; }
+  .grandpa { color: #a06d16; font-weight: bold; }
+  .grandpa.angry { color: #962d2d; }
+  
+  .action-desc {
+    color: #7d7265;
+    font-style: italic;
+    margin: 8px 0;
+    font-size: 13px;
+  }
+
+  .viewer-note {
+    color: #555;
+    background: #f1ede2;
+    padding: 8px 12px;
+    margin: 8px 0 15px 0;
+    font-size: 13px;
+    border-left: 3px solid #7d7265;
+  }
+
+  .inner-thought { 
+    color: #962d2d; 
+    font-style: italic; 
+    background: #fdf5f5; 
+    padding: 12px; 
+    border-left: 3px solid #b83232; 
+    margin-top: 15px; 
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+  
+  .choices button { 
+    display: block; 
+    width: 100%; 
+    background: #fdfcfb; 
+    border: 1px solid #cfc4b5; 
+    color: #4a423a; 
+    padding: 10px; 
+    margin-bottom: 8px; 
+    text-align: left; 
+    cursor: pointer; 
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  }
+  .choices button:hover { 
+    background: #f5f0e6; 
+    border-color: #a89985;
+    transform: translateX(2px);
+  }
+  
+  .next-btn {
+    margin-top: 5px; 
+    background: #ebdcc7 !important; 
+    color: #4a3820 !important; 
+    border: 1px solid #c2b099 !important;
+    text-align: center !important;
+    font-weight: bold;
+  }
+  .restart-btn {
+    margin-top: 5px;
+    background: #f5eeee !important;
+    color: #8a3333 !important;
+    border: 1px solid #e0cccc !important;
+    text-align: center !important;
+    font-weight: bold;
+  }
+</style>
+
+<div class="kitchen-table" id="tableContainer">
+  <div class="ambient-desc">
+    Kitchen. Faded oilcloth. Grandfather sits across from you. You need facts about Petro Neborachko's arrest.
+  </div>
+
+  <div id="dialogueLog"></div>
+
+  <div class="choices" id="actionPanel">
+    <button onclick="startConversation()">
+      Grandpa, tell me about Petro Neborachko.
+    </button>
+  </div>
+</div>
+
+<script>
+  let clickCount = 0;
+  let shotCount = 0; 
+  let isIrritated = false; 
+  let gameOver = false;
+  
+  let askedQuestions = { docs: false, letters: false, charges: false, property: false, rehab: false };
+
+  const coreMantra = "I never saw him. I was born much later. There are no documents in this house. But everyone always said the same: He was a blacksmith. Arrested in 1941 by the NKVD. Died in a camp in '42 or '43 somewhere in Kolyma. They always remembered him as a cruel man, silent and constantly drunk. That is all I know.";
+
+  const explanations = {
+    docs: "💡 Context: The Soviet state rarely left official records or search warrants with the families of those arrested.",
+    letters: "💡 Context: There are no letters. Enemies of the people sent to Kolyma camps were banned from any contact with the outside world.",
+    charges: "💡 Context: Official penal articles were kept secret. Families only knew vague rumors, never the formal charges.",
+    property: "💡 Context: Property confiscation was a standard NKVD practice. It served to terrorize the local community and isolate the victim's family.",
+    rehab: "💡 Context: Massive post-Stalin rehabilitation waves often bypassed individuals whose relatives were too terrified to submit official state requests."
+  };
+
+  function startConversation() {
+    const log = document.getElementById('dialogueLog');
+    let dialogueBlock = document.createElement('div');
+    dialogueBlock.className = 'fade-in';
+    dialogueBlock.innerHTML = `
+      <p class="log-entry"><span class="player">You:</span> Grandpa, tell me about Petro.</p>
+      <p class="log-entry"><span class="grandpa">Grandfather:</span> I don't know much. I already told you everything I knew, but you can ask.</p>
+    `;
+    log.innerHTML = "";
+    log.appendChild(dialogueBlock);
+    showOptions();
+  }
+
+  function showOptions() {
+    let html = "";
+    
+    if (!gameOver) {
+      if (!askedQuestions.docs) html += `<button onclick="askGrandpa('Did you get any arrest documents in 1941?', 'docs')">Ask about 1941 arrest documents.</button>`;
+      if (!askedQuestions.letters) html += `<button onclick="askGrandpa('Are there any letters left from the camp?', 'letters')">Ask about letters or certificates.</button>`;
+      if (!askedQuestions.charges) html += `<button onclick="askGrandpa('What were the specific charges against him?', 'charges')">Ask about official charges.</button>`;
+      if (!askedQuestions.property) html += `<button onclick="askGrandpa('What happened to his blacksmith shop and tools?', 'property')">Ask about confiscated property.</button>`;
+      if (!askedQuestions.rehab) html += `<button onclick="askGrandpa('Did the family receive any rehabilitation papers later?', 'rehab')">Ask about post-Soviet rehabilitation status.</button>`;
+    }
+
+    if (clickCount >= 5 && !gameOver) {
+      html += `
+        <div class="inner-thought fade-in">
+          He has nothing more to say. The repeating story is all that is left.
+        </div>
+      `;
+    }
+
+    html += `<button class="next-btn" onclick="nextModule()">Leave the kitchen</button>`;
+    html += `<button class="restart-btn" onclick="restartGame()">Start game over</button>`;
+
+    document.getElementById('actionPanel').innerHTML = html;
+  }
+
+  function askGrandpa(question, type) {
+    if (gameOver) return;
+
+    if (clickCount === 0 && type === 'letters') {
+      isIrritated = true;
+      document.getElementById('tableContainer').style.boxShadow = "4px 4px 0px #962d2d";
+    }
+
+    clickCount++;
+    askedQuestions[type] = true;
+    const log = document.getElementById('dialogueLog');
+    
+    let responseBlock = document.createElement('div');
+    responseBlock.className = 'fade-in';
+
+    let grandpaDialogue = "";
+    let actionText = "";
+
+    if (isIrritated) {
+      shotCount++; 
+      
+      if (shotCount === 1) {
+        actionText = `<p class="action-desc">* Grandfather sighs heavily, reaches into the cupboard, and pours himself a shot of cheap vodka. *</p>`;
+        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather (irritated):</span> Why do you keep digging into this? I told you: ${coreMantra}</p>`;
+      } else if (shotCount === 2) {
+        actionText = `<p class="action-desc">* His hands shake slightly as he pours a second shot and drinks it fast. *</p>`;
+        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather (angry):</span> Stop it! There is nothing here! Look at me: ${coreMantra}</p>`;
+      } else if (shotCount >= 3) {
+        actionText = `<p class="action-desc">* He pours a third shot, swallows it in one gulp, wipes his mouth with his sleeve, and stands up from the table. *</p>`;
+        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather:</span> I am done talking.</p>`;
+        gameOver = true; 
+      }
+    } else {
+      grandpaDialogue = `<p class="log-entry"><span class="grandpa">Grandfather:</span> ${coreMantra}</p>`;
+    }
+
+    responseBlock.innerHTML = `
+      <p class="log-entry"><span class="player">You:</span> ${question}</p>
+      ${actionText}
+      ${grandpaDialogue}
+      <div class="viewer-note">${explanations[type]}</div>
+    `;
+    
+    if (gameOver) {
+      responseBlock.innerHTML += `
+        <div class="inner-thought">
+          He leaves the kitchen, slamming the door. The conversation is over. His fear and alcohol completely blocked the truth.
+        </div>
+      `;
+    }
+
+    log.appendChild(responseBlock);
+
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 50);
+
+    showOptions();
+  }
+
+  function nextModule() {
+    alert("The conversation ends.");
+  }
+
+  function restartGame() {
+    clickCount = 0;
+    shotCount = 0;
+    isIrritated = false;
+    gameOver = false;
+    document.getElementById('tableContainer').style.boxShadow = "4px 4px 0px #e2dacd";
+    askedQuestions = { docs: false, letters: false, charges: false, property: false, rehab: false };
+    document.getElementById('dialogueLog').innerHTML = "";
+    document.getElementById('actionPanel').innerHTML = `
+      <button onclick="startConversation()">
+        Grandpa, tell me about Petro Neborachko.
+      </button>
+    `;
+  }
+</script>
