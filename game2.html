@@ -2,185 +2,268 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SBU Archives — Case of Petro Neborachko</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition: Into the Archives</title>
+  <link rel="preconnect" href="googleapis.com">
+  <link rel="preconnect" href="gstatic.com" crossorigin>
+  <link href="googleapis.com" rel="stylesheet">
+
   <style>
     body { 
-      background: #161311; 
-      color: #e0e0e0;
-      font-family: 'Courier New', monospace; 
+      background-color: #161311; 
+      font-family: 'Special Elite', 'Courier New', monospace; 
+      color: #212121; 
       padding: 20px; 
       line-height: 1.5;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
-    .archive-container { 
-      max-width: 650px; 
-      margin: 20px auto; 
-      border: 2px solid #3a3a3a; 
-      padding: 25px; 
-      background: #1a1a1a; 
-      box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
-    }
-    .header-context {
-      border-bottom: 2px dashed #555;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-    }
-    .year-badge {
-      background: #8a3333;
-      color: #fff;
-      padding: 3px 8px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .phone-storage {
-      background: #2a2a2a;
-      padding: 15px;
-      border-left: 4px solid #2b5c8f;
-      margin-bottom: 20px;
-      font-size: 13px;
-    }
-    .case-folder {
-      background: #f8f5ee;
-      color: #1a1a1a;
-      padding: 25px;
-      border-radius: 2px;
-      min-height: 100px;
-      margin-bottom: 20px;
-      border: 1px solid #cfc4b5;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-    }
-    .page-number {
-      font-size: 12px;
-      font-weight: bold;
-      text-align: right;
-      color: #7d7265;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .controls button {
-      display: inline-block;
-      background: #2a2a2a;
-      color: #fff;
-      border: 1px solid #555;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      margin-right: 5px;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    .controls button:hover { background: #3a3a3a; }
-    .controls button:disabled { opacity: 0.2; cursor: not-allowed; }
     
-    .btn-photo { background: #2b5c8f !important; border-color: #2b5c8f !important; }
-    .btn-photo:hover { background: #1f456e !important; }
-    
-    .btn-next { 
-      display: block;
+    .interlude-card { 
+      max-width: 620px; 
       width: 100%;
-      background: #8a3333 !important; 
-      border-color: #8a3333 !important;
-      color: white !important;
-      text-align: center;
-      margin-top: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .btn-next:hover { background: #a63f3f !important; }
-    
-    .gallery-preview {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #aaa;
-      line-height: 1.4;
+      border: 3px double #1a1715; 
+      padding: 30px; 
+      background: #f8f5ee; 
+      box-shadow: 12px 12px 0px rgba(26, 23, 21, 0.9);
+      border-radius: 2px;
+      position: relative;
+      box-sizing: border-box;
+      margin: 20px auto;
     }
 
-    /* Styles for the Modal Window */
+    .stamp-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 15px;
+    }
+
+    .archive-stamp {
+      border: 3px solid #8a3333;
+      color: #8a3333;
+      font-size: 11px;
+      padding: 4px 8px;
+      font-weight: bold;
+      transform: rotate(2deg);
+      opacity: 0.8;
+      letter-spacing: 1px;
+      display: inline-block;
+    }
+    
+    .stage-indicator {
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .interlude-title {
+      font-size: 22px;
+      color: #1a1715;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed #1a1715;
+      padding-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .archive-viewer {
+      background: #ffffff;
+      border: 1px dashed #1a1715;
+      padding: 20px;
+      margin-bottom: 15px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .page-number {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 5px;
+    }
+
+    .stats-box {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 15px;
+      padding: 5px 10px;
+      background: rgba(33,33,33,0.03);
+      border-left: 3px solid #1a1715;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .controls button, .action-btn { 
+      flex: 1;
+      background: #1a1715; 
+      border: 2px solid #1a1715; 
+      color: #f8f5ee; 
+      padding: 10px; 
+      text-align: center; 
+      cursor: pointer;
+      font-family: 'Special Elite', 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+    }
+    
+    .controls button:hover:not(:disabled), .action-btn:hover { 
+      background: #8a3333; 
+      border-color: #8a3333;
+      color: #ffffff;
+    }
+
+    .controls button:disabled {
+      background: #ccc;
+      border-color: #ccc;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    #photoBtn {
+      background: #8a3333;
+      border-color: #8a3333;
+    }
+
+    #photoBtn:disabled {
+      background: #d9c5c5;
+      border-color: #d9c5c5;
+      color: #888;
+    }
+
+    .finish-btn {
+      width: 100%;
+      background: #2b5c8f;
+      border-color: #2b5c8f;
+      margin-top: 10px;
+    }
+    .finish-btn:hover {
+      background: #1e436b !important;
+      border-color: #1e436b !important;
+    }
+
+    #galleryLog {
+      font-size: 11px;
+      color: #666;
+      word-break: break-all;
+    }
+
+    /* СТИЛІ ДЛЯ МОДАЛЬНОГО ВІКНА */
     .modal-overlay {
-      display: none;
+      display: none; /* Сховане за замовчуванням */
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(22, 19, 17, 0.85);
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
-    .modal-box {
-      background: #f8f5ee;
-      color: #1a1a1a;
-      max-width: 500px;
-      width: 90%;
-      padding: 30px;
-      border: 3px double #8a3333;
-      box-shadow: 10px 10px 0px #111;
-      text-align: center;
-    }
-    .modal-box h2 {
-      color: #8a3333;
-      margin-top: 0;
-      font-size: 20px;
-      border-bottom: 2px dashed #8a3333;
-      padding-bottom: 10px;
-    }
-    .modal-box p {
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    .modal-btn {
-      background: #8a3333;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+
+    .modal-content {
+      max-width: 550px;
       width: 100%;
+      background: #f8f5ee;
+      border: 3px double #8a3333;
+      padding: 25px;
+      box-shadow: 8px 8px 0px rgba(138, 51, 51, 0.4);
+      box-sizing: border-box;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      color: #8a3333;
+      font-weight: bold;
+      margin-bottom: 15px;
+      border-bottom: 2px dashed #8a3333;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .modal-text {
+      font-size: 13px;
+      color: #212121;
+      margin-bottom: 20px;
+      background: rgba(33, 33, 33, 0.03);
+      padding: 12px;
+      border-left: 4px solid #1a1715;
+    }
+
+    .modal-btn {
+      width: 100%;
+      background: #8a3333;
+      border: 2px solid #8a3333;
+      color: #ffffff;
+      padding: 12px;
+      font-family: 'Special Elite', 'Courier New', monospace;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
     }
     .modal-btn:hover {
-      background: #1a1a1a;
+      background: #1a1715;
+      border-color: #1a1715;
+    }
+
+    @media (max-height: 780px) {
+      .interlude-card { padding: 20px; margin: 10px auto; }
+      .interlude-title { font-size: 18px; margin-bottom: 12px; }
     }
   </style>
 </head>
 <body>
 
-<div class="archive-container">
-  <div class="header-context">
-    <span class="year-badge">STAGE 2: THE ARCHIVE</span>
-    <p style="margin: 8px 0 0 0; font-style: italic; font-size: 13px; color: #b0b0b0;">
-      Kyiv. Central Archive of the SBU. Criminal case file №4012 is in front of you. Flip through the pages and decide which ones to capture on your camera. Your patience defines your evidence.
-    </p>
+<div class="interlude-card">
+  <div class="stamp-container">
+    <div class="archive-stamp">DECLASSIFIED / СЕКРЕТНО</div>
   </div>
 
-  <div class="phone-storage">
-    📱 Captured Document Photos: <span id="photoCount" style="font-weight:bold; color:#f8f5ee;">0</span>
-    <div class="gallery-preview" id="galleryLog">Your gallery is empty.</div>
+  <div class="stage-indicator">Transition: Stage 1 → Stage 2</div>
+  <div class="interlude-title">REFLECTING THE SILENCE</div>
+  
+  <!-- Archive document viewer screen -->
+  <div class="archive-viewer" id="pageContent">
+    <!-- Content generated via JavaScript -->
   </div>
 
-  <div class="case-folder" id="pageContent">
-    <!-- Content injected dynamically via JavaScript -->
+  <!-- Evidence collection stats -->
+  <div class="stats-box">
+    Photos captured: <span id="photoCount" style="font-weight:bold; color:#8a3333;">0</span><br>
+    <div id="galleryLog">No documents captured yet.</div>
   </div>
 
+  <!-- Navigation and photo controls -->
   <div class="controls">
-    <button id="prevBtn" onclick="changePage(-1)">◀ Previous Page</button>
-    <button id="nextBtn" onclick="changePage(1)">Next Page ▶</button>
-    <button id="photoBtn" class="btn-photo" onclick="takePhoto()">📷 Take Photo</button>
-    
-    <button id="leaveArchiveBtn" class="btn-next" onclick="finishResearch()">Complete Research & Save Files</button>
+    <button id="prevBtn" onclick="changePage(-1)">← Back</button>
+    <button id="photoBtn" onclick="takePhoto()">📷 Take Photo</button>
+    <button id="nextBtn" onclick="changePage(1)">Next →</button>
   </div>
+
+  <!-- Button to trigger explanation modal -->
+  <button class="action-btn finish-btn" onclick="finishResearch()">Finish Research & Analyze Evidence</button>
 </div>
 
-<!-- Modal Window Notification -->
+<!-- ПОЯСНЮВАЛЬНЕ МОДАЛЬНЕ ВІКНО -->
 <div class="modal-overlay" id="experienceModal">
-  <div class="modal-box">
-    <h2>RESEARCH COMPLETED</h2>
-    <p>You have just experienced my own digitized research path within the SBU Archive reading room. By interacting with these document sheets, you walked through the actual process of discovering family history from the inside.</p>
-    <p>Now, prepare yourself for an emotional immersion. You are about to step into the historical reconstruction of the 1941 NKVD interrogation of Petro Neborachko.</p>
+  <div class="modal-content">
+    <div class="modal-header">Investigation Progress Saved</div>
+    <div class="modal-text">
+      <strong>WHAT HAPPENS NEXT:</strong><br><br>
+      You have compiled your personal case file from the Soviet archives. Now, you are stepping directly into the investigator's office for the <strong>Interrogation Stage</strong>.<br><br>
+      The photos you just captured are saved in your inventory. Use them carefully during the dialogue to counter fabrications, protect your family's memory, and untangle the historical truth.
+    </div>
     <button class="modal-btn" onclick="redirectToInterrogation()">Enter Interrogation Room</button>
   </div>
 </div>
@@ -197,7 +280,7 @@
     { num: "Page 21", title: "Interrogation Protocol - Final Statements" },
     { num: "Page 24", title: "Formal Accusation & Indictment Order" },
     { num: "Page 27", title: "Official Bill of Indictment (Summary of Charges)" },
-    { num: "Page 28", title: "Resolution on Preventive Detention & Classification" },
+    { num: "Page 28", solid: "Resolution on Preventive Detention & Classification" },
     { num: "Page 38", title: "Official Wartime Evacuation Certificate (July 1941)" },
     { num: "Page 60", title: "Prosecutor's Post-Stalin Review (Rehabilitation Case)" },
     { num: "Page 65", title: "Formal Petition to the Supreme Court of the USSR" },
@@ -210,8 +293,8 @@
   function updateUI() {
     const page = casePages[currentPageIndex];
     document.getElementById('pageContent').innerHTML = `
-      <div class="page-number">${page.num} / Total: ${casePages.length}</div>
-      <h3 style="margin-top:0; color:#8a3333; font-size:16px; font-weight:900;">${page.title}</h3>
+      <div class="page-number">Document ${currentPageIndex + 1} of ${casePages.length}</div>
+      <h3 style="margin-top:5px; color:#8a3333; font-size:16px; font-weight:900; min-height:40px;">${page.num}: ${page.title}</h3>
     `;
 
     document.getElementById('prevBtn').disabled = (currentPageIndex === 0);
@@ -246,12 +329,13 @@
     }
   }
 
+  // Крок 1: Зберігаємо дані й відкриваємо вікно з поясненням
   function finishResearch() {
     localStorage.setItem('savedEvidence', JSON.stringify(takenPhotos));
-    // Show the modal window instead of instant redirect
     document.getElementById('experienceModal').style.display = 'flex';
   }
 
+  // Крок 2: Чіткий перехід за кнопкою всередині вікна
   function redirectToInterrogation() {
     window.location.href = "dopros.html";
   }
