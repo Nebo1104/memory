@@ -1,37 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NKVD Interrogation - Protocol №942</title>
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: "Courier New", monospace; }
-        .scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://raw.githubusercontent.com/Nebo1104/memory/main/vstup.png') no-repeat center center; background-size: cover; filter: brightness(0.7) contrast(1.1); z-index: 1; }
-        .lamp-flicker { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 200, 0.01); pointer-events: none; z-index: 2; animation: flicker 5s infinite; }
-        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.2; } }
-        .protocol-overlay { position: absolute; bottom: 8%; left: 5%; width: 45%; color: rgba(255, 255, 255, 0.5); font-size: 13px; line-height: 1.5; text-shadow: 2px 2px 5px black; pointer-events: none; z-index: 5; max-height: 35vh; overflow: hidden; }
-        #ui-panel { position: absolute; right: 5%; top: 8%; width: 380px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
-        .speech-box { background: rgba(10, 10, 10, 0.95); border-left: 4px solid #8b0000; padding: 20px; color: #ddd; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .stat-group { display: flex; gap: 10px; }
-        .stat-item { flex: 1; background: rgba(0,0,0,0.9); padding: 8px; font-size: 9px; color: #888; border: 1px solid #333; text-transform: uppercase; }
-        .bar { height: 4px; background: #111; margin-top: 5px; width: 100%; overflow: hidden; }
-        .fill { height: 100%; background: #2e7d32; transition: width 1s ease; width: 100%; }
-        .explanation { padding: 15px; font-size: 12px; border-left: 3px solid; display: none; background: rgba(0,0,0,0.9); color: #eee; margin-top: 10px; }
-        .exp-correct { border-color: #2e7d32; background: rgba(20, 40, 20, 0.9); }
-        .exp-danger { border-color: #8b0000; background: rgba(40, 20, 20, 0.9); }
-        .options { margin-top: 10px; }
-        button { display: block; width: 100%; padding: 14px; margin-bottom: 10px; background: rgba(30, 30, 30, 0.95); color: #ccc; border: 1px solid #444; cursor: pointer; font-family: inherit; transition: 0.2s; text-align: left; font-size: 13px; }
-        button:hover { background: #8b0000; color: white; border-color: #ff4444; transform: scale(1.02); }
-        .btn-continue { background: #2e7d32 !important; color: white !important; text-align: center !important; font-weight: bold; }
-        .shake { animation: shakeAnim 0.3s; }
-        @keyframes shakeAnim { 0%, 100% {transform: translate(0,0);} 25% {transform: translate(-5px, 0);} 75% {transform: translate(5px, 0);} }
-        .missing-stamp { position: absolute; top: 40%; left: 15%; border: 6px solid #8b0000; color: #8b0000; padding: 20px; font-size: 40px; font-weight: bold; transform: rotate(-15deg); opacity: 0.7; text-align: center; display: none; z-index: 6; pointer-events: none; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrogation Room</title>
+  <style>
+    /* Збережено стилі для модального вікна емоційної паузи */
+    .interlude-modal {
+      display: none; 
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(16, 13, 11, 0.95);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Special Elite', 'Courier New', monospace;
+    }
+
+    .interlude-content {
+      max-width: 580px;
+      width: 100%;
+      background: #f8f5ee;
+      border: 3px double #8a3333;
+      padding: 30px;
+      box-shadow: 12px 12px 0px rgba(138, 51, 51, 0.3);
+      box-sizing: border-box;
+      color: #212121;
+      line-height: 1.6;
+    }
+
+    .interlude-header {
+      font-size: 16px;
+      color: #8a3333;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed #8a3333;
+      padding-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .interlude-section {
+      font-size: 13px;
+      margin-bottom: 18px;
+      padding: 12px;
+      background: rgba(33, 33, 33, 0.04);
+      border-left: 4px solid #1a1715;
+    }
+
+    .interlude-section.historical {
+      border-left-color: #2b5c8f;
+      background: rgba(43, 92, 143, 0.04);
+    }
+
+    .interlude-box-header {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .interlude-btn {
+      width: 100%;
+      background: #1a1715;
+      border: 2px solid #1a1715;
+      color: #f8f5ee;
+      padding: 14px;
+      font-family: 'Special Elite', 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 13px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .interlude-btn:hover {
+      background: #8a3333;
+      border-color: #8a3333;
+      color: #ffffff;
+    }
+  </style>
 </head>
 <body>
 
 <div class="scene"></div>
 <div class="lamp-flicker"></div>
-<div class="missing-stamp" id="stamp">MISSING 1941</div>
+<div class="missing-stamp" id="stamp" style="display:none;">MISSING 1941</div>
 <div class="protocol-overlay" id="protocol-text"><p style="letter-spacing: 3px; opacity: 0.3;">USSR. NKVD CASE №942</p></div>
 
 <div id="ui-panel">
@@ -45,6 +103,28 @@
     </div>
     <div id="explanation" class="explanation"></div>
     <div id="options-box" class="options"></div>
+</div>
+
+<!-- НОВЕ МОДАЛЬНЕ ВІКНО: ЕМОЦІЙНА ПАУЗА ТА ІСТОРИЧНИЙ КОНТЕКСТ -->
+<div class="interlude-modal" id="emotionalInterlude">
+  <div class="interlude-content">
+    <div class="interlude-header">A Moment of Reflection</div>
+    
+    <!-- Психологічна підтримка -->
+    <div class="interlude-section" style="border-left-color: #8a3333;">
+      <span class="interlude-box-header" style="color: #8a3333;">EMOTIONAL PAUSE:</span>
+      Interrogation protocols and family separation can be deeply emotional to witness. If you feel overwhelmed, please take a short break, stretch, or drink some water. Your well-being comes first.
+    </div>
+
+    <!-- Історична деконструкція міфу про реабілітацію -->
+    <div class="interlude-section historical">
+      <span class="interlude-box-header" style="color: #2b5c8f;">THE REALITY OF THE THAW (1958):</span>
+      Next, you will write a rehabilitation petition as Mykola. It is crucial to look past the historical myth. Khrushchev’s Thaw was not an act of genuine reconciliation or justice. It was a calculated political tool designed to reduce severe social tension and placate the West.<br><br>
+      Mykola does not write this letter out of a pure quest for abstract justice. Because of his father's political conviction under Art. 54-10, Mykola is heavily restricted in his civil rights. The sky is legally closed to him. He writes this petition out of survival—as the only desperate way to bypass the Soviet ban and enter a higher education institute to become a pilot.
+    </div>
+
+    <button class="interlude-btn" onclick="executeFinalRedirect()">Proceed to Draft the Petition</button>
+  </div>
 </div>
 
 <script>
@@ -87,7 +167,7 @@
         const box = document.getElementById('options-box');
         const current = interrogationData[step];
         
-        box.innerHTML = ""; // Полная очистка перед созданием
+        box.innerHTML = ""; 
         
         current.btns.forEach((btnData) => {
             const btn = document.createElement('button');
@@ -116,7 +196,6 @@
         document.getElementById('will-fill').style.width = willpower + "%";
         document.getElementById('anxiety-fill').style.width = anxiety + "%";
 
-        // Кнопка продолжения заменяет варианты, предотвращая залипание
         box.innerHTML = "";
         const contBtn = document.createElement('button');
         contBtn.className = "btn-continue";
@@ -152,12 +231,22 @@
                 <p style="font-size:11px; color:#888; border-top:1px solid #333; padding-top:10px;">
                     1958: His son Mykola is a soldier dreaming of becoming a pilot, but the sky is closed to him. He must fight for the truth.
                 </p>
-                <button onclick="window.location.href='letter.html'" class="btn-continue" style="width:100%; border:none; padding:12px; margin-top:10px;">PROCEED TO 1958</button>
+                <!-- Змінено виклик функції: спочатку показуємо модальне вікно -->
+                <button onclick="showEmotionalInterlude()" class="btn-continue" style="width:100%; border:none; padding:12px; margin-top:10px;">PROCEED TO 1958</button>
             </div>
         `;
     }
 
-    // Первый запуск
+    // Відкриття вікна-інтерлюдії
+    function showEmotionalInterlude() {
+        document.getElementById('emotionalInterlude').style.display = 'flex';
+    }
+
+    // Остаточний перехід після прочитання контексту
+    function executeFinalRedirect() {
+        window.location.href = 'letter.html';
+    }
+
     renderStep();
 </script>
 
