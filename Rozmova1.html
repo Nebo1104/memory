@@ -1,10 +1,10 @@
 <style>
   body { 
-    background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/game/1game.png'); /* <--- СЮДИ ВСТАВИТИ ПОСИЛАННЯ НА КАРТИНКУ */
+    background-image: url('githubusercontent.com');
     background-size: cover; 
     background-position: center; 
     background-attachment: fixed; 
-    color: #3a3530; 
+    color: #1a1a1a; /* <--- Зроблено значно темнішим для контрасту */
     font-family: 'Courier New', monospace; 
     padding: 20px; 
     line-height: 1.4;
@@ -12,18 +12,18 @@
   .kitchen-table { 
     max-width: 600px; 
     margin: 20px auto; 
-    border: 1px solid #d3cbc0; 
+    border: 2px solid #2a2a2a; /* <--- Чіткіша рамка */
     padding: 20px; 
-    background: rgba(250, 248, 245, 0.94); 
-    box-shadow: 4px 4px 0px #e2dacd;
+    background: rgba(255, 255, 255, 0.92); /* <--- Оптимальна щільність білого фону */
+    box-shadow: 6px 6px 0px #1a1a1a; /* <--- Контрастна тінь */
     transition: all 0.3s ease;
   }
   .ambient-desc {
-    color: #7d7265;
+    color: #2b2b2b; /* <--- Текст більше не блідий */
     font-style: italic;
     margin-bottom: 15px;
     font-size: 13px;
-    border-bottom: 1px solid #eae4d9;
+    border-bottom: 2px solid #1a1a1a; /* <--- Товстіша лінія розмежування */
     padding-bottom: 10px;
   }
   
@@ -38,32 +38,32 @@
   }
 
   .log-entry { margin-bottom: 12px; font-size: 14px; }
-  .player { color: #2b5c8f; font-weight: bold; }
-  .grandpa { color: #a06d16; font-weight: bold; }
-  .grandpa.angry { color: #962d2d; }
+  .player { color: #0f3c6d; font-weight: bold; } /* <--- Насичений синій */
+  .grandpa { color: #805000; font-weight: bold; } /* <--- Темніший золотий */
+  .grandpa.angry { color: #801010; font-weight: bold; } /* <--- Глибокий червоний */
   
   .action-desc {
-    color: #7d7265;
+    color: #2b2b2b; /* <--- Зроблено чітким */
     font-style: italic;
     margin: 8px 0;
     font-size: 13px;
   }
 
   .viewer-note {
-    color: #555;
-    background: #f1ede2;
+    color: #1a1a1a; /* <--- Чистий контраст */
+    background: #e6e0d4; /* <--- Темніша підкладка */
     padding: 8px 12px;
     margin: 8px 0 15px 0;
     font-size: 13px;
-    border-left: 3px solid #7d7265;
+    border-left: 4px solid #1a1a1a;
   }
 
   .inner-thought { 
-    color: #962d2d; 
+    color: #7a1212; /* <--- Контрастний бордовий */
     font-style: italic; 
-    background: #fdf5f5; 
+    background: #ffebeb; /* <--- Більш насичений рожевий для читання */
     padding: 12px; 
-    border-left: 3px solid #b83232; 
+    border-left: 4px solid #b83232; 
     margin-top: 15px; 
     font-size: 13px;
     margin-bottom: 15px;
@@ -72,40 +72,42 @@
   .choices button { 
     display: block; 
     width: 100%; 
-    background: #fdfcfb; 
-    border: 1px solid #cfc4b5; 
-    color: #4a423a; 
+    background: #ffffff; 
+    border: 2px solid #1a1a1a; /* <--- Чорна контрастна рамка кнопок */
+    color: #1a1a1a; /* <--- Чорний текст кнопок */
     padding: 10px; 
     margin-bottom: 8px; 
     text-align: left; 
     cursor: pointer; 
     font-family: 'Courier New', monospace;
     font-size: 13px;
+    font-weight: bold; /* <--- Жирний шрифт для кращої читабельності */
     transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
   }
   .choices button:hover { 
-    background: #f5f0e6; 
-    border-color: #a89985;
+    background: #1a1a1a; /* <--- Інверсія при наведенні (чорний фон) */
+    color: #ffffff; /* <--- Білий текст при наведенні */
     transform: translateX(2px);
   }
   
   .next-btn {
     margin-top: 5px; 
-    background: #ebdcc7 !important; 
-    color: #4a3820 !important; 
-    border: 1px solid #c2b099 !important;
+    background: #1a1a1a !important; /* <--- Акцентна кнопка тепер темна */
+    color: #ffffff !important; 
+    border: 2px solid #1a1a1a !important;
     text-align: center !important;
     font-weight: bold;
   }
   .restart-btn {
     margin-top: 5px;
-    background: #f5eeee !important;
-    color: #8a3333 !important;
-    border: 1px solid #e0cccc !important;
+    background: #7a1212 !important; /* <--- Кнопка рестарту чітко видима */
+    color: #ffffff !important;
+    border: 2px solid #7a1212 !important;
     text-align: center !important;
     font-weight: bold;
   }
 </style>
+
 
 <div class="kitchen-table" id="tableContainer">
   <div class="ambient-desc">
