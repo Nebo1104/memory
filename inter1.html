@@ -1,111 +1,129 @@
-<style>
-  body { 
-    background-image: url('githubusercontent.com'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-    color: #3a3530; 
-    font-family: 'Courier New', monospace; 
-    padding: 20px; 
-    line-height: 1.4;
-  }
-  
-  .kitchen-table { 
-    max-width: 600px; 
-    margin: 20px auto; 
-    border: 1px solid #d3cbc0; 
-    padding: 20px; 
-    background: rgba(250, 248, 245, 0.96); 
-    box-shadow: 4px 4px 0px #e2dacd;
-    transition: all 0.3s ease;
-  }
-  
-  .ambient-desc {
-    color: #7d7265;
-    font-style: italic;
-    margin-bottom: 15px;
-    font-size: 13px;
-    border-bottom: 1px solid #eae4d9;
-    padding-bottom: 10px;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transition: Into the Archives</title>
+  <!-- Connecting authentic typewriter font correctly -->
+  <link rel="preconnect" href="googleapis.com">
+  <link rel="preconnect" href="gstatic.com" crossorigin>
+  <link href="googleapis.com" rel="stylesheet">
 
-  .context-section {
-    color: #3a3530;
-    font-style: italic; 
-    background: #fdfdfd; 
-    padding: 12px; 
-    border-left: 3px solid #7d7265; 
-    margin-top: 15px; 
-    font-size: 13px;
-    margin-bottom: 15px;
-    line-height: 1.5;
-  }
+  <style>
+    body { 
+      background-color: #161311; /* <--- Замінено на глибокий темний колір архівного столу */
+      font-family: 'Special Elite', 'Courier New', monospace; 
+      color: #212121; 
+      padding: 20px; 
+      line-height: 1.5;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .interlude-card { 
+      max-width: 620px; 
+      width: 100%;
+      border: 3px double #1a1715; 
+      padding: 35px; 
+      background: #f8f5ee; /* Чистий колір паперу справи без прозорості для 100% чіткості тексту */
+      box-shadow: 12px 12px 0px rgba(26, 23, 21, 0.9);
+      border-radius: 2px;
+      position: relative;
+    }
 
-  .preview-section {
-    color: #962d2d; 
-    font-style: italic; 
-    background: #fdf5f5; 
-    padding: 12px; 
-    border-left: 3px solid #b83232; 
-    margin-top: 15px; 
-    font-size: 13px;
-    margin-bottom: 15px;
-    line-height: 1.5;
-  }
+    /* Red Soviet declassified/archive stamp style */
+    .interlude-card::before {
+      content: "DECLASSIFIED / СЕКРЕТНО";
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      border: 3px solid #8a3333;
+      color: #8a3333;
+      font-size: 11px;
+      padding: 4px 8px;
+      font-weight: bold;
+      transform: rotate(4deg);
+      opacity: 0.8;
+      letter-spacing: 1px;
+    }
+    
+    .stage-indicator {
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
 
-  .box-header {
-    font-size: 13px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-    font-style: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .context-section .box-header {
-    color: #555;
-  }
+    .interlude-title {
+      font-size: 24px;
+      color: #1a1715;
+      margin-bottom: 25px;
+      border-bottom: 2px dashed #1a1715;
+      padding-bottom: 10px;
+      letter-spacing: 1px;
+    }
 
-  .preview-section .box-header {
-    color: #962d2d;
-  }
-  
-  .choices button { 
-    display: block; 
-    width: 100%; 
-    background: #fdfcfb; 
-    border: 1px solid #cfc4b5; 
-    color: #4a423a; 
-    padding: 10px; 
-    margin-bottom: 8px; 
-    text-align: left; 
-    cursor: pointer; 
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .choices button:hover { 
-    background: #f5f0e6; 
-    border-color: #a89985;
-    transform: translateX(2px);
-  }
-  
-  .next-btn {
-    margin-top: 5px; 
-    background: #ebdcc7 !important; 
-    color: #4a3820 !important; 
-    border: 1px solid #c2b099 !important;
-    text-align: center !important;
-    font-weight: bold;
-  }
-</style>
+    .context-section {
+      background: rgba(33, 33, 33, 0.05); /* Легка паперова підкладка тексту */
+      padding: 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      border-left: 4px solid #1a1715;
+    }
 
-<div class="kitchen-table">
-  <div class="ambient-desc">
-    Transition: Stage 1 → Stage 2 | Reflecting the Silence
-  </div>
+    .preview-section {
+      background: rgba(138, 51, 51, 0.05); /* Червонувата архівна підкладка */
+      padding: 18px;
+      margin-bottom: 25px;
+      border-left: 4px solid #8a3333;
+      font-size: 14px;
+    }
+
+    .box-header {
+      font-size: 14px;
+      color: #1a1715;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .choices button { 
+      display: block; 
+      width: 100%; 
+      background: #1a1715; 
+      border: 2px solid #1a1715; 
+      color: #f8f5ee; 
+      padding: 15px; 
+      text-align: center; 
+      cursor: pointer;
+      font-family: 'Special Elite', 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+      box-shadow: 4px 4px 0px rgba(138, 51, 51, 0.5);
+    }
+    
+    .choices button:hover { 
+      background: #8a3333; 
+      border-color: #8a3333;
+      color: #ffffff;
+      transform: translate(2px, 2px);
+      box-shadow: 0px 0px 0px transparent;
+    }
+  </style>
+</head>
+<body>
+
+<div class="interlude-card">
+  <div class="stage-indicator">Transition: Stage 1 → Stage 2</div>
+  <div class="interlude-title">REFLECTING THE SILENCE</div>
   
   <!-- WHY IT HAPPENED: Historical and psychological context -->
   <div class="context-section">
@@ -120,12 +138,15 @@
   </div>
 
   <div class="choices">
-    <button onclick="proceedToNextGame()" class="next-btn">Open the Archive File</button>
+    <button onclick="proceedToNextGame()">Open the Archive File</button>
   </div>
 </div>
 
 <script>
   function proceedToNextGame() {
-    window.location.href = 'game2.html'; /* <--- НАЗВА ФАЙЛУ НАСТУПНОЇ ГРИ */
+    window.location.href = 'game2.html'; /* <--- NEXT GAME MODULE FILE NAME */
   }
 </script>
+
+</body>
+</html>
