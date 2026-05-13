@@ -10,35 +10,36 @@
       background-color: #110e0d; 
       font-family: 'Special Elite', 'Courier New', monospace; 
       color: #2c2523; 
-      padding: 20px; 
-      line-height: 1.6;
       margin: 0;
+      padding: 0;
       min-height: 100vh;
       box-sizing: border-box;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      justify-content: flex-end; /* Зміщує панель праворуч */
       position: relative;
+      overflow: hidden;
     }
 
-    /* ЗАДНЯ КАРТИНКА З ВАШИМ ПОСИЛАННЯМ */
+    /* ФОНОВА КАРТИНКА НА ВЕСЬ ЕКРАН */
     .scene {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/game/vstup.png');
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background-image: url('githubusercontent.com');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0.15; /* Оптимальна прозорість для читабельності тексту */
+      opacity: 0.85; /* Збільшено яскравість, щоб гравець чітко бачив зображення */
       z-index: -2;
     }
 
-    /* АТМОСФЕРНЕ МЕРЕХТІННЯ ЛАМПИ */
+    /* АТМОСФЕРНЕ МЕРЕХТІННЯ */
     .lamp-flicker {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 25%, rgba(255, 220, 150, 0.12) 0%, transparent 70%);
+      background: radial-gradient(circle at 35% 25%, rgba(255, 220, 150, 0.15) 0%, transparent 70%);
       z-index: -1;
       pointer-events: none;
       animation: flickerAnim 5s infinite;
@@ -55,30 +56,32 @@
       49% { opacity: 1; }
     }
 
-    /* ОСНОВНА ПАНЕЛЬ ІНТЕРФЕЙСУ */
+    /* НАПІВПРОЗОРА ПАНЕЛЬ ІНТЕРФЕЙСУ СПРАВА */
     #ui-panel {
-      max-width: 640px; 
-      width: 100%;
-      border: 2px solid #2c2523;
-      outline: 4px double #2c2523;
-      outline-offset: -8px;
-      padding: 35px; 
-      background: #fdfbf7; 
-      box-shadow: 16px 16px 0px rgba(17, 14, 13, 0.95);
-      border-radius: 2px;
+      width: 450px; 
+      max-width: 100%;
+      height: 100vh;
+      border-left: 2px solid #2c2523;
+      padding: 40px 30px; 
+      background: rgba(253, 251, 247, 0.85); /* Напівпрозорий кремовий фон */
+      backdrop-filter: blur(8px); /* Легке розмиття картинки під панеллю */
+      box-shadow: -10px 0px 30px rgba(0, 0, 0, 0.5);
       box-sizing: border-box;
       position: relative;
       z-index: 10;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto; /* Внутрішній скрол, якщо контент не вміщається */
     }
 
     .stat-group {
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
       margin-bottom: 25px;
     }
 
     .stat-item {
-      flex: 1;
       font-size: 12px;
       font-weight: bold;
       text-transform: uppercase;
@@ -88,7 +91,7 @@
 
     .bar {
       width: 100%;
-      background: #e8e2d5;
+      background: rgba(44, 37, 35, 0.2);
       height: 10px;
       margin-top: 6px;
       border: 1px solid #2c2523;
@@ -103,7 +106,7 @@
     }
 
     .speech-box {
-      background: rgba(44, 37, 35, 0.04); 
+      background: rgba(44, 37, 35, 0.08); 
       padding: 18px;
       margin-bottom: 20px;
       font-size: 15px;
@@ -119,13 +122,13 @@
     }
 
     .exp-correct {
-      background: rgba(43, 92, 143, 0.05);
+      background: rgba(43, 92, 143, 0.1);
       border-left-color: #2b5c8f;
       color: #2b5c8f;
     }
 
     .exp-danger {
-      background: rgba(138, 51, 51, 0.05);
+      background: rgba(138, 51, 51, 0.1);
       border-left-color: #8a3333;
       color: #8a3333;
     }
@@ -141,7 +144,7 @@
       cursor: pointer;
       font-family: 'Special Elite', 'Courier New', monospace;
       font-size: 13px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       transition: all 0.2s ease-in-out;
       box-sizing: border-box;
       box-shadow: 4px 4px 0px rgba(138, 51, 51, 0.2);
@@ -169,34 +172,30 @@
     }
 
     .protocol-overlay {
-      max-width: 640px;
-      width: 100%;
-      margin: 20px auto;
-      color: #6e5e5a;
+      color: #443835;
       font-size: 12px;
-      border-top: 2px dashed #d1c7bd;
+      border-top: 2px dashed #2c2523;
       padding-top: 20px;
-      position: relative;
-      z-index: 10;
+      margin-top: auto; /* Штовхає лог протоколу до самого низу панелі */
       box-sizing: border-box;
     }
 
-    /* ФІНАЛЬНИЙ ШТАМП */
+    /* ФІНАЛЬНИЙ ШТАМП ТЕПЕР ЗЛІВА НА КАРТИНЦІ */
     .missing-stamp {
       display: none;
-      border: 4px solid #8a3333;
+      border: 5px solid #8a3333;
       color: #8a3333;
-      font-size: 15px;
-      padding: 8px 16px;
+      font-size: 24px;
+      padding: 12px 24px;
       font-weight: bold;
-      transform: rotate(-7deg);
-      position: absolute;
-      top: 35px;
-      right: 35px;
-      letter-spacing: 2px;
-      z-index: 20;
-      background: #fdfbf7;
-      box-shadow: 4px 4px 0px rgba(138, 51, 51, 0.15);
+      transform: rotate(-12deg);
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      letter-spacing: 3px;
+      z-index: 5;
+      background: rgba(253, 251, 247, 0.9);
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
     }
 
     .shake {
@@ -208,7 +207,7 @@
       40%, 80% { transform: translateX(5px); }
     }
 
-    /* АДАПТИВНЕ МОДАЛЬНЕ ВІКНО */
+    /* АДАПТИВНЕ МОДАЛЬНЕ ВІКНО НА ВЕСЬ ЕКРАН */
     .interlude-modal {
       display: none; 
       position: fixed;
@@ -290,18 +289,25 @@
       border-color: #8a3333;
       color: #ffffff;
     }
+
+    /* Адаптація для маленьких екранів телефонів */
+    @media (max-width: 768px) {
+      body { justify-content: center; overflow-y: auto; }
+      #ui-panel { height: auto; min-height: 100vh; width: 100%; border-left: none; }
+      .missing-stamp { position: absolute; top: 20px; left: 20px; font-size: 18px; }
+    }
   </style>
 </head>
 <body>
 
-<div class="scene" crossorigin="anonymous"></div>
+<div class="scene"></div>
 <div class="lamp-flicker"></div>
 <div class="missing-stamp" id="stamp">MISSING 1941</div>
 
 <div id="ui-panel">
     <div class="stat-group">
         <div class="stat-item">Willpower <div class="bar"><div id="will-fill" class="fill" style="width: 100%;"></div></div></div>
-        <div class="stat-item">Anxiety <div class="bar"><div id="anxiety-fill" class="fill" style="width: 20%; background: #444;"></div></div></div>
+        <div class="stat-item">Anxiety <div class="bar"><div id="anxiety-fill" class="fill" style="width: 20%; background: #4a3e3b;"></div></div></div>
     </div>
     <div class="speech-box">
         <b style="color: #ff4444; font-size: 11px; letter-spacing: 1px;">SGT. SELIN:</b><br>
@@ -309,10 +315,10 @@
     </div>
     <div id="explanation" class="explanation"></div>
     <div id="options-box" class="options"></div>
-</div>
 
-<div class="protocol-overlay" id="protocol-text">
-    <p style="letter-spacing: 3px; opacity: 0.3; margin-top: 0;">USSR. NKVD CASE №942</p>
+    <div class="protocol-overlay" id="protocol-text">
+        <p style="letter-spacing: 3px; opacity: 0.4; margin-top: 0;">USSR. NKVD CASE №942</p>
+    </div>
 </div>
 
 <!-- МОДАЛЬНЕ ВІКНО ЕМОЦІЙНОЇ ПАУЗИ -->
@@ -395,8 +401,8 @@
 
         if (!btnData.v) {
             willpower -= 25; anxiety += 25;
-            document.body.classList.add('shake');
-            setTimeout(() => document.body.classList.remove('shake'), 300);
+            document.getElementById('ui-panel').classList.add('shake');
+            setTimeout(() => document.getElementById('ui-panel').classList.remove('shake'), 300);
         } else {
             anxiety = Math.min(100, Math.floor(Math.random() * 20) + 15);
         }
@@ -429,6 +435,8 @@
     function finishGame() {
         document.getElementById('stamp').style.display = "block";
         const ui = document.getElementById('ui-panel');
+        
+        // Оновлення інтерфейсу всередині правої панелі без її руйнування
         ui.innerHTML = `
             <div class="speech-box">
                 <h2 style="color:#ff4444; margin:0; font-size:1.4em; font-weight:bold; text-transform:uppercase;">SENTENCED</h2>
@@ -441,6 +449,9 @@
                 </p>
                 <button onclick="showEmotionalInterlude()" class="btn-continue" style="width:100%; padding:14px; margin-top:15px;">PROCEED TO 1958</button>
             </div>
+            <div class="protocol-overlay" id="protocol-text">
+                <p style="letter-spacing: 3px; opacity: 0.4; margin-top: 0;">USSR. NKVD CASE №942</p>
+            </div>
         `;
     }
 
@@ -449,7 +460,8 @@
     }
 
     function executeFinalRedirect() {
-        window.location.href = 'letter.html';
+        // Гарантований прямий перехід на файл letter.html без збоїв маршрутизації
+        window.location.assign('letter.html');
     }
 
     renderStep();
