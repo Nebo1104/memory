@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NKVD Interrogation - Protocol №942</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: "Courier New", monospace; }
+        .scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://raw.githubusercontent.com/Nebo1104/memory/main/vstup.png') no-repeat center center; background-size: cover; filter: brightness(0.7) contrast(1.1); z-index: 1; }
+        .lamp-flicker { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 200, 0.01); pointer-events: none; z-index: 2; animation: flicker 5s infinite; }
+        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.2; } }
+        .protocol-overlay { position: absolute; bottom: 8%; left: 5%; width: 45%; color: rgba(255, 255, 255, 0.5); font-size: 13px; line-height: 1.5; text-shadow: 2px 2px 5px black; pointer-events: none; z-index: 5; max-height: 35vh; overflow: hidden; }
+        #ui-panel { position: absolute; right: 5%; top: 8%; width: 380px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
+        .speech-box { background: rgba(10, 10, 10, 0.95); border-left: 4px solid #8b0000; padding: 20px; color: #ddd; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .stat-group { display: flex; gap: 10px; }
+        .stat-item { flex: 1; background: rgba(0,0,0,0.9); padding: 8px; font-size: 9px; color: #888; border: 1px solid #333; text-transform: uppercase; }
+        .bar { height: 4px; background: #111; margin-top: 5px; width: 100%; overflow: hidden; }
+        .fill { height: 100%; background: #2e7d32; transition: width 1s ease; width: 100%; }
+        .explanation { padding: 15px; font-size: 12px; border-left: 3px solid; display: none; background: rgba(0,0,0,0.9); color: #eee; margin-top: 10px; }
+        .exp-correct { border-color: #2e7d32; background: rgba(20, 40, 20, 0.9); }
+        .exp-danger { border-color: #8b0000; background: rgba(40, 20, 20, 0.9); }
+        .options { margin-top: 10px; }
+        button { display: block; width: 100%; padding: 14px; margin-bottom: 10px; background: rgba(30, 30, 30, 0.95); color: #ccc; border: 1px solid #444; cursor: pointer; font-family: inherit; transition: 0.2s; text-align: left; font-size: 13px; }
+        button:hover { background: #8b0000; color: white; border-color: #ff4444; transform: scale(1.02); }
+        .btn-continue { background: #2e7d32 !important; color: white !important; text-align: center !important; font-weight: bold; }
+        .shake { animation: shakeAnim 0.3s; }
+        @keyframes shakeAnim { 0%, 100% {transform: translate(0,0);} 25% {transform: translate(-5px, 0);} 75% {transform: translate(5px, 0);} }
+        .missing-stamp { position: absolute; top: 40%; left: 15%; border: 6px solid #8b0000; color: #8b0000; padding: 20px; font-size: 40px; font-weight: bold; transform: rotate(-15deg); opacity: 0.7; text-align: center; display: none; z-index: 6; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="scene"></div>
+<div class="lamp-flicker"></div>
+<div class="missing-stamp" id="stamp">MISSING 1941</div>
+<div class="protocol-overlay" id="protocol-text"><p style="letter-spacing: 3px; opacity: 0.3;">USSR. NKVD CASE №942</p></div>
+
+<div id="ui-panel">
+    <div class="stat-group">
+        <div class="stat-item">Willpower <div class="bar"><div id="will-fill" class="fill" style="width: 100%;"></div></div></div>
+        <div class="stat-item">Anxiety <div class="bar"><div id="anxiety-fill" class="fill" style="width: 20%; background: #444;"></div></div></div>
+    </div>
+    <div class="speech-box">
+        <b style="color: #ff4444; font-size: 11px; letter-spacing: 1px;">SGT. SELIN:</b><br>
+        <span id="chat-text">"State your background for the protocol. What did your father own?"</span>
+    </div>
+    <div id="explanation" class="explanation"></div>
+    <div id="options-box" class="options"></div>
+</div>
+
+<script>
+    let step = 1;
+    let willpower = 100;
+    let anxiety = 20;
+
+    const interrogationData = {
+        1: { 
+            q: "Background?", chat: "A blacksmith... But witnesses say you spoke against the mobilization. Why?",
+            btns: [
+                {t: "Born in a peasant family. Father was a blacksmith.", v: true, m: "STABLE: Neutral facts. No emotional handle for the officer."},
+                {t: "We were simple poor people. Have mercy on us.", v: false, m: "DANGEROUS: Pity annoys the Sergeant. He sees weakness as guilt."}
+            ]
+        },
+        2: { 
+            q: "Agitation?", chat: "Witnesses heard your 'jokes' mocking the state. Admit it!",
+            btns: [
+                {t: "I never said anything against the Soviet power.", v: true, m: "STABLE: Direct denial is your only legal shield here."},
+                {t: "I only worried about my children.", v: false, m: "DANGEROUS: Fear is interpreted as defeatist agitation."}
+            ]
+        },
+        3: { 
+            q: "Jokes?", chat: "Who are your anti-Soviet accomplices? Name them now.",
+            btns: [
+                {t: "I have no such contacts. Only family and neighbors.", v: true, m: "STABLE: Naming no one stops the investigation from expanding."},
+                {t: "I don't understand what you want.", v: false, m: "DANGEROUS: Confusion invites more aggressive techniques."}
+            ]
+        },
+        4: { 
+            q: "Plea?", chat: "Sign this protocol. Admit your guilt, or the road home is closed.",
+            btns: [
+                {t: "I will not sign a lie. I am not guilty.", v: true, m: "DIGNITY: Petro refused to sign, preserving his name at a high cost."},
+                {t: "Please, let me go home to Olga.", v: false, m: "DANGEROUS: The machine only cares about the ink on paper."}
+            ]
+        }
+    };
+
+    function renderStep() {
+        const box = document.getElementById('options-box');
+        const current = interrogationData[step];
+        
+        box.innerHTML = ""; // Полная очистка перед созданием
+        
+        current.btns.forEach((btnData) => {
+            const btn = document.createElement('button');
+            btn.innerText = btnData.t;
+            btn.onclick = function() { processChoice(btnData); };
+            box.appendChild(btn);
+        });
+    }
+
+    function processChoice(btnData) {
+        const exp = document.getElementById('explanation');
+        const box = document.getElementById('options-box');
+        
+        exp.innerHTML = btnData.m;
+        exp.className = "explanation " + (btnData.v ? "exp-correct" : "exp-danger");
+        exp.style.display = "block";
+
+        if (!btnData.v) {
+            willpower -= 25; anxiety += 25;
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 300);
+        } else {
+            anxiety = Math.min(100, Math.floor(Math.random() * 20) + 15);
+        }
+
+        document.getElementById('will-fill').style.width = willpower + "%";
+        document.getElementById('anxiety-fill').style.width = anxiety + "%";
+
+        // Кнопка продолжения заменяет варианты, предотвращая залипание
+        box.innerHTML = "";
+        const contBtn = document.createElement('button');
+        contBtn.className = "btn-continue";
+        contBtn.innerText = "CONTINUE →";
+        contBtn.onclick = function() { finalizeStep(btnData.t); };
+        box.appendChild(contBtn);
+    }
+
+    function finalizeStep(choiceText) {
+        const log = document.getElementById('protocol-text');
+        log.innerHTML += `<p>> ${choiceText}</p>`;
+        document.getElementById('explanation').style.display = "none";
+        
+        if (step < 4 && willpower > 0) {
+            step++;
+            document.getElementById('chat-text').innerText = interrogationData[step].chat;
+            renderStep();
+        } else {
+            finishGame();
+        }
+    }
+
+    function finishGame() {
+        document.getElementById('stamp').style.display = "block";
+        const ui = document.getElementById('ui-panel');
+        ui.innerHTML = `
+            <div class="speech-box">
+                <h2 style="color:#ff4444; margin:0; font-size:1.4em;">SENTENCED</h2>
+                <p style="font-size:12px; color:#ccc; line-height:1.4;">
+                    Petro was arrested under Art. 54-10. During the 1941 evacuation from <b>Novocherkassk</b>, he vanished. 
+                    Official searches in 1942 yielded nothing. He was gone.
+                </p>
+                <p style="font-size:11px; color:#888; border-top:1px solid #333; padding-top:10px;">
+                    1958: His son Mykola is a soldier dreaming of becoming a pilot, but the sky is closed to him. He must fight for the truth.
+                </p>
+                <button onclick="window.location.href='letter.html'" class="btn-continue" style="width:100%; border:none; padding:12px; margin-top:10px;">PROCEED TO 1958</button>
+            </div>
+        `;
+    }
+
+    // Первый запуск
+    renderStep();
+</script>
+
+</body>
+</html>

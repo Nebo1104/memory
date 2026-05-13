@@ -1,216 +1,205 @@
-<!-- Connecting authentic typewriter font from Google Fonts -->
-<link rel="preconnect" href="googleapis.com">
-<link rel="preconnect" href="gstatic.com" crossorigin>
-<link href="googleapis.com" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Archive Letter: Bureaucratic Quest</title>
+    <style>
+        body { background: #d3c9b1; font-family: "Courier New", monospace; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .main-container { display: flex; flex-direction: row; gap: 30px; width: 100%; max-width: 1200px; align-items: flex-start; }
+        .paper-column { flex: 1.2; position: sticky; top: 20px; }
+        .paper { background: #fff; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; background-image: url("https://transparenttextures.com"); min-height: 650px; transition: filter 0.5s; }
+        .ui-column { flex: 0.8; position: sticky; top: 20px; }
+        .ui-panel { background: rgba(255,255,255,0.9); padding: 25px; border: 1px solid #999; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stamp { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 6px double #8b0000; color: #8b0000; padding: 15px 30px; font-size: 2.2em; font-weight: bold; text-transform: uppercase; opacity: 0; pointer-events: none; z-index: 10; transition: opacity 0.2s; text-align: center; }
+        button { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #222; color: #eee; border: none; font-family: inherit; cursor: pointer; text-align: left; transition: 0.2s; font-size: 13px; }
+        button:hover { background: #8b0000; transform: translateX(5px); }
+        .explanation { border-left: 4px solid #8b0000; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
+        .exp-error { background: #fff5f5; border-color: #8b0000; color: #333; }
+        .exp-correct { background: #f5fff5; border-color: #2e7d32; color: #1b5e20; }
+        .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .shake { animation: shakeAnim 0.3s; }
+        @keyframes shakeAnim { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .kgb-arrest { background: #1a1a1a !important; color: #cc0000 !important; border: 5px solid #cc0000 !important; }
+        .military-shame { background: #2e3b23 !important; color: #e0e0e0 !important; border: 5px solid #4a5d3a !important; }
+        .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
+        .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
 
-<style>
-  body { 
-    background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/main/file_000000004a8c72439635c8becb6bd07a.png'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-    font-family: 'Special Elite', 'Courier New', monospace; 
-    font-weight: bold; 
-    color: #212121; 
-    padding: 10px; 
-    line-height: 1.4;
-    margin: 0;
-    overflow-x: hidden;
-    position: relative;
-  }
+        @media (max-width: 900px) { .main-container { flex-direction: column; } .paper-column, .ui-column { width: 100%; position: static; } }
+    </style>
+</head>
+<body>
 
-  body::before {
-    content: " ";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0);
-    animation: grainFlicker 0.15s infinite;
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  @keyframes grainFlicker {
-    0% { background-color: rgba(255, 255, 255, 0.01); }
-    50% { background-color: rgba(0, 0, 0, 0.02); }
-    100% { background-color: rgba(255, 255, 255, 0.005); }
-  }
-  
-  .kitchen-table { 
-    max-width: 580px; 
-    margin: 15px auto; 
-    border: 2px solid #b5a994; 
-    padding: 20px; 
-    background: rgba(250, 248, 245, 0.92); 
-    box-shadow: 4px 4px 0px #cbd2c3;
-  }
-  
-  .ambient-desc {
-    color: #4a423a; 
-    font-style: italic;
-    margin-bottom: 12px;
-    font-size: 13px;
-    border-bottom: 2px dashed #d3cbc0; 
-    padding-bottom: 8px;
-  }
-
-  .typewriter-title {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 3px;
-    color: #1a1715;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    margin-left: auto;
-    margin-right: auto;
-    width: 17em; 
-    animation: typing 3.5s steps(17, end) forwards;
-  }
-
-  @keyframes typing {
-    from { width: 0; }
-    to { width: 17em; }
-  }
-  
-  .game-subtitle {
-    font-size: 13px;
-    text-align: center;
-    color: #5e5449;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fadeInDoc 1s 3.2s forwards ease;
-  }
-
-  @keyframes fadeInDoc {
-    from { opacity: 0; transform: translateY(3px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .slide-container {
-    display: grid;
-    grid-template-rows: 0fr; 
-    transition: grid-template-rows 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
-  }
-
-  .slide-container.open {
-    grid-template-rows: 1fr; 
-    margin-bottom: 15px;
-  }
-
-  .slide-wrapper {
-    overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-  }
-
-  .slide-container.open .slide-wrapper {
-    opacity: 1;
-  }
-
-  .instruction-box {
-    background: rgba(245, 240, 230, 0.85); 
-    border-left: 4px solid #8a3333; 
-    padding: 12px;
-    font-size: 13px;
-    color: #212121;
-  }
-  
-  .instruction-box p {
-    margin: 0 0 8px 0;
-  }
-  
-  .instruction-box p:last-child {
-    margin-bottom: 0;
-  }
-
-  .box-header {
-    font-size: 14px;
-    color: #1a1715;
-    font-weight: 900; 
-  }
-  
-  .choices button { 
-    display: block; 
-    width: 100%; 
-    background: rgba(253, 252, 251, 0.95); 
-    border: 1px solid #a89985; 
-    color: #212121; 
-    padding: 10px; 
-    margin-bottom: 6px; 
-    text-align: left; 
-    cursor: pointer;
-    font-family: 'Special Elite', 'Courier New', monospace;
-    font-weight: bold;
-    font-size: 13px;
-    transition: background 0.2s ease, transform 0.1s ease;
-  }
-  
-  .choices button:hover { 
-    background: #ebdcc7; 
-    color: #4a3820;
-    transform: translateX(3px);
-  }
-  
-  .menu-btn {
-    text-align: center !important;
-    text-transform: uppercase;
-  }
-  
-  .start-btn-main {
-    background: #c9b097 !important; 
-    color: #2b1a08 !important; 
-    border: 2px solid #8a735d !important;
-  }
-</style>
-
-<div class="kitchen-table">
-  <div id="mainMenu">
-    <div class="typewriter-title">ECHO OF DEPORTATION</div>
-    <div class="game-subtitle">interactive research of family memory</div>
-    
-    <div class="ambient-desc" style="text-align: center; border-bottom: none; margin-bottom: 15px;">
-      A story about fear passed down through generations, and the emptiness left behind by the Soviet repressive system.
-    </div>
-
-    <div id="instructionPlace" class="slide-container">
-      <div class="slide-wrapper">
-        <div class="instruction-box">
-          <p><span class="box-header">ABOUT:</span> This project is entirely based on my personal experience, reflections, and deep research into the actual archive case files regarding the repression of my ancestor. The game consists of 4 logical mini-games.</p>
-          <p><span class="box-header">HOW TO PLAY:</span> Answer as honestly as you would in real life. In most cases, there are no generic right or wrong answers, but keep in mind that every choice carries weight and shapes the final outcome.</p>
-          <p><span class="box-header">OBJECTIVE:</span> To provide an opportunity to gain a new perspective and experience through emotional engagement.</p>
-          <p><span class="box-header">FEEDBACK:</span> If you would like to share your thoughts, ideas, or suggestions, feel free to reach out to me directly at <u>n.neborachko@gmail.com</u>.</p>
+<div class="main-container">
+    <div class="paper-column">
+        <div class="paper" id="doc">
+            <div class="stamp" id="stamp-bad">REJECTED</div>
+            <div class="stamp" id="stamp-ok" style="border-color: green; color: green;">SENT</div>
+            <div style="text-align: right;"><div id="p-1" style="min-height: 1.2em;">____________________</div>February 25, 1958</div>
+            <h3 style="text-align: center; margin-top: 30px;">STATEMENT</h3>
+            <div id="p-2"></div><div id="p-3"></div><div id="p-4"></div><div id="p-5"></div>
+            <div style="margin-top: 50px; font-size: 0.9em;">Signature: <span style="text-decoration: underline;">M.P. Neborachko</span><br>Address: Military Unit 54962, Zaporizhzhia city.</div>
         </div>
-      </div>
     </div>
 
-    <div class="choices">
-      <button class="menu-btn start-btn-main" onclick="initiateGame()">Start game</button>
-      <button class="menu-btn" id="infoToggleBtn" onclick="toggleInstruction()">About & Instructions</button>
+    <div class="ui-column">
+        <div class="ui-panel" id="ui">
+            <div id="instr"><b>Step 1:</b> Recipient selection:</div>
+            <div id="explanation-box" class="explanation"></div>
+            <div id="buttons"></div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-  let instructionVisible = false;
+    const stepsData = {
+        1: { 
+            correctText: "To the Board of the Supreme Court of the USSR", 
+            instr: "Step 1: Recipient selection:",
+            correctExp: "Correct. Legal rehabilitation was the responsibility of the Military Board. This is the only address that forces the bureaucratic machine to work.",
+            btns: [
+                { t: "To the Board of the Supreme Court of the USSR", v: true },
+                { t: "To the Comrades in Moscow", v: false, type: 'guardhouse', e: "Your commander cursed you out on the parade ground for such informal nonsense. Sent to the guardhouse for 10 days." },
+                { t: "To the Communist Party Committee", v: false, type: 'party', e: "No response. Instead, a formal reprimand was sent to your unit for violating hierarchy." },
+                { t: "To the Foreign Press Office", v: false, type: 'arrest', e: "Treason. Attempting to contact international media." }
+            ]
+        },
+        2: { 
+            correctText: "On June 29, 1941, in the village of Stav-Sloboda, my father Petro Filippovich Neborachko was arrested for reasons unknown to me.", 
+            instr: "Step 2: Describe the arrest:",
+            correctExp: "Correct. 'Reasons unknown' is a safe formula. It implies you don't judge the state, but simply seek information.",
+            btns: [
+                { t: "In 1941, my father Petro Neborachko was arrested for reasons unknown to me.", v: true },
+                { t: "My father was kidnapped by the NKVD during the war.", v: false, type: 'shame', e: "Ideological mistake. Specifically blaming the NKVD is seen as an insult to state security." },
+                { t: "My father disappeared without a trace in 1941.", v: false, e: "A 'disappearance' implies he might be a deserter. You must acknowledge the arrest." },
+                { t: "I will go to the newspapers if you don't find him.", v: false, type: 'arrest', e: "Anti-Soviet Agitation. Threatening the state with exposure." }
+            ]
+        },
+        3: { 
+            correctText: "The Radomyshl military office replied that he was 'arrested' and 'repressed'. Where he is now remains unknown.", 
+            instr: "Step 3: State the military office's response:",
+            correctExp: "Correct. Citing the military office (Voenkomat) gives your request legal weight and shows you follow the chain of command.",
+            btns: [
+                { t: "The military office replied with only one word: 'repressed'.", v: true },
+                { t: "The local officials refuse to disclose the truth.", v: false, e: "Attacking local power is a direct confrontation. The Court will always side with officials." },
+                { t: "The state destroyed all documents about him.", v: false, type: 'arrest', e: "Accusing the state of destroying archives is slander. Arrested." },
+                { t: "I'll broadcast this on Radio Free Europe.", v: false, type: 'arrest', e: "Collaboration with foreign intelligence." }
+            ]
+        },
+        4: { 
+            correctText: "It is known that at that time there were cases of violation of socialist legality, due to the criminal activities of Beria.", 
+            instr: "Step 4: Choose the political argument:",
+            correctExp: "Correct. Blaming 'Beria' was the only safe legal loophole to admit the state was wrong without blaming the system itself.",
+            btns: [
+                { t: "Perhaps he was a victim of Beria's criminal activities.", v: true },
+                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'arrest', e: "The term 'Great Terror' is an anti-Soviet Western concept in 1968. Arrested." },
+                { t: "Restore justice or I will write to embassies.", v: false, type: 'arrest', e: "Contacting embassies is an act of defection." },
+                { t: "I demand to know where the bodies are buried.", v: false, e: "Confrontational. Focus on rehabilitation, not on mass graves." }
+            ]
+        },
+        5: { 
+            correctText: "Please clarify the case and send me a certificate needed for my military service.", 
+            instr: "Step 5: Final request:",
+            correctExp: "Correct. A 'certificate for service' is a practical, valid reason that benefits the state, not just your personal grief.",
+            btns: [
+                { t: "Please clarify the case and send me a certificate for my service.", v: true },
+                { t: "Restore justice or I will leak this to the BBC.", v: false, type: 'arrest', e: "Treason. Leaking stories to Western media." },
+                { t: "I demand financial compensation for my lost childhood.", v: false, e: "Asking for money marks you as a class enemy. The state does not pay for errors." },
+                { t: "Send me all original secret KGB files.", v: false, e: "Investigative files remain classified. You can only request the summary." }
+            ]
+        }
+    };
 
-  function toggleInstruction() {
-    const place = document.getElementById('instructionPlace');
-    const btn = document.getElementById('infoToggleBtn');
-    
-    if (!instructionVisible) {
-      place.classList.add('open'); 
-      btn.innerText = "Hide details";
-      instructionVisible = true;
-    } else {
-      place.classList.remove('open'); 
-      btn.innerText = "About & Instructions";
-      instructionVisible = false;
+    let step = 1;
+    let hasFinishedBefore = localStorage.getItem('gameFinished') === 'true';
+
+    function shuffle(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
     }
-  }
 
-  function initiateGame() {
-    window.location.href = 'Rozmova1.html'; 
-  }
+    function handle(s, isValid, err, type) {
+        const expBox = document.getElementById('explanation-box');
+        const stampBad = document.getElementById('stamp-bad');
+        const paper = document.getElementById('doc');
+        const btnBox = document.getElementById('buttons');
+
+        if (type === 'arrest') { end(err, 'kgb-arrest', '[ ARRESTED ]', 'You vanished.'); return; }
+        if (type === 'guardhouse') { end(err, 'military-shame', '[ GUARDHOUSE ]', 'Public shame on the parade ground.'); return; }
+        if (type === 'party') { end(err, 'party-silence', '[ REPRIMAND ]', 'Reprimand in your personal file.'); return; }
+        if (type === 'shame') { end(err, 'party-silence', '[ SHAME ]', 'Career over.'); return; }
+
+        if (!isValid) {
+            expBox.innerHTML = `<b>REJECTION REASON:</b> ${err}`;
+            expBox.className = "explanation exp-error";
+            expBox.style.display = 'block';
+            stampBad.style.opacity = '1';
+            paper.classList.add('shake');
+            setTimeout(() => paper.classList.remove('shake'), 300);
+            renderUI(s); 
+            return;
+        }
+
+        // ПРАВИЛЬНА ВІДПОВІДЬ
+        if (hasFinishedBefore) {
+            // Якщо вже проходив - скіпаємо пояснення
+            confirmStep(s);
+        } else {
+            // Якщо вперше - показуємо пояснення
+            expBox.innerHTML = `<b>ACCEPTED:</b> ${stepsData[s].correctExp}`;
+            expBox.className = "explanation exp-correct";
+            expBox.style.display = 'block';
+            stampBad.style.opacity = '0';
+            btnBox.innerHTML = `<button class="btn-continue" onclick="confirmStep(${s})">CONTINUE →</button>`;
+        }
+    }
+
+    function confirmStep(s) {
+        document.getElementById('explanation-box').style.display = 'none';
+        document.getElementById('p-' + s).innerHTML = `<span class="filled-text">${stepsData[s].correctText}</span>`;
+        if (s < 5) { step = s + 1; renderUI(step); } else { finish(); }
+    }
+
+    function end(reason, cssClass, title, subtext) {
+        document.getElementById('doc').style.filter = "grayscale(1) brightness(0.4)";
+        document.getElementById('ui').className = 'ui-panel ' + cssClass;
+        document.getElementById('ui').innerHTML = `
+            <h1>${title}</h1>
+            <p><b>INCIDENT:</b> ${reason}</p>
+            <p>${subtext}</p>
+            <button onclick="location.reload()" style="text-align:center; background:#fff; color:#000;">TRY AGAIN</button>
+        `;
+    }
+
+    function renderUI(stepNum) {
+        const data = stepsData[stepNum]; 
+        document.getElementById('instr').innerHTML = `<b>${data.instr}</b>`;
+        const shuffledBtns = shuffle(data.btns);
+        let html = '';
+        shuffledBtns.forEach(b => {
+            const errorText = b.e ? b.e.replace(/'/g, "\\'") : "";
+            html += `<button onclick="handle(${stepNum}, ${b.v}, '${errorText}', '${b.type || ""}')">${b.t}</button>`;
+        });
+        document.getElementById('buttons').innerHTML = html;
+    }
+
+    function finish() {
+        localStorage.setItem('gameFinished', 'true'); // Запам'ятовуємо успіх
+        document.getElementById('ui').innerHTML = `
+            <h2 style="color:green; border: 2px solid green; padding: 10px; text-align: center;">LETTER SENT</h2>
+            <p>Historical Outcome: The real Petro Neborachko was rehabilitated thanks to this letter.</p>
+            <button onclick="location.reload()" style="text-align:center; background:#222; color:#fff;">RESTART</button>
+            <p style="font-size:0.8em; color:#666; text-align:center;">(Explanations will be skipped in the next run)</p>
+        `;
+        document.getElementById('stamp-ok').style.opacity = '1';
+    }
+
+    renderUI(1);
 </script>
+
+</body>
+</html>
