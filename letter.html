@@ -52,6 +52,8 @@
 </div>
 
 <script>
+    let currentStep = 1;
+
     const stepsData = {
         1: { 
             correctText: "To the Board of the Supreme Court of the USSR", 
@@ -92,7 +94,7 @@
             correctExp: "Correct. Blaming 'Beria' was the only safe legal loophole to admit the state was wrong without blaming the system itself.",
             btns: [
                 { t: "Perhaps he was a victim of Beria's criminal activities.", v: true },
-                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'arrest', e: "The term 'Great Terror' is an anti-Soviet Western concept in 1968. Arrested." },
+                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'arrest', e: "The term 'Great Terror' is an anti-Soviet Western concept in 1958. Arrested." },
                 { t: "Restore justice or I will write to embassies.", v: false, type: 'arrest', e: "Contacting embassies is an act of defection." },
                 { t: "I demand to know where the bodies are buried.", v: false, e: "Confrontational. Focus on rehabilitation, not on mass graves." }
             ]
@@ -100,104 +102,140 @@
         5: { 
             correctText: "Please clarify the case and send me a certificate needed for my military service.", 
             instr: "Step 5: Final request:",
-            correctExp: "Correct. A 'certificate for service' is a practical, valid reason that benefits the state, not just your personal grief.",
+            correctExp: "Correct. Framing this request around your 'military service' gives a clear, practical reason for the bureaucracy to assist a loyal soldier.",
             btns: [
-                { t: "Please clarify the case and send me a certificate for my service.", v: true },
-                { t: "Restore justice or I will leak this to the BBC.", v: false, type: 'arrest', e: "Treason. Leaking stories to Western media." },
-                { t: "I demand financial compensation for my lost childhood.", v: false, e: "Asking for money marks you as a class enemy. The state does not pay for errors." },
-                { t: "Send me all original secret KGB files.", v: false, e: "Investigative files remain classified. You can only request the summary." }
+                { t: "Please clarify the case and send me a certificate for my military service.", v: true },
+                { t: "Acknowledge the crime of your system immediately.", v: false, type: 'arrest', e: "Direct attack on the regime. Your service record is destroyed, and you are detained." },
+                { t: "Give me money as compensation for my suffering.", v: false, e: "The state does not compensate children of the repressed at this stage. Request denied." }
             ]
         }
     };
 
-    let step = 1;
-    let hasFinishedBefore = localStorage.getItem('gameFinished') === 'true';
-
-    function shuffle(array) {
-        let arr = [...array];
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    }
-
-    function handle(s, isValid, err, type) {
-        const expBox = document.getElementById('explanation-box');
-        const stampBad = document.getElementById('stamp-bad');
-        const paper = document.getElementById('doc');
-        const btnBox = document.getElementById('buttons');
-
-        if (type === 'arrest') { end(err, 'kgb-arrest', '[ ARRESTED ]', 'You vanished.'); return; }
-        if (type === 'guardhouse') { end(err, 'military-shame', '[ GUARDHOUSE ]', 'Public shame on the parade ground.'); return; }
-        if (type === 'party') { end(err, 'party-silence', '[ REPRIMAND ]', 'Reprimand in your personal file.'); return; }
-        if (type === 'shame') { end(err, 'party-silence', '[ SHAME ]', 'Career over.'); return; }
-
-        if (!isValid) {
-            expBox.innerHTML = `<b>REJECTION REASON:</b> ${err}`;
-            expBox.className = "explanation exp-error";
-            expBox.style.display = 'block';
-            stampBad.style.opacity = '1';
-            paper.classList.add('shake');
-            setTimeout(() => paper.classList.remove('shake'), 300);
-            renderUI(s); 
-            return;
-        }
-
-        // ПРАВИЛЬНА ВІДПОВІДЬ
-        if (hasFinishedBefore) {
-            // Якщо вже проходив - скіпаємо пояснення
-            confirmStep(s);
-        } else {
-            // Якщо вперше - показуємо пояснення
-            expBox.innerHTML = `<b>ACCEPTED:</b> ${stepsData[s].correctExp}`;
-            expBox.className = "explanation exp-correct";
-            expBox.style.display = 'block';
-            stampBad.style.opacity = '0';
-            btnBox.innerHTML = `<button class="btn-continue" onclick="confirmStep(${s})">CONTINUE →</button>`;
-        }
-    }
-
-    function confirmStep(s) {
-        document.getElementById('explanation-box').style.display = 'none';
-        document.getElementById('p-' + s).innerHTML = `<span class="filled-text">${stepsData[s].correctText}</span>`;
-        if (s < 5) { step = s + 1; renderUI(step); } else { finish(); }
-    }
-
-    function end(reason, cssClass, title, subtext) {
-        document.getElementById('doc').style.filter = "grayscale(1) brightness(0.4)";
-        document.getElementById('ui').className = 'ui-panel ' + cssClass;
-        document.getElementById('ui').innerHTML = `
-            <h1>${title}</h1>
-            <p><b>INCIDENT:</b> ${reason}</p>
-            <p>${subtext}</p>
-            <button onclick="location.reload()" style="text-align:center; background:#fff; color:#000;">TRY AGAIN</button>
-        `;
-    }
-
-    function renderUI(stepNum) {
-        const data = stepsData[stepNum]; 
+    function renderUI(step) {
+        currentStep = step;
+        const data = stepsData[step];
         document.getElementById('instr').innerHTML = `<b>${data.instr}</b>`;
-        const shuffledBtns = shuffle(data.btns);
-        let html = '';
-        shuffledBtns.forEach(b => {
-            const errorText = b.e ? b.e.replace(/'/g, "\\'") : "";
-            html += `<button onclick="handle(${stepNum}, ${b.v}, '${errorText}', '${b.type || ""}')">${b.t}</button>`;
+        
+        const btnBox = document.getElementById('buttons');
+        btnBox.innerHTML = '';
+        
+        data.btns.forEach(btn => {
+            const b = document.createElement('button');
+            b.innerText = btn.t;
+            b.onclick = () => handleChoice(btn, data);
+            btnBox.appendChild(b);
         });
-        document.getElementById('buttons').innerHTML = html;
+    }
+
+    function handleChoice(btn, data) {
+        const expBox = document.getElementById('explanation-box');
+        expBox.style.display = 'block';
+        
+        if (btn.v) {
+            expBox.className = "explanation exp-correct";
+            expBox.innerText = data.correctExp;
+            
+            document.getElementById(`p-${currentStep}`).innerHTML = `<span class="filled-text">${data.correctText}</span>`;
+            
+            const btnBox = document.getElementById('buttons');
+            btnBox.innerHTML = '';
+            const nextB = document.createElement('button');
+            nextB.className = "btn-continue";
+            nextB.innerText = currentStep < 5 ? "CONTINUE →" : "SUBMIT PETITION →";
+            nextB.onclick = () => {
+                expBox.style.display = 'none';
+                if (currentStep < 5) {
+                    renderUI(currentStep + 1);
+                } else {
+                    finish();
+                }
+            };
+            btnBox.appendChild(nextB);
+        } else {
+            expBox.className = "explanation exp-error";
+            expBox.innerText = btn.e;
+            document.getElementById('doc').classList.add('shake');
+            setTimeout(() => document.getElementById('doc').classList.remove('shake'), 300);
+            
+            if (btn.type) {
+                document.getElementById('stamp-bad').style.opacity = '1';
+                const btnBox = document.getElementById('buttons');
+                btnBox.innerHTML = '';
+                
+                let panelClass = 'ui-panel';
+                if (btn.type === 'arrest') panelClass += ' kgb-arrest';
+                if (btn.type === 'guardhouse') panelClass += ' military-shame';
+                if (btn.type === 'party') panelClass += ' party-silence';
+                
+                document.getElementById('ui').className = panelClass;
+                
+                const failB = document.createElement('button');
+                failB.innerText = "TRY AGAIN (RELOAD)";
+                failB.style.background = "#8b0000";
+                failB.onclick = () => location.reload();
+                btnBox.appendChild(failB);
+            }
+        }
     }
 
     function finish() {
-        localStorage.setItem('gameFinished', 'true'); // Запам'ятовуємо успіх
+        localStorage.setItem('gameFinished', 'true'); 
+        
         document.getElementById('ui').innerHTML = `
-            <h2 style="color:green; border: 2px solid green; padding: 10px; text-align: center;">LETTER SENT</h2>
-            <p>Historical Outcome: The real Petro Neborachko was rehabilitated thanks to this letter.</p>
-            <button onclick="location.reload()" style="text-align:center; background:#222; color:#fff;">RESTART</button>
-            <p style="font-size:0.8em; color:#666; text-align:center;">(Explanations will be skipped in the next run)</p>
+            <h2 style="color:#2b5c8f; border: 2px solid #2b5c8f; padding: 10px; text-align: center; text-transform: uppercase; font-weight: bold; margin-top: 0;">LETTER SENT</h2>
+            <p style="font-size: 13px; line-height: 1.5; color: #2c2523;">Historical Outcome: The real Petro Neborachko was officially rehabilitated in the late 1950s thanks to this procedural step.</p>
+            
+            <button onclick="showFinalDiscoveryModal()" style="text-align:center; background:#8a3333; border: 2px solid #8a3333; color:#fff; width:100%; padding:14px; font-family:inherit; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; margin-bottom:10px; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); display: block; box-sizing: border-box;">
+                Read the Investigation Finale →
+            </button>
+            
+            <button onclick="location.reload()" style="text-align:center; background:#2c2523; border: 2px solid #2c2523; color:#fdfbf7; width:100%; padding:10px; font-family:inherit; font-size:12px; cursor:pointer; text-transform:uppercase; display: block; box-sizing: border-box;">RESTART</button>
+            <p style="font-size:0.8em; color:#666; text-align:center; margin-top:10px;">(Explanations will be skipped in the next run)</p>
         `;
-        document.getElementById('stamp-ok').style.opacity = '1';
+        
+        const stamp = document.getElementById('stamp-ok');
+        if (stamp) { stamp.style.opacity = '1'; }
+        
+        if (!document.getElementById('finalDiscoveryModal')) {
+            const modal = document.createElement('div');
+            modal.id = 'finalDiscoveryModal';
+            modal.style.cssText = `
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(17, 14, 13, 0.97); z-index: 9999; align-items: center; justify-content: center;
+                padding: 20px; box-sizing: border-box; font-family: inherit;
+            `;
+            modal.innerHTML = `
+                <div style="max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; padding: 35px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; color: #2c2523; overflow-y: auto; text-align: left; line-height: 1.6;">
+                    <div style="font-size: 16px; color: #8a3333; font-weight: bold; margin-bottom: 20px; border-bottom: 2px dashed #8a3333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                        Author's Note & Document Discovery
+                    </div>
+                    <div style="font-size: 13px; margin-bottom: 18px; padding: 12px; background: rgba(44, 37, 35, 0.04); border-left: 4px solid #2c2523;">
+                        During the process of declassifying, digitizing, and analyzing this criminal file using AI tools, I was in direct contact and shared these archival materials with the living branch of Petro Neborachko's family — including the descendants of Mykola, the son who drafted this exact petition in 1958.
+                    </div>
+                    <div style="font-size: 13px; margin-bottom: 22px; padding: 12px; background: rgba(138, 51, 51, 0.04); border-left: 4px solid #8a3333;">
+                        <strong>THE FINAL REVELATION:</strong><br><br>
+                        The most staggering discovery within the declassified folders was an internal, classified NKVD service memo dated late 1942. It explicitly states that Petro Neborachko vanished completely during the chaotic wartime evacuation, and could not be found anywhere across the Gulag camp system. 
+                        <br><br>
+                        Hearing this, his relatives wept during our conversation. For over 80 years, the family lived with the heavy, absolute certainty that their ancestor had perished behind the barbed wire of a Soviet labor camp. Now, it turns out the historical truth is far more complex, open-ended, and fragmented than anyone believed for almost a century.
+                    </div>
+                    <button onclick="closeFinalDiscoveryModal()" style="width: 100%; background: #2c2523; border: 1px solid #2c2523; color: #fdfbf7; padding: 15px; font-family: inherit; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);">
+                        Close Archive & Complete Journey
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
     }
 
+    function showFinalDiscoveryModal() {
+        document.getElementById('finalDiscoveryModal').style.display = 'flex';
+    }
+
+    function closeFinalDiscoveryModal() {
+        document.getElementById('finalDiscoveryModal').style.display = 'none';
+    }
+
+    // Старт гри з першого кроку
     renderUI(1);
 </script>
 
