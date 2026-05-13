@@ -1,0 +1,216 @@
+<!-- Connecting authentic typewriter font from Google Fonts -->
+<link rel="preconnect" href="googleapis.com">
+<link rel="preconnect" href="gstatic.com" crossorigin>
+<link href="googleapis.com" rel="stylesheet">
+
+<style>
+  body { 
+    background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/main/file_000000004a8c72439635c8becb6bd07a.png'); 
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    font-family: 'Special Elite', 'Courier New', monospace; 
+    font-weight: bold; 
+    color: #212121; 
+    padding: 10px; 
+    line-height: 1.4;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: " ";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0);
+    animation: grainFlicker 0.15s infinite;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  @keyframes grainFlicker {
+    0% { background-color: rgba(255, 255, 255, 0.01); }
+    50% { background-color: rgba(0, 0, 0, 0.02); }
+    100% { background-color: rgba(255, 255, 255, 0.005); }
+  }
+  
+  .kitchen-table { 
+    max-width: 580px; 
+    margin: 15px auto; 
+    border: 2px solid #b5a994; 
+    padding: 20px; 
+    background: rgba(250, 248, 245, 0.92); 
+    box-shadow: 4px 4px 0px #cbd2c3;
+  }
+  
+  .ambient-desc {
+    color: #4a423a; 
+    font-style: italic;
+    margin-bottom: 12px;
+    font-size: 13px;
+    border-bottom: 2px dashed #d3cbc0; 
+    padding-bottom: 8px;
+  }
+
+  .typewriter-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 3px;
+    color: #1a1715;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    width: 17em; 
+    animation: typing 3.5s steps(17, end) forwards;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 17em; }
+  }
+  
+  .game-subtitle {
+    font-size: 13px;
+    text-align: center;
+    color: #5e5449;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeInDoc 1s 3.2s forwards ease;
+  }
+
+  @keyframes fadeInDoc {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-container {
+    display: grid;
+    grid-template-rows: 0fr; 
+    transition: grid-template-rows 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+  }
+
+  .slide-container.open {
+    grid-template-rows: 1fr; 
+    margin-bottom: 15px;
+  }
+
+  .slide-wrapper {
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  .slide-container.open .slide-wrapper {
+    opacity: 1;
+  }
+
+  .instruction-box {
+    background: rgba(245, 240, 230, 0.85); 
+    border-left: 4px solid #8a3333; 
+    padding: 12px;
+    font-size: 13px;
+    color: #212121;
+  }
+  
+  .instruction-box p {
+    margin: 0 0 8px 0;
+  }
+  
+  .instruction-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .box-header {
+    font-size: 14px;
+    color: #1a1715;
+    font-weight: 900; 
+  }
+  
+  .choices button { 
+    display: block; 
+    width: 100%; 
+    background: rgba(253, 252, 251, 0.95); 
+    border: 1px solid #a89985; 
+    color: #212121; 
+    padding: 10px; 
+    margin-bottom: 6px; 
+    text-align: left; 
+    cursor: pointer;
+    font-family: 'Special Elite', 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 13px;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .choices button:hover { 
+    background: #ebdcc7; 
+    color: #4a3820;
+    transform: translateX(3px);
+  }
+  
+  .menu-btn {
+    text-align: center !important;
+    text-transform: uppercase;
+  }
+  
+  .start-btn-main {
+    background: #c9b097 !important; 
+    color: #2b1a08 !important; 
+    border: 2px solid #8a735d !important;
+  }
+</style>
+
+<div class="kitchen-table">
+  <div id="mainMenu">
+    <div class="typewriter-title">ECHO OF DEPORTATION</div>
+    <div class="game-subtitle">interactive research of family memory</div>
+    
+    <div class="ambient-desc" style="text-align: center; border-bottom: none; margin-bottom: 15px;">
+      A story about fear passed down through generations, and the emptiness left behind by the Soviet repressive system.
+    </div>
+
+    <div id="instructionPlace" class="slide-container">
+      <div class="slide-wrapper">
+        <div class="instruction-box">
+          <p><span class="box-header">ABOUT:</span> This project is entirely based on my personal experience, reflections, and deep research into the actual archive case files regarding the repression of my ancestor. The game consists of 4 logical mini-games.</p>
+          <p><span class="box-header">HOW TO PLAY:</span> Answer as honestly as you would in real life. In most cases, there are no generic right or wrong answers, but keep in mind that every choice carries weight and shapes the final outcome.</p>
+          <p><span class="box-header">OBJECTIVE:</span> To provide an opportunity to gain a new perspective and experience through emotional engagement.</p>
+          <p><span class="box-header">FEEDBACK:</span> If you would like to share your thoughts, ideas, or suggestions, feel free to reach out to me directly at <u>n.neborachko@gmail.com</u>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="choices">
+      <button class="menu-btn start-btn-main" onclick="initiateGame()">Start game</button>
+      <button class="menu-btn" id="infoToggleBtn" onclick="toggleInstruction()">About & Instructions</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let instructionVisible = false;
+
+  function toggleInstruction() {
+    const place = document.getElementById('instructionPlace');
+    const btn = document.getElementById('infoToggleBtn');
+    
+    if (!instructionVisible) {
+      place.classList.add('open'); 
+      btn.innerText = "Hide details";
+      instructionVisible = true;
+    } else {
+      place.classList.remove('open'); 
+      btn.innerText = "About & Instructions";
+      instructionVisible = false;
+    }
+  }
+
+  function initiateGame() {
+    window.location.href = 'Rozmova1.html'; 
+  }
+</script>
