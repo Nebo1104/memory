@@ -187,77 +187,18 @@
         document.getElementById('buttons').innerHTML = html;
     }
 
-    
-        function finish() {
+    function finish() {
         localStorage.setItem('gameFinished', 'true'); // Запам'ятовуємо успіх
-        
-        // Переписуємо інтерфейс UI: додаємо кнопку переходу до фінального відкриття
         document.getElementById('ui').innerHTML = `
-            <h2 style="color:#2b5c8f; border: 2px solid #2b5c8f; padding: 10px; text-align: center; text-transform: uppercase; font-weight: bold; margin-top: 0;">LETTER SENT</h2>
-            <p style="font-size: 13px; line-height: 1.5; color: #2c2523;">Historical Outcome: The real Petro Neborachko was officially rehabilitated in the late 1950s thanks to this procedural step.</p>
-            
-            <!-- Кнопка відкриття фінального документального вікна -->
-            <button onclick="showFinalDiscoveryModal()" style="text-align:center; background:#8a3333; border: 2px solid #8a3333; color:#fff; width:100%; padding:14px; font-family:inherit; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; margin-bottom:10px; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); display: block; box-sizing: border-box;">
-                Read the Investigation Finale →
-            </button>
-            
-            <button onclick="location.reload()" style="text-align:center; background:#2c2523; border: 2px solid #2c2523; color:#fdfbf7; width:100%; padding:10px; font-family:inherit; font-size:12px; cursor:pointer; text-transform:uppercase; display: block; box-sizing: border-box;">RESTART</button>
-            <p style="font-size:0.8em; color:#666; text-align:center; margin-top:10px;">(Explanations will be skipped in the next run)</p>
+            <h2 style="color:green; border: 2px solid green; padding: 10px; text-align: center;">LETTER SENT</h2>
+            <p>Historical Outcome: The real Petro Neborachko was rehabilitated thanks to this letter.</p>
+            <button onclick="location.reload()" style="text-align:center; background:#222; color:#fff;">RESTART</button>
+            <p style="font-size:0.8em; color:#666; text-align:center;">(Explanations will be skipped in the next run)</p>
         `;
-        
-        // Перевіряємо штамп
-        const stamp = document.getElementById('stamp-ok');
-        if (stamp) { stamp.style.opacity = '1'; }
-        
-        // Автоматично створюємо структуру модального вікна
-        if (!document.getElementById('finalDiscoveryModal')) {
-            const modal = document.createElement('div');
-            modal.id = 'finalDiscoveryModal';
-            modal.style.cssText = `
-                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(17, 14, 13, 0.97); z-index: 9999; align-items: center; justify-content: center;
-                padding: 20px; box-sizing: border-box; font-family: inherit;
-            `;
-            modal.innerHTML = `
-                <div style="max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; padding: 35px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; color: #2c2523; overflow-y: auto; text-align: left; line-height: 1.6;">
-                    <div style="font-size: 16px; color: #8a3333; font-weight: bold; margin-bottom: 20px; border-bottom: 2px dashed #8a3333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
-                        Author's Note & Document Discovery
-                    </div>
-                    <div style="font-size: 13px; margin-bottom: 18px; padding: 12px; background: rgba(44, 37, 35, 0.04); border-left: 4px solid #2c2523;">
-                        During the process of declassifying, digitizing, and analyzing this criminal file using AI tools, I was in direct contact and shared these archival materials with the living branch of Petro Neborachko's family — including the descendants of Mykola, the son who drafted this exact petition in 1958.
-                    </div>
-                    <div style="font-size: 13px; margin-bottom: 22px; padding: 12px; background: rgba(138, 51, 51, 0.04); border-left: 4px solid #8a3333;">
-                        <strong>THE FINAL REVELATION:</strong><br><br>
-                        The most staggering discovery within the declassified folders was an internal, classified NKVD service memo dated late 1942. It explicitly states that Petro Neborachko vanished completely during the chaotic wartime evacuation, and could not be found anywhere across the Gulag camp system. 
-                        <br><br>
-                        Hearing this, his relatives wept during our conversation. For over 80 years, the family lived with the heavy, absolute certainty that their ancestor had perished behind the barbed wire of a Soviet labor camp. Now, it turns out the historical truth is far more complex, open-ended, and fragmented than anyone believed for almost a century.
-                    </div>
-                    <button onclick="closeFinalDiscoveryModal()" style="width: 100%; background: #2c2523; border: 1px solid #2c2523; color: #fdfbf7; padding: 15px; font-family: inherit; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);">
-                        Close Archive & Complete Journey
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
+        document.getElementById('stamp-ok').style.opacity = '1';
     }
 
-    // Функції керування фінальним вікном
-    function showFinalDiscoveryModal() {
-        document.getElementById('finalDiscoveryModal').style.display = 'flex';
-    }
-
-    function closeFinalDiscoveryModal() {
-        document.getElementById('finalDiscoveryModal').style.display = 'none';
-    }
-
-    // Універсальний безпечний запуск: викликає функцію, яка реально існує у вашому коді
-    if (typeof renderStep === 'function') {
-        renderStep(1);
-    } else if (typeof render === 'function') {
-        render(1);
-    } else if (typeof renderUI === 'function') {
-        renderUI(1);
-    }
+    renderUI(1);
 </script>
 
 </body>
