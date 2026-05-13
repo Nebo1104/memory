@@ -25,22 +25,6 @@
         .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
         .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
 
-        /* СТИЛЬ ДЛЯ КНОПКИ ШВИДКОГО ПЕРЕХОДУ ДО ФІНАЛУ */
-        .btn-skip-finale {
-            background: #8a3333 !important;
-            color: #ffffff !important;
-            text-align: center !important;
-            font-weight: bold;
-            margin-top: 25px !important;
-            text-transform: uppercase;
-            border: 1px solid #8a3333 !important;
-            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
-        }
-        .btn-skip-finale:hover {
-            background: #222 !important;
-            border-color: #222 !important;
-        }
-
         @media (max-width: 900px) { .main-container { flex-direction: column; } .paper-column, .ui-column { width: 100%; position: static; } }
     </style>
 </head>
@@ -63,8 +47,11 @@
             <div id="instr"><b>Step 1:</b> Recipient selection:</div>
             <div id="explanation-box" class="explanation"></div>
             <div id="buttons"></div>
-            <!-- Сюди через скрипт буде додаватися кнопка швидкого переходу -->
-            <div id="skip-container"></div>
+            
+            <!-- Стабільна кнопка пропуску в каркасі HTML -->
+            <button onclick="triggerImmediateFinale()" id="always-visible-skip" style="display: block; width: 100%; margin-top: 25px; padding: 12px; background: #8a3333; color: #fff; border: 1px solid #8a3333; text-align: center; font-weight: bold; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15); font-family: inherit;">
+                Skip to Investigation Finale ➔
+            </button>
         </div>
     </div>
 </div>
@@ -143,14 +130,6 @@
             b.onclick = () => handleChoice(btn, data);
             btnBox.appendChild(b);
         });
-
-        // Додаємо кнопку швидкого переходу під варіантами відповідей
-        const skipBox = document.getElementById('skip-container');
-        skipBox.innerHTML = `
-            <button onclick="triggerImmediateFinale()" class="btn-skip-finale">
-                Skip to Investigation Finale ➔
-            </button>
-        `;
     }
 
     function handleChoice(btn, data) {
@@ -185,11 +164,13 @@
             
             if (btn.type) {
                 document.getElementById('stamp-bad').style.opacity = '1';
+                
+                // Ховаємо кнопку пропуску при арешті / програші
+                const skipBtn = document.getElementById('always-visible-skip');
+                if (skipBtn) { skipBtn.style.display = 'none'; }
+
                 const btnBox = document.getElementById('buttons');
                 btnBox.innerHTML = '';
-                
-                // Ховаємо кнопку пропуску, якщо гравець заарештований/програв
-                document.getElementById('skip-container').innerHTML = '';
                 
                 let panelClass = 'ui-panel';
                 if (btn.type === 'arrest') panelClass += ' kgb-arrest';
@@ -207,19 +188,17 @@
         }
     }
 
-    // Функція примусового виклику фіналу через кнопку "Skip to Investigation Finale"
     function triggerImmediateFinale() {
-        // Забезпечуємо ініціалізацію модального вікна
         buildModalStructure();
-        // Відкриваємо його на екрані
         showFinalDiscoveryModal();
     }
 
     function finish() {
         localStorage.setItem('gameFinished', 'true'); 
         
-        // Прибираємо кнопку швидкого пропуску з фінального екрана результату
-        document.getElementById('skip-container').innerHTML = '';
+        // Ховаємо кнопку швидкого пропуску з фінального екрана результату
+        const skipBtn = document.getElementById('always-visible-skip');
+        if (skipBtn) { skipBtn.style.display = 'none'; }
 
         document.getElementById('ui').innerHTML = `
             <h2 style="color:#2b5c8f; border: 2px solid #2b5c8f; padding: 10px; text-align: center; text-transform: uppercase; font-weight: bold; margin-top: 0;">LETTER SENT</h2>
@@ -239,7 +218,6 @@
         buildModalStructure();
     }
 
-    // Окрема виділена функція збирання модального вікна у DOM
     function buildModalStructure() {
         if (!document.getElementById('finalDiscoveryModal')) {
             const modal = document.createElement('div');
@@ -280,7 +258,7 @@
         document.getElementById('finalDiscoveryModal').style.display = 'none';
     }
 
-    // Старт гри з першого кроку
+    // Первісна ініціалізація
     renderUI(1);
 </script>
 
