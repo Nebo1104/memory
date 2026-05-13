@@ -16,6 +16,8 @@
             height: 100vh; 
             box-sizing: border-box;
             overflow: hidden; 
+            position: relative;
+            transition: background-color 5s ease-in-out; /* Повільне занурення всього тла в темряву */
         }
         
         .main-container { 
@@ -26,9 +28,9 @@
             max-width: 1200px; 
             height: 100%;
             align-items: stretch; 
+            transition: opacity 5s ease-in-out, filter 5s ease-in-out;
         }
         
-        /* Ліва колонка з папером: скрол з'являється тільки всередині неї за потреби */
         .paper-column { 
             flex: 1.2; 
             height: 100%;
@@ -44,10 +46,9 @@
             background-image: url("https://transparenttextures.com"); 
             min-height: 100%; 
             box-sizing: border-box;
-            transition: filter 0.5s; 
+            transition: filter 5s, background-color 5s; 
         }
         
-        /* Права колонка з інтерфейсом: жорстко зафіксована на екрані */
         .ui-column { 
             flex: 0.8; 
             height: 100%;
@@ -65,6 +66,7 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            transition: background-color 5s, border-color 5s, box-shadow 5s;
         }
         
         #buttons {
@@ -87,6 +89,57 @@
         .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
         .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
 
+        /* ЕФЕКТ ПЛАВНОГО ЗГАСАННЯ ЗАДНЬОГО ПЛАНУ */
+        .fade-out {
+            opacity: 0;
+            filter: brightness(0); 
+            pointer-events: none;
+        }
+
+        /* ОВЕРЛЕЙ ДЛЯ МОДАЛЬНОГО ВІКНА */
+        .interlude-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 14, 13, 0.96); z-index: 9999; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+            transition: background-color 5s ease-in-out;
+        }
+
+        /* КАРТКА, ЩО ПЕРЕТВОРЮЄТЬСЯ НА ПТАХУ */
+        .interlude-content-card {
+            max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; 
+            border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; 
+            padding: 30px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; 
+            color: #2c2523; display: flex; flex-direction: column;
+            transition: all 5.0s cubic-bezier(0.3, 0.1, 0.3, 1);
+            position: relative;
+            transform-origin: center center;
+        }
+
+        /* ЛЕДАЧИЙ СИЛУЕТ ТА БЕЗКІНЕЧНИЙ ПОЛІТ БЕЗ МИТТЄВОГО ЗНИКНЕННЯ */
+        .interlude-content-card.bird-shape {
+            max-width: 140px; height: 140px; padding: 0; border: none; outline: none; box-shadow: none;
+            background: #fdfbf7;
+            clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%);
+            
+            /* Політ триває 24 секунди. Журавлик залишається у верхньому правому кутку */
+            animation: flyRightUpLazy 24s forwards cubic-bezier(0.1, 0.2, 0.3, 1), flapWingsLazy 1.6s infinite alternate ease-in-out;
+            animation-delay: 0s, 5.0s; 
+        }
+
+        /* НАДЗВИЧАЙНО ПОВІЛЬНИЙ ЛІНИВИЙ ПОЛІТ ВПРАВО-ВГОРУ */
+        @keyframes flyRightUpLazy {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            15% { transform: translate(10px, 15px) scale(0.98) rotate(3deg); }
+            45% { transform: translate(250px, -25vh) scale(0.65) rotate(-10deg); }
+            100% { transform: translate(38vw, -36vh) scale(0.25) rotate(-18deg); opacity: 0.85; }
+        }
+
+        /* ЛЕДАЧИЙ ПОМАХ КРИЛ ЖУРАВЛИКА */
+        @keyframes flapWingsLazy {
+            0% { clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%); }
+            100% { clip-path: polygon(40% 12%, 48% 35%, 90% 70%, 62% 60%, 52% 88%, 45% 65%, 25% 68%, 35% 48%, 5% 68%, 32% 38%); }
+        }
+
         @media (max-width: 900px) { 
             body { overflow: auto; height: auto; }
             .main-container { flex-direction: column; } 
@@ -96,7 +149,14 @@
 </head>
 <body>
 
-<div class="main-container">
+<!-- Контейнер для титрів, який тепер розташований на найвищому рівні у структурі -->
+<div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
+    <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 4s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
+        Thank you for walking this path
+    </div>
+</div>
+
+<div class="main-container" id="game-content">
     <div class="paper-column">
         <div class="paper" id="doc">
             <div class="stamp" id="stamp-bad">REJECTED</div>
@@ -114,9 +174,37 @@
             <div id="explanation-box" class="explanation"></div>
             <div id="buttons"></div>
             
-            <!-- Жорстко закріплена бордова кнопка пропуску -->
             <button onclick="triggerImmediateFinale()" id="always-visible-skip" style="display: block; width: 100%; margin-top: auto; padding: 14px; background: #8a3333; color: #fff; border: 1px solid #8a3333; text-align: center; font-weight: bold; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15); font-family: inherit;">
                 Skip to Investigation Finale ➔
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ОВЕРЛЕЙ З АРХІВНОЮ КАРТКОЮ -->
+<div class="interlude-modal-overlay" id="finalDiscoveryModal">
+    <div class="interlude-content-card" id="modalCard">
+        <div id="modal-hide-group" style="display: flex; flex-direction: column; height: 100%; width: 100%; transition: opacity 1.2s;">
+            <div style="font-size: 16px; color: #8a3333; font-weight: bold; margin-bottom: 15px; border-bottom: 2px dashed #8a3333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;">
+                Author's Note & Document Discovery
+            </div>
+            
+            <div style="overflow-y: auto; flex-grow: 1; padding-right: 10px; margin-bottom: 15px; text-align: left; line-height: 1.6;">
+                <div style="font-size: 13px; margin-bottom: 15px; padding: 12px; background: rgba(44, 37, 35, 0.04); border-left: 4px solid #2c2523;">
+                    During the process of declassifying, digitizing, and analyzing this criminal file using AI tools, 
+                    I was in direct contact and shared these archival materials with the living branch of Petro Neborachko's family — including the descendants of Mykola, the son who drafted this exact petition in 1958.
+                </div>
+                
+                <div style="font-size: 13px; padding: 12px; background: rgba(138, 51, 51, 0.04); border-left: 4px solid #8a3333; margin-bottom: 10px;">
+                    <strong>THE FINAL REVELATION:</strong><br><br>
+                    An <a href="githubusercontent.com" target="_blank" style="color: #8a3333; text-decoration: underline; font-weight: bold;">internal, classified NKVD service memo dated late 1942</a> states that Petro Neborachko vanished during the evacuation and never reached the Gulag. 
+                    <br><br>
+                    This discovery completely shattered the family's 80-year conviction that their ancestor died inside a Soviet labor camp.
+                </div>
+            </div>
+
+            <button onclick="animateBirdTransformation()" style="width: 100%; background: #2c2523; border: 1px solid #2c2523; color: #fdfbf7; padding: 14px; font-family: inherit; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2); flex-shrink: 0; text-align: center; display: block; box-sizing: border-box; margin-top: auto;">
+                Release Memory ➔
             </button>
         </div>
     </div>
@@ -254,7 +342,6 @@
     }
 
     function triggerImmediateFinale() {
-        buildModalStructure();
         showFinalDiscoveryModal();
     }
 
@@ -268,7 +355,7 @@
             <h2 style="color:#2b5c8f; border: 2px solid #2b5c8f; padding: 10px; text-align: center; text-transform: uppercase; font-weight: bold; margin-top: 0;">LETTER SENT</h2>
             <p style="font-size: 13px; line-height: 1.5; color: #2c2523;">Historical Outcome: The real Petro Neborachko was officially rehabilitated in the late 1950s thanks to this procedural step.</p>
             
-            <button onclick="showFinalDiscoveryModal()" style="text-align:center; background:#8a3333; border: 2px solid #8a3333; color:#fff; width:100%; padding:14px; font-family:inherit; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; margin-bottom:10px; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); display: block; box-sizing: border-box;">
+            <button onclick="showFinalDiscoveryModal()" style="text-align:center; background:#8a3333; border: 2px solid #8a3333; color:#fff; width:100%; padding:14px; font-family:inherit; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; margin-bottom:10px; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2); display: block; box-sizing: border-box;">
                 Read the Investigation Finale →
             </button>
             
@@ -278,54 +365,48 @@
         
         const stamp = document.getElementById('stamp-ok');
         if (stamp) { stamp.style.opacity = '1'; }
-        
-        buildModalStructure();
-    }
-
-    function buildModalStructure() {
-        if (!document.getElementById('finalDiscoveryModal')) {
-            const modal = document.createElement('div');
-            modal.id = 'finalDiscoveryModal';
-            modal.style.cssText = `
-                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(17, 14, 13, 0.97); z-index: 9999; align-items: center; justify-content: center;
-                padding: 20px; box-sizing: border-box; font-family: inherit;
-            `;
-            modal.innerHTML = `
-                <div style="max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; padding: 30px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; color: #2c2523; display: flex; flex-direction: column;">
-                    
-                    <div style="font-size: 16px; color: #8a3333; font-weight: bold; margin-bottom: 15px; border-bottom: 2px dashed #8a3333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;">
-                        Author's Note & Document Discovery
-                    </div>
-                    
-                    <div style="overflow-y: auto; flex-grow: 1; padding-right: 10px; margin-bottom: 15px; text-align: left; line-height: 1.6;">
-                                               
-                        <div style="font-size: 13px; padding: 12px; background: rgba(138, 51, 51, 0.04); border-left: 4px solid #8a3333;">
-                            <strong>THE FINAL REVELATION:</strong><br><br>
-                            An <a href="https://raw.githubusercontent.com/Nebo1104/memory/game/image00038.jpg" target="_blank" style="color: #8a3333; text-decoration: underline; font-weight: bold;">internal, classified NKVD service memo dated late 1942</a> states that Petro Neborachko vanished during the evacuation and never reached the Gulag. 
-                            <br><br>
-                            This discovery completely shattered the family's 80-year conviction that their ancestor died inside a Soviet labor camp.
-                        </div>
-                        
-                    </div>
-                    
-                    <!-- Кнопка фінального редиректу на головну сторінку репозиторію -->
-                    <button onclick="window.location.href='github.com'" style="width: 100%; background: #2c2523; border: 1px solid #2c2523; color: #fdfbf7; padding: 14px; font-family: inherit; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2); flex-shrink: 0; text-align: center; display: block; box-sizing: border-box;">
-                        Complete Journey & Return to Main Menu ➔
-                    </button>
-                    
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
     }
 
     function showFinalDiscoveryModal() {
         document.getElementById('finalDiscoveryModal').style.display = 'flex';
     }
 
-    function closeFinalDiscoveryModal() {
-        document.getElementById('finalDiscoveryModal').style.display = 'none';
+    // МЕХАНІКА ПОЛІТУ ТА ПАРАЛЕЛЬНОЇ ПОЯВИ ВЕЛИКИХ ТИТРІВ НА НАЙВИЩОМУ ШАРІ
+    function animateBirdTransformation() {
+        const textContainer = document.getElementById('modal-hide-group');
+        const card = document.getElementById('modalCard');
+        const overlay = document.getElementById('finalDiscoveryModal');
+        
+        if (textContainer) { textContainer.style.opacity = '0'; }
+        
+        setTimeout(() => {
+            if (card) { card.classList.add('bird-shape'); }
+            
+            // Поступове занурення квесту на тлі в чорноту
+            const gameContent = document.getElementById('game-content');
+            if (gameContent) { gameContent.className = "main-container fade-out"; }
+            document.body.style.backgroundColor = "#080606";
+            
+            // Перетворюємо підкладку оверлею на чисту темряву
+            if (overlay) {
+                overlay.style.transition = "background-color 4.5s ease-in-out";
+                overlay.style.backgroundColor = "rgba(8, 6, 6, 1)";
+            }
+            
+            // ПЛАВНА ПОЯВА ВЕЛИКИХ ТИТРІВ НА НАЙВИЩОМУ ШАРІ (z-index: 10000)
+            setTimeout(() => {
+                const thankyouOverlay = document.getElementById('thankyou-overlay');
+                if (thankyouOverlay) {
+                    thankyouOverlay.style.display = 'flex'; // Робимо шар видимим
+                    
+                    setTimeout(() => {
+                        const text = document.getElementById('finale-text');
+                        if (text) { text.style.opacity = '0.5'; } // Плавно вмикаємо великі слова
+                    }, 100);
+                }
+            }, 4500); // Проростають рівно через 4.5с, коли навколо вже залягла чиста лінива темрява
+            
+        }, 1200);
     }
 
     renderUI(1);
