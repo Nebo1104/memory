@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SBU Archives — Case of Petro Neborachko</title>
+  <style>
+    body { 
+      background: #161311; 
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace; 
+      padding: 20px; 
+      line-height: 1.5;
+    }
+    .archive-container { 
+      max-width: 650px; 
+      margin: 20px auto; 
+      border: 2px solid #3a3a3a; 
+      padding: 25px; 
+      background: #1a1a1a; 
+      box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
+    }
+    .header-context {
+      border-bottom: 2px dashed #555;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .year-badge {
+      background: #8a3333;
+      color: #fff;
+      padding: 3px 8px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .phone-storage {
+      background: #2a2a2a;
+      padding: 15px;
+      border-left: 4px solid #2b5c8f;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    .case-folder {
+      background: #f8f5ee;
+      color: #1a1a1a;
+      padding: 25px;
+      border-radius: 2px;
+      min-height: 100px;
+      margin-bottom: 20px;
+      border: 1px solid #cfc4b5;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+    .page-number {
+      font-size: 12px;
+      font-weight: bold;
+      text-align: right;
+      color: #7d7265;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .controls button {
+      display: inline-block;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-right: 5px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .controls button:hover { background: #3a3a3a; }
+    .controls button:disabled { opacity: 0.2; cursor: not-allowed; }
+    
+    .btn-photo { background: #2b5c8f !important; border-color: #2b5c8f !important; }
+    .btn-photo:hover { background: #1f456e !important; }
+    
+    .btn-next { 
+      display: block;
+      width: 100%;
+      background: #8a3333 !important; 
+      border-color: #8a3333 !important;
+      color: white !important;
+      text-align: center;
+      margin-top: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-next:hover { background: #a63f3f !important; }
+    
+    .gallery-preview {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #aaa;
+      line-height: 1.4;
+    }
+
+    /* Styles for the Modal Window */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: #f8f5ee;
+      color: #1a1a1a;
+      max-width: 500px;
+      width: 90%;
+      padding: 30px;
+      border: 3px double #8a3333;
+      box-shadow: 10px 10px 0px #111;
+      text-align: center;
+    }
+    .modal-box h2 {
+      color: #8a3333;
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 2px dashed #8a3333;
+      padding-bottom: 10px;
+    }
+    .modal-box p {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .modal-btn {
+      background: #8a3333;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+    }
+    .modal-btn:hover {
+      background: #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="archive-container">
+  <div class="header-context">
+    <span class="year-badge">STAGE 2: THE ARCHIVE</span>
+    <p style="margin: 8px 0 0 0; font-style: italic; font-size: 13px; color: #b0b0b0;">
+      Kyiv. Central Archive of the SBU. Criminal case file №4012 is in front of you. Flip through the pages and decide which ones to capture on your camera. Your patience defines your evidence.
+    </p>
+  </div>
+
+  <div class="phone-storage">
+    📱 Captured Document Photos: <span id="photoCount" style="font-weight:bold; color:#f8f5ee;">0</span>
+    <div class="gallery-preview" id="galleryLog">Your gallery is empty.</div>
+  </div>
+
+  <div class="case-folder" id="pageContent">
+    <!-- Content injected dynamically via JavaScript -->
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn" onclick="changePage(-1)">◀ Previous Page</button>
+    <button id="nextBtn" onclick="changePage(1)">Next Page ▶</button>
+    <button id="photoBtn" class="btn-photo" onclick="takePhoto()">📷 Take Photo</button>
+    
+    <button id="leaveArchiveBtn" class="btn-next" onclick="finishResearch()">Complete Research & Save Files</button>
+  </div>
+</div>
+
+<!-- Modal Window Notification -->
+<div class="modal-overlay" id="experienceModal">
+  <div class="modal-box">
+    <h2>RESEARCH COMPLETED</h2>
+    <p>You have just experienced my own digitized research path within the SBU Archive reading room. By interacting with these document sheets, you walked through the actual process of discovering family history from the inside.</p>
+    <p>Now, prepare yourself for an emotional immersion. You are about to step into the historical reconstruction of the 1941 NKVD interrogation of Petro Neborachko.</p>
+    <button class="modal-btn" onclick="redirectToInterrogation()">Enter Interrogation Room</button>
+  </div>
+</div>
+
+<script>
+  const casePages = [
+    { num: "Page 1", title: "Arrestee Questionnaire (NKVD, 1941)" },
+    { num: "Page 7", title: "Detailed Prisoner Registration Form" },
+    { num: "Page 11", title: "Mugshot Photograph (NKVD Archive Copy)" },
+    { num: "Page 12", title: "Home Search & Property Seizure Warrant" },
+    { num: "Page 13", title: "Interrogation Protocol - Session I" },
+    { num: "Page 16", title: "Interrogation Protocol - Session II" },
+    { num: "Page 18", title: "Interrogation Protocol - Confrontation" },
+    { num: "Page 21", title: "Interrogation Protocol - Final Statements" },
+    { num: "Page 24", title: "Formal Accusation & Indictment Order" },
+    { num: "Page 27", title: "Official Bill of Indictment (Summary of Charges)" },
+    { num: "Page 28", title: "Resolution on Preventive Detention & Classification" },
+    { num: "Page 38", title: "Official Wartime Evacuation Certificate (July 1941)" },
+    { num: "Page 60", title: "Prosecutor's Post-Stalin Review (Rehabilitation Case)" },
+    { num: "Page 65", title: "Formal Petition to the Supreme Court of the USSR" },
+    { num: "Page 70", title: "Official Rehabilitation Certificate (Declassified)" }
+  ];
+
+  let currentPageIndex = 0;
+  let takenPhotos = [];
+
+  function updateUI() {
+    const page = casePages[currentPageIndex];
+    document.getElementById('pageContent').innerHTML = `
+      <div class="page-number">${page.num} / Total: ${casePages.length}</div>
+      <h3 style="margin-top:0; color:#8a3333; font-size:16px; font-weight:900;">${page.title}</h3>
+    `;
+
+    document.getElementById('prevBtn').disabled = (currentPageIndex === 0);
+    document.getElementById('nextBtn').disabled = (currentPageIndex === casePages.length - 1);
+
+    const isAlreadyPhotographed = takenPhotos.includes(page.num);
+    const photoBtn = document.getElementById('photoBtn');
+    
+    if (isAlreadyPhotographed) {
+      photoBtn.disabled = true;
+      photoBtn.innerText = "✓ Already Captured";
+    } else {
+      photoBtn.disabled = false;
+      photoBtn.innerText = "📷 Take Photo";
+    }
+  }
+
+  function changePage(direction) {
+    currentPageIndex += direction;
+    updateUI();
+  }
+
+  function takePhoto() {
+    const page = casePages[currentPageIndex];
+    if (!takenPhotos.includes(page.num)) {
+      takenPhotos.push(page.num);
+      
+      document.getElementById('photoCount').innerText = takenPhotos.length;
+      document.getElementById('galleryLog').innerText = "Saved: " + takenPhotos.join(', ');
+      
+      updateUI();
+    }
+  }
+
+  function finishResearch() {
+    localStorage.setItem('savedEvidence', JSON.stringify(takenPhotos));
+    // Show the modal window instead of instant redirect
+    document.getElementById('experienceModal').style.display = 'flex';
+  }
+
+  function redirectToInterrogation() {
+    window.location.href = "githubusercontent.com";
+  }
+
+  updateUI();
+</script>
+
+</body>
+</html>
