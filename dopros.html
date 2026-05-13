@@ -5,7 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interrogation Room</title>
   <style>
-    /* Збережено стилі для модального вікна емоційної паузи */
+    /* Базові стилі для сцени, щоб скрипт не ламався */
+    body { background-color: #161311; color: #212121; font-family: monospace; padding: 20px; }
+    .bar { width: 100px; background: #333; height: 10px; display: inline-block; margin-left: 10px; }
+    .fill { height: 100%; background: #ff4444; }
+    .btn-continue, .options button { display: block; width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; }
+    
+    /* СТИЛЬ ШТАМПУ — ТЕПЕР ВІН СХОВАНИЙ ЗА ЗАМОВЧУВАННЯМ */
+    #stamp {
+      display: none;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #ff4444;
+      border: 3px solid #ff4444;
+      padding: 10px;
+      font-weight: bold;
+      transform: rotate(-5deg);
+    }
+
+    /* СТИЛІ ДЛЯ МОДАЛЬНОГО ВІКНО ЕМОЦІЙНОЇ ПАУЗИ */
     .interlude-modal {
       display: none; 
       position: fixed;
@@ -89,7 +108,7 @@
 
 <div class="scene"></div>
 <div class="lamp-flicker"></div>
-<div class="missing-stamp" id="stamp" style="display:none;">MISSING 1941</div>
+<div class="missing-stamp" id="stamp">MISSING 1941</div>
 <div class="protocol-overlay" id="protocol-text"><p style="letter-spacing: 3px; opacity: 0.3;">USSR. NKVD CASE №942</p></div>
 
 <div id="ui-panel">
@@ -105,18 +124,16 @@
     <div id="options-box" class="options"></div>
 </div>
 
-<!-- НОВЕ МОДАЛЬНЕ ВІКНО: ЕМОЦІЙНА ПАУЗА ТА ІСТОРИЧНИЙ КОНТЕКСТ -->
+<!-- МОДАЛЬНЕ ВІКНО: ЕМОЦІЙНА ПАУЗА ТА ІСТОРИЧНИЙ КОНТЕКСТ -->
 <div class="interlude-modal" id="emotionalInterlude">
   <div class="interlude-content">
     <div class="interlude-header">A Moment of Reflection</div>
     
-    <!-- Психологічна підтримка -->
     <div class="interlude-section" style="border-left-color: #8a3333;">
       <span class="interlude-box-header" style="color: #8a3333;">EMOTIONAL PAUSE:</span>
       Interrogation protocols and family separation can be deeply emotional to witness. If you feel overwhelmed, please take a short break, stretch, or drink some water. Your well-being comes first.
     </div>
 
-    <!-- Історична деконструкція міфу про реабілітацію -->
     <div class="interlude-section historical">
       <span class="interlude-box-header" style="color: #2b5c8f;">THE REALITY OF THE THAW (1958):</span>
       Next, you will write a rehabilitation petition as Mykola. It is crucial to look past the historical myth. Khrushchev’s Thaw was not an act of genuine reconciliation or justice. It was a calculated political tool designed to reduce severe social tension and placate the West.<br><br>
@@ -231,22 +248,22 @@
                 <p style="font-size:11px; color:#888; border-top:1px solid #333; padding-top:10px;">
                     1958: His son Mykola is a soldier dreaming of becoming a pilot, but the sky is closed to him. He must fight for the truth.
                 </p>
-                <!-- Змінено виклик функції: спочатку показуємо модальне вікно -->
                 <button onclick="showEmotionalInterlude()" class="btn-continue" style="width:100%; border:none; padding:12px; margin-top:10px;">PROCEED TO 1958</button>
             </div>
         `;
     }
 
-    // Відкриття вікна-інтерлюдії
+    // Функція показу вікна
     function showEmotionalInterlude() {
         document.getElementById('emotionalInterlude').style.display = 'flex';
     }
 
-    // Остаточний перехід після прочитання контексту
+    // Функція переходу на наступний рівень
     function executeFinalRedirect() {
         window.location.href = 'letter.html';
     }
 
+    // Запускаємо перший крок гри
     renderStep();
 </script>
 
