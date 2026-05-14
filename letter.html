@@ -82,16 +82,16 @@
         
         .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        /* ПЛАВНІ ВІКНА ПОМИЛОК З АВТЕНТИЧНИМ ТЕМНИМ ТЛОМ (ЗЕЛЕНЕ ПОВНІСТЮ ВИДАЛЕНО) */
+        /* ПЛАВНІ ВІКНА ПОМИЛОК З АВТЕНТИЧНИМ ТЕМНИМ ТЛОМ */
         .error-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 12, 12, 0.85); z-index: 15000; align-items: center; justify-content: center;
+            background: rgba(10, 8, 8, 0.88); z-index: 15000; align-items: center; justify-content: center;
             padding: 20px; box-sizing: border-box;
             transition: opacity 0.3s ease-in-out;
         }
         .error-modal-box {
             max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7); font-family: "Courier New", monospace;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: "Courier New", monospace;
             opacity: 0; transform: translateY(-10px);
             transition: all 0.3s ease-in-out;
         }
@@ -99,10 +99,10 @@
             opacity: 1; transform: translateY(0);
         }
         
-        /* ЧИСТА КОЛОРИСТИКА ШТРАФІВ БЕЗ СПАДКУВАННЯ МИНУЛИХ СТИЛІВ */
-        .kgb-arrest { background: rgba(20, 15, 15, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
-        .military-shame { background: rgba(46, 59, 35, 0.98) !important; color: #e0e0e0 !important; border: 4px solid #5a734a !important; }
-        .party-silence { background: rgba(50, 50, 50, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
+        /* СУВОРА КОЛОРИСТИКА ШТРАФІВ (ЗЕЛЕНИЙ ПОВНІСТЮ ВИДАЛЕНО З УСІХ КЛАСІВ) */
+        .kgb-arrest { background: rgba(24, 14, 14, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
+        .military-shame { background: rgba(38, 41, 43, 0.98) !important; color: #e5e5e5 !important; border: 4px solid #5d666b !important; } /* Залізо-сірий казенний колір замість хакі */
+        .party-silence { background: rgba(48, 48, 48, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
         
         .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
         .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
@@ -143,7 +143,6 @@
 </head>
 <body>
 
-<!-- ДИНАМІЧНИЙ ПЛЕЄР ДЛЯ ВАШОЇ МУЗИКИ ELEGIA.MP3 -->
 <audio id="finaleTrack" src="elegia.mp3" preload="auto"></audio>
 
 <div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
@@ -253,7 +252,6 @@
         if(head) head.innerText = header || "System Notification";
         if(txt) txt.innerText = text;
         
-        // Примусово скидаємо старі стилі та додаємо лише потрібний радянський колір
         if(box) box.className = `error-modal-box ${type}`;
         
         if(modal) {
@@ -354,8 +352,8 @@
 
         setTimeout(() => {
             if (track) {
-                track.volume = 0.6; // Налаштування оптимальної гучності вашого треку
-                track.play().catch(e => console.log("Audio play blocked by browser policy:", e));
+                track.volume = 0.5;
+                track.play().catch(e => console.log("Audio track block:", e));
             }
 
             if (card) { card.classList.add('bird-shape'); }
