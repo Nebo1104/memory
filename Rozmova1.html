@@ -124,138 +124,77 @@
 </div>
 
 <script>
-  let clickCount = 0;
-  let shotCount = 0; 
-  let isIrritated = false; 
-  let gameOver = false;
-  
-  let askedQuestions = { docs: false, letters: false, charges: false, property: false, rehab: false };
+    const grandfatherData = {
+        1: {
+            reply: "\"No papers here. I was born later. All I know: he was a blacksmith, arrested by the NKVD in 1941, and died in Kolyma around '42. They said he was just a cruel, silent drunk. That’s all.\"",
+            context: "The Soviet state rarely left official records or search warrants with the families of those arrested."
+        },
+        2: {
+            reply: "\"No letters. The NKVD took him from his forge in 1941, and by '43 he was dead somewhere in Kolyma. He was a silent, cruel drunkard who left nothing behind. Just a ghost.\"",
+            context: "There are no letters. Enemies of the people sent to Kolyma camps were banned from any contact with the outside world."
+        },
+        3: {
+            reply: "\"Nobody knew the charges. Who would dare ask in 1941? He was a blacksmith, taken away, and died in Kolyma by '43. They always said he was a bitter, cruel drunk who brought it on himself.\"",
+            context: "Official penal articles were kept secret. Families only knew vague rumors, never the formal charges."
+        },
+        4: {
+            reply: "\"There was no shop. Everything was nationalized back in the 30s. He was just a blacksmith working for the collective farm (kolkhoz) when the NKVD took him in 1941. He died in Kolyma soon after. We remembered him only as a terrifying, silent drunk. The state already owned the rest.\"",
+            context: "Property confiscation was a standard NKVD practice. It served to terrorize the local community and isolate the victim's family."
+        },
+        5: {
+            reply: "\"No papers. He vanished into Kolyma after the 1941 arrest, and we never looked into it. Why clear the name of a man known only for his cruelty, heavy silence, and endless drinking?\"",
+            context: "Massive post-Stalin rehabilitation waves often bypassed individuals whose relatives were too terrified to submit official state requests."
+        }
+    };
 
-  const coreMantra = "I never saw him. I was born much later. There are no documents in this house. But everyone always said the same: He was a blacksmith. Arrested in 1941 by the NKVD. Died in a camp in '42 or '43 somewhere in Kolyma. They always remembered him as a cruel man, silent and constantly drunk. That is all I know.";
+    let askedCount = 0;
+    const totalQuestions = 5;
 
-  const explanations = {
-    docs: "💡 Context: The Soviet state rarely left official records or search warrants with the families of those arrested.",
-    letters: "💡 Context: There are no letters. Enemies of the people sent to Kolyma camps were banned from any contact with the outside world.",
-    charges: "💡 Context: Official penal articles were kept secret. Families only knew vague rumors, never the formal charges.",
-    property: "💡 Context: Property confiscation was a standard NKVD practice. It served to terrorize the local community and isolate the victim's family.",
-    rehab: "💡 Context: Massive post-Stalin rehabilitation waves often bypassed individuals whose relatives were too terrified to submit official state requests."
-  };
+    function askQuestion(id) {
+        // Вимикаємо кнопку, на яку щойно натиснули
+        const btn = document.getElementById(`q${id}`);
+        if (btn) { btn.disabled = true; }
 
-  function startConversation() {
-    const log = document.getElementById('dialogueLog');
-    let dialogueBlock = document.createElement('div');
-    dialogueBlock.className = 'fade-in';
-    dialogueBlock.innerHTML = `
-      <p class="log-entry"><span class="player">You:</span> Grandpa, tell me about Petro.</p>
-      <p class="log-entry"><span class="grandpa">Grandfather:</span> I don't know much. I already told you everything I knew, but you can ask.</p>
-    `;
-    log.innerHTML = "";
-    log.appendChild(dialogueBlock);
-    showOptions();
-  }
+        const stream = document.getElementById('dialogue-stream');
+        const data = grandfatherData[id];
 
-  function showOptions() {
-    let html = "";
-    
-    if (!gameOver) {
-      if (!askedQuestions.docs) html += `<button onclick="askGrandpa('Did you get any arrest documents in 1941?', 'docs')">Ask about 1941 arrest documents.</button>`;
-      if (!askedQuestions.letters) html += `<button onclick="askGrandpa('Are there any letters left from the camp?', 'letters')">Ask about letters or certificates.</button>`;
-      if (!askedQuestions.charges) html += `<button onclick="askGrandpa('What were the specific charges against him?', 'charges')">Ask about official charges.</button>`;
-      if (!askedQuestions.property) html += `<button onclick="askGrandpa('What happened to his blacksmith shop and tools?', 'property')">Ask about confiscated property.</button>`;
-      if (!askedQuestions.rehab) html += `<button onclick="askGrandpa('Did the family receive any rehabilitation papers later?', 'rehab')">Ask about post-Soviet rehabilitation status.</button>`;
+        // Додаємо репліку діда та історичний контекст у стрім паперу праворуч
+        stream.innerHTML += `
+            <div class="dialogue-turn">
+                <b style="color: #8b0000;">Grandfather:</b> ${data.reply}
+                <div class="context-box">
+                    <b>💡 Context:</b> ${data.context}
+                </div>
+            </div>
+        `;
+
+        // Автоматично прокручуємо папір вниз, підтримуючи дискомфортний ритм
+        const paperColumn = document.querySelector('.paper-column');
+        if (paperColumn) { paperColumn.scrollTop = paperColumn.scrollHeight; }
+
+        askedCount++;
+
+        // Перевіряємо, чи всі питання вичерпано
+        if (askedCount === totalQuestions) {
+            triggerDialogueEnd();
+        }
     }
 
-    if (clickCount >= 5 && !gameOver) {
-      html += `
-        <div class="inner-thought fade-in">
-          He has nothing more to say. The repeating story is all that is left.
-        </div>
-      `;
+    function triggerDialogueEnd() {
+        const stream = document.getElementById('dialogue-stream');
+        
+        // Змінюємо інструкцію ліворуч на фінальний тупик
+        document.getElementById('instr').innerHTML = `<b style="color:#8b0000;">He has nothing more to say. The repeating story is all that is left.</b>`;
+        
+        // Додаємо кнопку переходу до архівів прямо під папером праворуч
+        const proceedBox = document.getElementById('proceed-box');
+        proceedBox.innerHTML = `
+            <button onclick="window.location.href='game2.html'" class="btn-proceed">
+                Enter the State Archives ➔
+            </button>
+        `;
+
+        const paperColumn = document.querySelector('.paper-column');
+        if (paperColumn) { paperColumn.scrollTop = paperColumn.scrollHeight; }
     }
-
-    html += `<button class="next-btn" onclick="nextModule()">Leave the kitchen</button>`;
-    html += `<button class="restart-btn" onclick="restartGame()">Start game over</button>`;
-
-    document.getElementById('actionPanel').innerHTML = html;
-  }
-
-  function askGrandpa(question, type) {
-    if (gameOver) return;
-
-    if (clickCount === 0 && type === 'letters') {
-      isIrritated = true;
-      document.getElementById('tableContainer').style.boxShadow = "4px 4px 0px #962d2d";
-    }
-
-    clickCount++;
-    askedQuestions[type] = true;
-    const log = document.getElementById('dialogueLog');
-    
-    let responseBlock = document.createElement('div');
-    responseBlock.className = 'fade-in';
-
-    let grandpaDialogue = "";
-    let actionText = "";
-
-    if (isIrritated) {
-      shotCount++; 
-      
-      if (shotCount === 1) {
-        actionText = `<p class="action-desc">* Grandfather sighs heavily, reaches into the cupboard, and pours himself a shot of cheap vodka. *</p>`;
-        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather (irritated):</span> Why do you keep digging into this? I told you: ${coreMantra}</p>`;
-      } else if (shotCount === 2) {
-        actionText = `<p class="action-desc">* His hands shake slightly as he pours a second shot and drinks it fast. *</p>`;
-        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather (angry):</span> Stop it! There is nothing here! Look at me: ${coreMantra}</p>`;
-      } else if (shotCount >= 3) {
-        actionText = `<p class="action-desc">* He pours a third shot, swallows it in one gulp, wipes his mouth with his sleeve, and stands up from the table. *</p>`;
-        grandpaDialogue = `<p class="log-entry"><span class="grandpa angry">Grandfather:</span> I am done talking.</p>`;
-        gameOver = true; 
-      }
-    } else {
-      grandpaDialogue = `<p class="log-entry"><span class="grandpa">Grandfather:</span> ${coreMantra}</p>`;
-    }
-
-    responseBlock.innerHTML = `
-      <p class="log-entry"><span class="player">You:</span> ${question}</p>
-      ${actionText}
-      ${grandpaDialogue}
-      <div class="viewer-note">${explanations[type]}</div>
-    `;
-    
-    if (gameOver) {
-      responseBlock.innerHTML += `
-        <div class="inner-thought">
-          He leaves the kitchen, slamming the door. The conversation is over. His fear and alcohol completely blocked the truth.
-        </div>
-      `;
-    }
-
-    log.appendChild(responseBlock);
-
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 50);
-
-    showOptions();
-  }
-
-function nextModule() {
-  // Перехід на проміжний етап дослідження архіву
-  window.location.href = "inter1.html"; 
-}
-
-  function restartGame() {
-    clickCount = 0;
-    shotCount = 0;
-    isIrritated = false;
-    gameOver = false;
-    document.getElementById('tableContainer').style.boxShadow = "4px 4px 0px #e2dacd";
-    askedQuestions = { docs: false, letters: false, charges: false, property: false, rehab: false };
-    document.getElementById('dialogueLog').innerHTML = "";
-    document.getElementById('actionPanel').innerHTML = `
-      <button onclick="startConversation()">
-        Grandpa, tell me about Petro Neborachko.
-      </button>
-    `;
-  }
 </script>
