@@ -163,7 +163,54 @@
     color: #2b1a08 !important; 
     border: 2px solid #8a735d !important;
   }
+
+  /* СТИЛІ СТИЛІЗОВАНОГО СПЛИВАЮЧОГО ВІКНА ЗАПИТУ */
+  .audio-prompt-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); z-index: 20000;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .audio-prompt-box {
+    background: #faf8f5; border: 3px double #8a3333; padding: 25px; max-width: 380px;
+    text-align: center; box-shadow: 5px 5px 0px #cbd2c3;
+  }
+  .audio-prompt-title { font-size: 18px; font-weight: 900; color: #1a1715; margin-bottom: 10px; text-transform: uppercase;}
+  .audio-prompt-text { font-size: 13px; color: #4a423a; font-style: italic; margin-bottom: 20px; }
+  .audio-prompt-btn-container { display: flex; gap: 10px; justify-content: center; }
+  .audio-prompt-btn {
+    background: #fdfcfb; border: 1px solid #a89985; padding: 8px 20px; font-family: 'Special Elite', monospace;
+    font-size: 13px; cursor: pointer; transition: background 0.2s; font-weight: bold;
+  }
+  .audio-prompt-btn:hover { background: #ebdcc7; }
+  .audio-prompt-btn.yes { background: #c9b097; border-color: #8a735d; }
+
+  /* КНОПКА КЕРУВАННЯ МУЗИКОЮ НА СТОРІНЦІ */
+  .audio-toggle-widget {
+    position: fixed; bottom: 15px; right: 15px; z-index: 15000;
+    background: rgba(250, 248, 245, 0.85); border: 1px solid #b5a994;
+    padding: 5px 10px; font-size: 11px; cursor: pointer;
+    text-transform: uppercase; color: #4a423a; box-shadow: 2px 2px 0px #cbd2c3;
+    transition: background 0.2s;
+  }
+  .audio-toggle-widget:hover { background: #ebdcc7; color: #212121; }
 </style>
+
+<!-- СПЛИВАЮЧЕ ПОВІДОМЛЕННЯ (ПРОМПТ) ПРИ ЗАВАНТАЖЕННІ -->
+<div id="audioPrompt" class="audio-prompt-overlay">
+  <div class="audio-prompt-box">
+    <div class="audio-prompt-title">Audio Notice</div>
+    <div class="audio-prompt-text">Enable atmospheric background soundscape for full immersion?</div>
+    <div class="audio-prompt-btn-container">
+      <button class="audio-prompt-btn yes" onclick="handleAudioPrompt(true)">[ YES ]</button>
+      <button class="audio-prompt-btn" onclick="handleAudioPrompt(false)">[ NO ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ВІДЖЕТ ПЕРЕМИКАННЯ МУЗИКИ -->
+<div id="audioWidget" class="audio-toggle-widget" onclick="toggleAudioState()" style="display: none;">
+  Sound: ON
+</div>
 
 <div class="kitchen-table">
   <div id="mainMenu">
@@ -177,7 +224,7 @@
     <div id="instructionPlace" class="slide-container">
       <div class="slide-wrapper">
         <div class="instruction-box">
-          <p><span class="box-header">ACADEMIC CONTEXT:</span> This is an academic visual game developed as part of the research framework: <i>"The Migration of Silence and the Inherited Myths of Loyalty: Family Memory and Bureaucratic Folklore in Post-Soviet Space"</i>. Created for <a href="https://www.folklore-society.com/event/folklore-on-the-move-the-folklore-societys-annual-conference-2026/" target="_blank" rel="noopener noreferrer" style="color: #8a3333; font-weight: bold; text-decoration: underline; cursor: pointer; display: inline;">'Folklore on the Move' The Folklore Society's Annual Conference 2026</a> (In Person: 5-7 June at King's College, University of Aberdeen; Online: 10 June 2026).</p>
+          <p><span class="box-header">ACADEMIC CONTEXT:</span> This is an academic visual game developed as part of the research framework: <i>"The Migration of Silence and the Inherited Myths of Loyalty: Family Memory and Bureaucratic Folklore in Post-Soviet Space"</i>. Created for <a href="folklore-society.com" target="_blank" rel="noopener noreferrer" style="color: #8a3333; font-weight: bold; text-decoration: underline; cursor: pointer; display: inline;">'Folklore on the Move' The Folklore Society's Annual Conference 2026</a> (In Person: 5-7 June at King's College, University of Aberdeen; Online: 10 June 2026).</p>
           <p><span class="box-header">ABOUT:</span> This project is entirely based on personal experience, reflections, and deep research into the actual archive case files regarding the repression of my ancestor. The game consists of 4 logical mini-games.</p>
           <p><span class="box-header">HOW TO PLAY:</span> Answer as honestly as you would in real life. In most cases, there are no generic right or wrong answers, but keep in mind that every choice carries weight and shapes the final outcome.</p>
           <p><span class="box-header">OBJECTIVE:</span> To provide an opportunity to gain a new perspective and experience through emotional engagement.</p>
@@ -196,36 +243,83 @@
 <script>
   let instructionVisible = false;
   let audioCtx = null;
+  let isMuted = false;
+  
+  // Вузли керування гучністю для швидкого вимкнення
+  let masterGain = null;
 
-  // Драматичний процедурний ембієнт (0 Кб завантаження)
+  // ОБРОБКА ВИБОРУ КОРИСТУВАЧА У СПЛИВАЮЧОМУ ВІКНІ
+  function handleAudioPrompt(allowAudio) {
+    document.getElementById('audioPrompt').style.display = 'none';
+    document.getElementById('audioWidget').style.display = 'block';
+    
+    if (allowAudio) {
+      startAmbientHum();
+      document.getElementById('audioWidget').innerText = "Sound: ON";
+      isMuted = false;
+    } else {
+      document.getElementById('audioWidget').innerText = "Sound: OFF";
+      isMuted = true;
+    }
+  }
+
+  // КНОПКА МИТТЄВОГО ОН/ОФФ ЗВУКУ
+  function toggleAudioState() {
+    const widget = document.getElementById('audioWidget');
+    
+    if (!audioCtx) {
+      // Якщо звук ще взагалі не створювався (натиснули NO, але передумали)
+      startAmbientHum();
+      widget.innerText = "Sound: ON";
+      isMuted = false;
+      return;
+    }
+
+    if (isMuted) {
+      // Вмикаємо звук назад плавним поверненням гучності
+      masterGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.1);
+      widget.innerText = "Sound: ON";
+      isMuted = false;
+    } else {
+      // Повністю приглушуємо звук через майстер-вузол
+      masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+      widget.innerText = "Sound: OFF";
+      isMuted = true;
+    }
+  }
+
+  // СИНТЕЗАТОР ДРАМАТИЧНОГО ЕМБІЄНТУ
   function startAmbientHum() {
     if (audioCtx) return;
 
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Створюємо головний вузол гучності (перемикач), через який пропустимо всі шари
+    masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(1, audioCtx.currentTime);
+    masterGain.connect(audioCtx.destination);
 
     // --- ШАР 1: ГЛИБОКИЙ ТИСК (SUB-BASS) ---
     const subOsc = audioCtx.createOscillator();
     const subGain = audioCtx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(40, audioCtx.currentTime); // Важкий низький бас
+    subOsc.frequency.setValueAtTime(40, audioCtx.currentTime); 
     subGain.gain.setValueAtTime(0.06, audioCtx.currentTime); 
 
-    // --- ШАР 2: ПРИМАРНИЙ РЕЗОНАНС (БИТТЯ ХВИЛЬ) ---
+    // --- ШАР 2: ПРИМАРНИЙ РЕЗОНАНС ---
     const midOsc = audioCtx.createOscillator();
     const midGain = audioCtx.createGain();
-    midOsc.type = 'triangle'; // Більш шорсткий, текстурний звук
-    midOsc.frequency.setValueAtTime(110.5, audioCtx.currentTime); // Невелика розбудова створює ефект тривожного коливання
+    midOsc.type = 'triangle'; 
+    midOsc.frequency.setValueAtTime(110.5, audioCtx.currentTime); 
     midGain.gain.setValueAtTime(0.015, audioCtx.currentTime);
 
-    // Модулятор для повільного "дихання" другого шару
     const lfo = audioCtx.createOscillator();
     const lfoGain = audioCtx.createGain();
     lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(0.2, audioCtx.currentTime); // Дуже повільно (раз на 5 секунд)
+    lfo.frequency.setValueAtTime(0.2, audioCtx.currentTime); 
     lfoGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
 
-    // --- ШАР 3: ГЕНЕРАТОР ШУМУ (СТАРА ПЛІВКА / ПОРОЖНЕЧА) ---
-    // Створюємо буфер для генерації випадкових чисел (білого шуму)
+    // --- ШАР 3: ГЕНЕРАТОР ШУМУ (СТАРА ПЛІВКА) ---
     const bufferSize = 2 * audioCtx.sampleRate;
     const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
@@ -237,37 +331,33 @@
     noiseSource.buffer = noiseBuffer;
     noiseSource.loop = true;
 
-    // Фільтр, щоб зробити шум глухим і схожим на порожній архів
     const filter = audioCtx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(400, audioCtx.currentTime); // Зрізаємо високі частоти, залишаємо глухий шурхіт
+    filter.frequency.setValueAtTime(400, audioCtx.currentTime); 
     
     const noiseGain = audioCtx.createGain();
     noiseGain.gain.setValueAtTime(0.012, audioCtx.currentTime);
 
-    // З'ЄДНАННЯ ВСІХ КОМПОНЕНТІВ
+    // ЗВ'ЯЗУВАННЯ КОМПОНЕНТІВ КРІЗЬ MASTER GAIN
     lfo.connect(lfoGain);
-    lfoGain.connect(midGain.gain); // Змушує резонанс плавно то з'являтися, то зникати
+    lfoGain.connect(midGain.gain);
 
     subOsc.connect(subGain);
+    subGain.connect(masterGain);
+
     midOsc.connect(midGain);
+    midGain.connect(masterGain);
+
     noiseSource.connect(filter);
     filter.connect(noiseGain);
+    noiseGain.connect(masterGain);
 
-    // Вивід у динаміки користувача
-    subGain.connect(audioCtx.destination);
-    midGain.connect(audioCtx.destination);
-    noiseGain.connect(audioCtx.destination);
-
-    // СИНХРОННИЙ СТАРТ
+    // СТАРТ
     subOsc.start();
     midOsc.start();
     lfo.start();
     noiseSource.start();
   }
-
-  // Активація звукового ландшафту при першому кліку
-  document.addEventListener('click', startAmbientHum, { once: true });
 
   function toggleInstruction() {
     const place = document.getElementById('instructionPlace');
