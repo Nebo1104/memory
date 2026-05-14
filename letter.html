@@ -78,11 +78,11 @@
         
         .explanation { border-left: 4px solid #2e7d32; background: #f5fff5; color: #1b5e20; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
         .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @pragma @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        /* НАПІВПРОЗОРІ ВІКНА ПОМИЛОК БЕЗ ЕФЕКТУ СТРУСУ */
+        /* ПЛАВНІ НАПІВПРОЗОРІ ВІКНА ПОМИЛОК ІЗ СУВОРИМ РАДЯНСЬКИМ ТЛОМ */
         .error-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 12, 12, 0.85); z-index: 15000; align-items: center; justify-content: center;
@@ -91,18 +91,18 @@
         }
         .error-modal-box {
             max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); font-family: "Courier New", monospace;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7); font-family: "Courier New", monospace;
             opacity: 0; transform: translateY(-10px);
             transition: all 0.3s ease-in-out;
         }
-        /* Клас для плавної появи вікна помилки */
         .error-modal-overlay.show .error-modal-box {
             opacity: 1; transform: translateY(0);
         }
         
-        .kgb-arrest { background: #1a1a1a; color: #ff3333; border: 4px solid #cc0000; }
-        .military-shame { background: #2e3b23; color: #e0e0e0; border: 4px solid #5a734a; }
-        .party-silence { background: #3d3d3d; color: #ddd; border: 4px solid #777; }
+        /* КОЛОРИСТИКА ОФІЦІЙНИХ ШТРАФІВ (ПОВНІСТЮ ПРИБРАНО ЗЕЛЕНИЙ) */
+        .kgb-arrest { background: rgba(20, 15, 15, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
+        .military-shame { background: rgba(46, 59, 35, 0.98) !important; color: #e0e0e0 !important; border: 4px solid #5a734a !important; }
+        .party-silence { background: rgba(50, 50, 50, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
         
         .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
         .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
@@ -143,7 +143,6 @@
 </head>
 <body>
 
-<!-- ТЕГ ДЛЯ ВАШОГО ОРИГІНАЛЬНОГО МУЗИЧНОГО ТРЕКУ -->
 <audio id="finaleTrack" src="githubusercontent.com" preload="auto"></audio>
 
 <div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
@@ -152,7 +151,6 @@
     </div>
 </div>
 
-<!-- НАПІВПРОЗОРЕ ВІКНО ДЛЯ ВИВОДУ РАДЯНСЬКИХ ПОМИЛОК (ПЛАВНА ПОЯВА) -->
 <div id="errorModal" class="error-modal-overlay" onclick="closeErrorModal()">
     <div id="errorModalBox" class="error-modal-box">
         <div id="errorModalHeader" class="error-modal-header">System Notification</div>
@@ -339,7 +337,6 @@
 </script>
 
 <script>
-    // АНІМАЦІЯ ПТАХИ ТА ЗАПУСК ВАШОГО ЗАВАНТАЖЕНОГО ТРЕКУ `elegia.mp3`
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
@@ -348,15 +345,13 @@
         
         if (textContainer) { textContainer.style.opacity = '0'; }
         
-        // Повністю затишаємо фоновий шум меню перед стартом вашої музики
         if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
             masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5); 
         }
 
         setTimeout(() => {
-            // ЗАПУСК ВАШОГО ТРЕКУ: Музика увімкнеться плавно разом із трансформацією
             if (track) {
-                track.volume = 0.5; // Базова гучність
+                track.volume = 0.5;
                 track.play().catch(e => console.log("Music track block:", e));
             }
 
@@ -385,7 +380,6 @@
     }
 </script>
 
-<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС -->
 <div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
