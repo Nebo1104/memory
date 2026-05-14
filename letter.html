@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>80 YEARS OF SEARCH - The Archive Letter</title>
+    <title>The Archive Letter: Bureaucratic Quest</title>
     <style>
         /* Блокування скролу всієї сторінки */
         body { 
@@ -149,7 +149,7 @@
 </head>
 <body>
 
-<!-- Контейнер для титрів, який розташований на найвищему рівні у структурі -->
+<!-- Контейнер для титрів, який розташований на найвищому рівні у структурі -->
 <div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
     <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 4s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
         Thank you for walking this path
@@ -172,7 +172,7 @@
         <div class="ui-panel">
             <div id="step-title" style="font-weight: bold; font-size: 14px; margin-bottom: 15px; border-bottom: 1px dashed #999; padding-bottom: 8px;">Step 1: Recipient selection:</div>
             <div id="buttons">
-                <!-- Кнопки квесту будуть згенеровані функцією renderUI автоматично -->
+                <!-- Кнопки будуть згенеровані вашим скриптом renderUI автоматично -->
             </div>
             <div class="explanation" id="exp-box"></div>
         </div>
@@ -198,17 +198,36 @@
     </div>
 </div>
 
+<!-- ВАШ ОРИГІНАЛЬНИЙ СЦЕНАРІЙ КРОКІВ ГРИ (БЕЗ ЗМІН І ВТРАТ) -->
 <script>
-    // Глобальний об'єкт для симуляції кроків вашої гри
     const stepsData = {
         1: {
             title: "Step 1: Recipient selection:",
             options: [
-                { text: "Send to the Chief Military Prosecutor's Office", correct: true, textKey: "p-2", textVal: "To: Chief Military Prosecutor's Office. I request a review of the case of my father, Petro Neborachko, convicted in 1942.", exp: "Correct. The military prosecutors are the primary body handling Stalin-era rehabilitation claims.", isCorrect: true },
-                { text: "Send directly to the Local Soviet Administration", correct: false, exp: "Error. Local administrations have no jurisdiction over criminal military tribunal files. The letter gets lost in bureaucratic cycles.", isCorrect: false }
+                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "To: Chief Military Prosecutor's Office. I request a review of the case of my father, Petro Neborachko, convicted in 1942.", exp: "Correct. The military prosecutors are the primary body handling Stalin-era rehabilitation claims.", isCorrect: true },
+                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administrations have no jurisdiction over criminal military tribunal files. The letter gets lost in bureaucratic cycles.", isCorrect: false }
+            ]
+        },
+        2: {
+            title: "Step 2: Legal grounds:",
+            options: [
+                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of evidence", textKey: "p-3", textVal: "The conviction under Article 54-10 was based on coerced confessions without any material evidence.", exp: "Correct. Pointing out the lack of procedural evidence is the strongest legal route.", isCorrect: true },
+                { text: "Write an emotional appeal about family loyalty", exp: "Rejected. Soviet bureaucratic machines ignore emotional requests; they require specific archival or legal contradictions.", isCorrect: false }
+            ]
+        },
+        3: {
+            title: "Step 3: Archival verification:",
+            options: [
+                { text: "Attach the 1942 Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence issued by the South-Western Front Tribunal.", exp: "Correct. Documented verification forces the archive to reopen the physical file folder.", isCorrect: true },
+                { text: "Rely on verbal testimony of village neighbors", exp: "Error. Witness statements from 1942 are considered secondary and invalid without pre-existing archival entries.", isCorrect: false }
+            ]
+        },
+        4: {
+            title: "Step 4: The Final Submission:",
+            options: [
+                { text: "Submit the petition and await official review", textKey: "p-5", textVal: "Therefore, I ask for the official rehabilitation and disclosure of his final fate.", exp: "The letter is sealed. The bureaucratic gears begin to turn...", isCorrect: true }
             ]
         }
-        // За необхідності ви можете розширити ваші кроки 2, 3, 4 тут
     };
 
     function renderUI(stepIndex) {
@@ -221,10 +240,16 @@
         if (expBox) expBox.style.display = 'none';
 
         const step = stepsData[stepIndex];
+        
+        // Якщо кроки закінчилися — відкриваємо фінальне вікно розкриття таємниці НКВС
         if (!step) {
-            // Якщо кроки закінчилися — показуємо вікно фінального відкриття
-            const modal = document.getElementById('finalDiscoveryModal');
-            if (modal) modal.style.display = 'flex';
+            const okStamp = document.getElementById('stamp-ok');
+            if (okStamp) okStamp.style.opacity = '1';
+            
+            setTimeout(() => {
+                const modal = document.getElementById('finalDiscoveryModal');
+                if (modal) modal.style.display = 'flex';
+            }, 1000);
             return;
         }
 
@@ -239,11 +264,19 @@
                     expBox.innerText = opt.exp;
                     expBox.className = opt.isCorrect ? "explanation exp-correct" : "explanation exp-error shake";
                     
-                    if(opt.isCorrect) {
+                    if (!opt.isCorrect) {
+                        const badStamp = document.getElementById('stamp-bad');
+                        if (badStamp) {
+                            badStamp.style.opacity = '1';
+                            setTimeout(() => { badStamp.style.opacity = '0'; }, 1500);
+                        }
+                    }
+
+                    if (opt.isCorrect) {
                         const targetDiv = document.getElementById(opt.textKey);
                         if (targetDiv) targetDiv.innerHTML = `<span class="filled-text">${opt.textVal}</span>`;
                         
-                        // Додаємо кнопку продовження
+                        btnContainer.innerHTML = '';
                         const nextBtn = document.createElement('button');
                         nextBtn.className = "btn-continue";
                         nextBtn.innerText = "CONTINUE QUEST ➔";
@@ -256,16 +289,16 @@
         });
     }
 
-    // -------------------------------------------------------------
-    // АУДІОРУШІЙ: СИНТЕЗАТОР ЗЛІТАННЯ ПТАХИ (0 Кб завантаження)
-    // -------------------------------------------------------------
+    // Первинний запуск
+    renderUI(1);
+</script>
+
+<!-- АУДІОПАТЧ ТА ФУНКЦІЇ МОДЕРНІЗАЦІЇ ФІНАЛУ (БЕЗФАЙЛОВИЙ СИНТ) -->
+<script>
+    // 1. СИНТЕЗАТОР ЗЛІТАННЯ ПТАХИ
     function playBirdTransformationSound() {
         const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
-        
-        if (ctx.state === 'suspended') {
-            ctx.resume();
-        }
-
+        if (ctx.state === 'suspended') { ctx.resume(); }
         const now = ctx.currentTime;
 
         const transformGain = ctx.createGain();
@@ -278,7 +311,6 @@
         delay.delayTime.setValueAtTime(0.3, now);
         const delayGain = ctx.createGain();
         delayGain.gain.setValueAtTime(0.4, now);
-        
         transformGain.connect(delay);
         delay.connect(delayGain);
         delayGain.connect(ctx.destination);
@@ -292,9 +324,7 @@
         const bufferSize = ctx.sampleRate * 2.5;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
         const noise = ctx.createBufferSource();
         noise.buffer = buffer;
 
@@ -313,9 +343,7 @@
         noise.stop(now + 5.0);
     }
 
-    // -------------------------------------------------------------
-    // ФУНКЦІЯ АНІМАЦІЇ ТРАНСФОРМАЦІЇ З СИНХРОННИМ ЗВУКОМ
-    // -------------------------------------------------------------
+    // 2. ОРИГІНАЛЬНА ФУНКЦІЯ АНІМАЦІЇ, ПІД КЛЮЧ ОЗВУЧЕНА ПАТЧЕМ
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
@@ -328,7 +356,7 @@
         }
 
         setTimeout(() => {
-            playBirdTransformationSound();
+            playBirdTransformationSound(); // Синхронне включення звуку крил паперу
 
             if (card) { card.classList.add('bird-shape'); }
             
@@ -345,22 +373,17 @@
                 const thankyouOverlay = document.getElementById('thankyou-overlay');
                 if (thankyouOverlay) {
                     thankyouOverlay.style.display = 'flex';
-                    
                     setTimeout(() => {
                         const text = document.getElementById('finale-text');
                         if (text) { text.style.opacity = '0.5'; }
                     }, 100);
                 }
             }, 4500);
-            
         }, 1200);
     }
-
-    // Запуск першого кроку гри при завантаженні сторінки
-    renderUI(1);
 </script>
 
-<!-- Модальне вікно для перегляду документа НКВС (гілка game) -->
+<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС (ГІЛКА GAME) -->
 <div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
