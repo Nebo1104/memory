@@ -393,42 +393,63 @@
         }
     };
 
-    // БЕЗФАЙЛОВИЙ ГЕНЕРАТОР РИПІННЯ СТАРИХ ДЕРЕВ'ЯНИХ МЕБЛІВ (0 Кб)
+    // ОНОВЛЕНИЙ І ЧІТКИЙ ГЕНЕРАТОР РИПІННЯ ДЕРЕВИНИ (0 Кб)
     function playWoodenCreak() {
-        const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') { ctx.resume(); }
-        const now = ctx.currentTime;
-        const duration = 0.35; 
+        try {
+            // Ініціалізація та примусове пробудження аудіо-контексту браузера
+            const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
+            if (ctx.state === 'suspended') { ctx.resume(); }
+            
+            const now = ctx.currentTime;
+            const duration = 0.4; // Збільшено тривалість для відчутності
 
-        const gainNode = ctx.createGain();
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.06, now + 0.05); 
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration); 
-        gainNode.connect(ctx.destination);
+            // Головний вузол гучності (збільшено силу звуку до 0.25)
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.25, now + 0.04); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration); 
+            gainNode.connect(ctx.destination);
 
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass'; 
-        filter.frequency.setValueAtTime(140, now); 
-        filter.Q.setValueAtTime(8, now); 
+            // ФІЛЬТР 1: Низький резонанс корпусу меблів (150 Гц)
+            const lowFilter = ctx.createBiquadFilter();
+            lowFilter.type = 'bandpass'; 
+            lowFilter.frequency.setValueAtTime(150, now); 
+            lowFilter.Q.setValueAtTime(5, now); 
+            lowFilter.connect(gainNode);
 
-        const bufferSize = ctx.sampleRate * duration;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        
-        for (let i = 0; i < bufferSize; i++) {
-            let rawNoise = Math.random() * 2 - 1;
-            let modulation = Math.sin(i * 0.01); 
-            data[i] = rawNoise * (modulation > 0.3 ? 1 : 0);
+            // ФІЛЬТР 2: Високий сухий тріск тертя волокон дерева (850 Гц)
+            const highFilter = ctx.createBiquadFilter();
+            highFilter.type = 'bandpass';
+            highFilter.frequency.setValueAtTime(850, now);
+            highFilter.Q.setValueAtTime(4, now);
+            highFilter.connect(gainNode);
+
+            // Створення аудіо-буфера для генерації білого шуму
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Математична генерація переривчастого структурного скрипу
+            for (let i = 0; i < bufferSize; i++) {
+                let rawNoise = Math.random() * 2 - 1;
+                // Створюємо низькочастотну амплітудну сітку (ефект мікроклацань сухого дерева)
+                let modulation = Math.sin(i * 0.04) * Math.cos(i * 0.01); 
+                data[i] = rawNoise * (Math.abs(modulation) > 0.25 ? 1 : 0);
+            }
+            
+            const noiseNode = ctx.createBufferSource();
+            noiseNode.buffer = buffer;
+
+            // Спрямовуємо звук через обидва фільтри для насиченого об'єму
+            noiseNode.connect(lowFilter);
+            noiseNode.connect(highFilter);
+
+            // Старт відтворення
+            noiseNode.start(now);
+            noiseNode.stop(now + duration);
+        } catch (e) {
+            console.log("AudioContext initializing or play issue:", e);
         }
-        
-        const noiseNode = ctx.createBufferSource();
-        noiseNode.buffer = buffer;
-
-        noiseNode.connect(filter);
-        filter.connect(gainNode);
-
-        noiseNode.start(now);
-        noiseNode.stop(now + duration);
     }
 
     function renderStep() {
@@ -446,7 +467,7 @@
     }
 
     function processChoice(btnData) {
-        // Запуск безфайлового звуку рипіння стільця при натисканні
+        // Виклик виправленого звукового рушія
         playWoodenCreak();
 
         const exp = document.getElementById('explanation');
