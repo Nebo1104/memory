@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Archive Letter: Bureaucratic Quest</title>
+    <title>80 YEARS OF SEARCH - Academic Research Edition</title>
     <style>
         body { 
             background: #d3c9b1; 
@@ -16,13 +16,16 @@
             box-sizing: border-box;
             overflow-x: hidden;
             position: relative;
+            transition: background-color 5s ease-in-out;
         }
         .main-container { 
             display: flex; 
             flex-direction: row; 
-            gap: 30px; width: 100%; 
+            gap: 30px; 
+            width: 100%; 
             max-width: 1200px; 
             align-items: flex-start; 
+            transition: opacity 5s ease-in-out, filter 5s ease-in-out;
         }
         .paper-column { flex: 1.2; position: sticky; top: 20px; }
         .paper { 
@@ -52,8 +55,10 @@
         .explanation { border-left: 4px solid #2e7d32; background: #f5fff5; color: #1b5e20; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
         .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        /* ПЛАВНІ НАПІВПРОЗОРІ ВІКНА ПОМИЛОК З СУВОРИМ РАДЯНСЬКИМ ТЛОМ */
+        /* НАПІВПРОЗОРІ ВІКНА ПОМИЛОК ІЗ АКАДЕМІЧНИМ ТЕКСТОМ */
         .error-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 8, 8, 0.88); z-index: 15000; align-items: center; justify-content: center;
@@ -61,14 +66,13 @@
             transition: opacity 0.3s ease-in-out;
         }
         .error-modal-box {
-            max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
+            max-width: 520px; width: 100%; padding: 25px; border-radius: 4px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: "Courier New", monospace;
             opacity: 0; transform: translateY(-10px);
             transition: all 0.3s ease-in-out;
         }
-        .error-modal-overlay.show .error-modal-box { opacity: 1; transform: translateY(0); }
+        .error-modal-overlay.show .error-modal-box { transform: translateY(0); opacity: 1; }
         
-        /* СУВОРА КОЛОРИСТИКА ШТРАФІВ (БЕЗ ЗЕЛЕНОГО НА ФОНІ) */
         .kgb-arrest { background: rgba(24, 14, 14, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
         .military-shame { background: rgba(38, 41, 43, 0.98) !important; color: #e5e5e5 !important; border: 4px solid #5d666b !important; } 
         .party-silence { background: rgba(48, 48, 48, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
@@ -76,7 +80,6 @@
         .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
         .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
 
-        /* ОВЕРЛЕЙ ДЛЯ КАРТКИ ВІДКРИТТЯ ТАЄМНИЦІ */
         .interlude-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(17, 14, 13, 0.96); z-index: 9999; align-items: center; justify-content: center;
@@ -98,7 +101,7 @@
 <div id="errorModal" class="error-modal-overlay" onclick="closeErrorModal()">
     <div id="errorModalBox" class="error-modal-box">
         <div id="errorModalHeader" class="error-modal-header">System Notification</div>
-        <div id="errorModalText" style="font-size: 13px; line-height: 1.5;"></div>
+        <div id="errorModalText" style="font-size: 13px; line-height: 1.5; white-space: pre-line;"></div>
         <button onclick="closeErrorModal()" style="background: rgba(255,255,255,0.15); color: inherit; border: 1px solid currentColor; margin-top: 18px; padding: 8px; text-align: center; width: auto; font-size: 11px; margin-left: auto;">[ CLOSE RECORD ]</button>
     </div>
 </div>
@@ -142,7 +145,6 @@
             <p style="font-size: 13px; line-height: 1.5; color: #5e5449; border-top: 1px dashed #d3cbc0; padding-top: 12px; margin-bottom: 25px;">
                 The family had spent decades believing he passed away inside a Soviet labor camp. The bureaucracy kept the silence, but the folklore inherited the truth.
             </p>
-            <!-- ПРЯМИЙ ПЕРЕХІД НА НОВИЙ ФАЙЛ ФІНАЛУ -->
             <button onclick="goToBirdFinale()" style="background: #8a3333; color: #fff; text-align: center; font-weight: bold; width: 100%; border: none; padding: 12px; cursor: pointer;">RELEASE MEMORY ➔</button>
         </div>
     </div>
@@ -152,53 +154,53 @@
     const stepsData = {
         1: { 
             instr: "Step 1: Recipient selection:",
-            correctExp: "Correct. Legal rehabilitation was the responsibility of the Military Board. This is the only address that forces the bureaucratic machine to work.",
+            correctExp: "RESEARCH NOTE:\nCorrect. Legal rehabilitation requests during the Khrushchev Thaw had to pass strictly through the Supreme Court's Military Board. This was the only official path that forced the Soviet legal mechanism to pull files from secret repositories.",
             headVal: "The Board of the Supreme Court of the USSR",
             btns: [
                 { t: "To the Board of the Supreme Court of the USSR", v: true },
-                { t: "To the Comrades in Moscow", v: false, type: 'military-shame', header: "CONTEMPT OF TRIBUNAL", e: "Your commander cursed you out on the parade ground for such informal nonsense. Sent to the guardhouse for 10 days." },
-                { t: "To the Communist Party Committee", v: false, type: 'party-silence', header: "BUREAUCRATIC SILENCE", e: "No response. Instead, a formal reprimand was sent to your unit for violating hierarchy." },
-                { t: "To the Foreign Press Office", v: false, type: 'kgb-arrest', header: "KGB INTERVENTION", e: "Treason. Attempting to contact international media." }
+                { t: "To the Comrades in Moscow", v: false, type: 'military-shame', header: "GARRISON GUARDHOUSE", e: "HISTORICAL CONTEXT:\nIn the Soviet military machine of 1958, addressing supreme judicial bodies with colloquial phrases like 'Comrades in Moscow' violated military protocols. As an active soldier, your commander sentences you to 10 days in the garrison guardhouse (гауптвахта) for insubordination and breach of etiquette." },
+                { t: "To the Communist Party Committee", v: false, type: 'party-silence', header: "BUREAUCRATIC SILENCE", e: "HISTORICAL CONTEXT:\nThe Communist Party apparatus was not a judicial archive repository. Appeals sent here outside of strict regional channels were methodically filed away as 'procedural violations' or redirected back to your local command, resulting in total silence." },
+                { t: "To the Foreign Press Office", v: false, type: 'kgb-arrest', header: "KGB INTERVENTION", e: "HISTORICAL CONTEXT:\nFATAL IDEOLOGICAL ERROR. Under active service, any attempt to bypass the Soviet state by contacting Western or foreign press offices was instantly flagged by military counterintelligence. Classed as High Treason and espionage. You are arrested by KGB operational units." }
             ]
         },
         2: { 
             instr: "Step 2: Describe the arrest:",
-            correctExp: "Correct. 'Reasons unknown' is a safe formula. It implies you don't judge the state, but simply seek information.",
+            correctExp: "RESEARCH NOTE:\nCorrect. The formula 'reasons unknown to me' was a vital linguistic camouflage. It signaled to the prosecutor that the family did not question the infallibility of Soviet law itself, but merely requested technical clarity.",
             btns: [
                 { t: "In 1941, my father Petro Neborachko was arrested for reasons unknown to me.", v: true },
-                { t: "My father was kidnapped by the NKVD during the war.", v: false, type: 'military-shame', header: "IDEOLOGICAL ERROR", e: "Ideological mistake. Specifically blaming the NKVD is seen as an insult to state security." },
-                { t: "My father disappeared without a trace in 1941.", v: false, type: 'party-silence', header: "DESERTION SUSPICION", e: "A 'disappearance' implies he might be a deserter. You must acknowledge the arrest." },
-                { t: "I will go to the newspapers if you don't find him.", v: false, type: 'kgb-arrest', header: "ANTI-SOVIET AGITATION", e: "Anti-Soviet Agitation. Threatening the state with exposure." }
+                { t: "My father was kidnapped by the NKVD during the war.", v: false, type: 'party-silence', header: "IDEOLOGICAL ERROR", e: "HISTORICAL CONTEXT:\nUsing words like 'kidnapped' (викрадений) directly accused state security organs (NKVD) of criminality. In 1958, even during de-Stalinization, accusing state organs of banditry was viewed as an ideological provocation. The petition is rejected." },
+                { t: "My father disappeared without a trace in 1941.", v: false, type: 'military-shame', header: "DESERTION SUSPICION", e: "HISTORICAL CONTEXT:\nStating that a Soviet citizen 'disappeared without a trace' (зник безвісти) in 1941 automatically triggered suspicion of military desertion or defection to Nazi forces. The archives will refuse to open a rehabilitation case for a potential deserter." },
+                { t: "I will go to the newspapers if you don't find him.", v: false, type: 'kgb-arrest', header: "ANTI-SOVIET AGITATION", e: "HISTORICAL CONTEXT:\nThreatening a Soviet court with public exposure or press leaks was defined as an attempt to undermine the authority of the state. Handled under Article 54-10 as Anti-Soviet Agitation. The KGB intercepts you at your military post." }
             ]
         },
         3: { 
             instr: "Step 3: State the military office's response:",
-            correctExp: "Correct. Citing the military office (Voenkomat) gives your request legal weight and shows you follow the chain of command.",
+            correctExp: "RESEARCH NOTE:\nCorrect. Referencing the official written notice from the Radomyshl Voenkomat (military office) anchored the petition in certified state facts, forcing the Supreme Court to address a pre-existing inter-departmental link.",
             btns: [
                 { t: "The military office replied with only one word: 'repressed'.", v: true },
-                { t: "The local officials refuse to disclose the truth.", v: false, type: 'party-silence', header: "CONFRONTATION", e: "Attacking local power is a direct confrontation. The Court will always side with officials." },
-                { t: "The state destroyed all documents about him.", v: false, type: 'kgb-arrest', header: "SLANDER AGAINST STATE", e: "Accusing the state of destroying archives is slander. Arrested." },
-                { t: "I'll broadcast this on Radio Free Europe.", v: false, type: 'kgb-arrest', header: "FOREIGN COLLABORATION", e: "Collaboration with foreign intelligence." }
+                { t: "The local officials refuse to disclose the truth.", v: false, type: 'party-silence', header: "BUREAUCRATIC WALL", e: "HISTORICAL CONTEXT:\nOpenly criticizing local administration or accusing them of withholding data was seen as an aggressive confrontation with regional Soviet power. The Supreme Court always sided with lower officials; your file is buried." },
+                { t: "The state destroyed all documents about him.", v: false, type: 'kgb-arrest', header: "SLANDER AGAINST THE STATE", e: "HISTORICAL CONTEXT:\nAccusing Soviet archives of destroying records was categorized as a malicious lie designed to discredit state administrative organs. Arrested for slander against the socialist infrastructure." },
+                { t: "I'll broadcast this on Radio Free Europe.", v: false, type: 'kgb-arrest', header: "HIGH TREASON", e: "HISTORICAL CONTEXT:\nMentioning 'Radio Free Europe' or any Western broadcasting agency was equivalent to declaring affiliation with foreign intelligence. This completely overrides the historical file, moving you into an active treason cell." }
             ]
         },
         4: { 
             instr: "Step 4: Choose the political argument:",
-            correctExp: "Correct. Blaming 'Beria' was the only safe legal loophole to admit the state was wrong without blaming the system itself.",
+            correctExp: "RESEARCH NOTE:\nCorrect. Following Khrushchev's Secret Speech, framing historical repressions as 'the criminal activities of Beria' was the only approved political loophole. It allowed the state to correct a tragedy without admitting structural failure of the communist system.",
             btns: [
                 { t: "Perhaps he was a victim of Beria's criminal activities.", v: true },
-                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'kgb-arrest', header: "ANTI-SOVIET CONCEPT", e: "The term 'Great Terror' is an anti-Soviet Western concept in 1958. Arrested." },
-                { t: "Restore justice or I will write to embassies.", v: false, type: 'kgb-arrest', header: "TREASON ALERT", e: "Contacting embassies is an act of defection." },
-                { t: "I demand to know where the bodies are buried.", v: false, type: 'party-silence', header: "CONFRONTATIONAL", e: "Confrontational. Focus on rehabilitation, not on mass graves." }
+                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'kgb-arrest', header: "IDEOLOGICAL SUBVERSION", e: "HISTORICAL CONTEXT:\nThe term 'Great Terror' (Великий терор) was an entirely Western, anti-Soviet sociological concept in 1958. Using it proved the applicant was exposed to capitalist propaganda. Handled instantly by internal security forces." },
+                { t: "Restore justice or I will write to embassies.", v: false, type: 'kgb-arrest', header: "DEFECTION ALERT", e: "HISTORICAL CONTEXT:\nThreatening to contact foreign embassies was viewed as an explicit statement of intent to defect or compromise state secrets. Security parameters change to maximum threat level. Arrested." },
+                { t: "I demand to know where the bodies are buried.", v: false, type: 'party-silence', header: "CONFRONTATIONAL TONE", e: "HISTORICAL CONTEXT:\nSoviet rehabilitation was designed to clear names, not to expose execution sites or mass graves. Demanding structural accountability or location of remains caused the office to immediately close the file folder to avoid folklore leakage." }
             ]
         },
         5: { 
             instr: "Step 5: Final request:",
-            correctExp: "The package is complete. The letter is officially processed into the archival system.",
+            correctExp: "RESEARCH NOTE:\nCorrect. Ending the appeal with a practical, mundane reason—such as needing a family status certificate for your ongoing military service command—removed any suspicion of political activism, making it a standard bureaucratic task.",
             btns: [
                 { t: "Please clarify the case and send me a certificate needed for my military service.", v: true },
-                { t: "Fix your mistakes immediately.", v: false, type: 'military-shame', header: "INSUBORDINATION", e: "Insubordination to judicial bodies. Demoted." },
-                { t: "I don't trust your courts.", v: false, type: 'kgb-arrest', header: "STATE DISLOYALTY", e: "Open subversion of Soviet courts. Detained." },
-                { t: "Forget it, I'll find out myself.", v: false, type: 'party-silence', header: "CASE DROPPED", e: "You abandon the archive room. The file sinks back into oblivion." }
+                { t: "Fix your mistakes immediately.", v: false, type: 'military-shame', header: "INSUBORDINATION", e: "HISTORICAL CONTEXT:\nDemanding immediate action from judicial officials with an authoritative tone violated the strict hierarchical submission required of a low-ranking soldier. Demoted and sent to disciplinary battalion." },
+                { t: "I don't trust your courts.", v: false, type: 'kgb-arrest', header: "STATE DISLOYALTY", e: "HISTORICAL CONTEXT:\nAn explicit declaration of distrust in the Soviet judicial system was a direct anti-state manifesto. This transformed a legal appeal into an act of active ideological rebellion, leading to state security detention." },
+                { t: "Forget it, I'll find out myself.", v: false, type: 'party-silence', header: "CASE DROPPED", e: "HISTORICAL CONTEXT:\nYou walk away from the desk. By failing to register the final request, the letter is treated as incomplete and abandoned. The file sinks back into the unindexed silence of the deep archive." }
             ]
         }
     };
@@ -295,9 +297,7 @@
 
     renderUI(1);
 
-    // ФУНКЦІЯ ПЕРЕНАПРАВЛЕННЯ НА НОВИЙ ФІНАЛЬНИЙ ФАЙЛ ПТАХИ
     function goToBirdFinale() {
-        // Замініть 'BirdFinale.html' на точну назву вашого нового html-файлу з птахом
         window.location.href = 'BirdFinale.html'; 
     }
 </script>
