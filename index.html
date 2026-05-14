@@ -197,45 +197,78 @@
   let instructionVisible = false;
   let audioCtx = null;
 
-  // Безфайловий генератор фонового гулу (важить 0 Кб)
+  // Драматичний процедурний ембієнт (0 Кб завантаження)
   function startAmbientHum() {
-    if (audioCtx) return; // Якщо звук уже запущений, нічого не робимо
+    if (audioCtx) return;
 
-    // Ініціалізуємо аудіоконтекст
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    // Головний низький гул
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(55, audioCtx.currentTime); // Низька частота (гудіння ламп)
+    // --- ШАР 1: ГЛИБОКИЙ ТИСК (SUB-BASS) ---
+    const subOsc = audioCtx.createOscillator();
+    const subGain = audioCtx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(40, audioCtx.currentTime); // Важкий низький бас
+    subGain.gain.setValueAtTime(0.06, audioCtx.currentTime); 
 
-    // Модулятор для ефекту легкого тремтіння звуку
+    // --- ШАР 2: ПРИМАРНИЙ РЕЗОНАНС (БИТТЯ ХВИЛЬ) ---
+    const midOsc = audioCtx.createOscillator();
+    const midGain = audioCtx.createGain();
+    midOsc.type = 'triangle'; // Більш шорсткий, текстурний звук
+    midOsc.frequency.setValueAtTime(110.5, audioCtx.currentTime); // Невелика розбудова створює ефект тривожного коливання
+    midGain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+
+    // Модулятор для повільного "дихання" другого шару
     const lfo = audioCtx.createOscillator();
     const lfoGain = audioCtx.createGain();
-    lfo.type = 'sawtooth';
-    lfo.frequency.setValueAtTime(0.5, audioCtx.currentTime);
-    lfoGain.gain.setValueAtTime(1.5, audioCtx.currentTime);
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.2, audioCtx.currentTime); // Дуже повільно (раз на 5 секунд)
+    lfoGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
 
-    // Гучність фонового звуку (дуже тиха, щоб не заважати)
-    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime); 
+    // --- ШАР 3: ГЕНЕРАТОР ШУМУ (СТАРА ПЛІВКА / ПОРОЖНЕЧА) ---
+    // Створюємо буфер для генерації випадкових чисел (білого шуму)
+    const bufferSize = 2 * audioCtx.sampleRate;
+    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+    
+    const noiseSource = audioCtx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    noiseSource.loop = true;
 
-    // З'єднуємо компоненти
+    // Фільтр, щоб зробити шум глухим і схожим на порожній архів
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, audioCtx.currentTime); // Зрізаємо високі частоти, залишаємо глухий шурхіт
+    
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.012, audioCtx.currentTime);
+
+    // З'ЄДНАННЯ ВСІХ КОМПОНЕНТІВ
     lfo.connect(lfoGain);
-    lfoGain.connect(oscillator.frequency);
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+    lfoGain.connect(midGain.gain); // Змушує резонанс плавно то з'являтися, то зникати
 
-    // Запуск звуку
-    oscillator.start();
+    subOsc.connect(subGain);
+    midOsc.connect(midGain);
+    noiseSource.connect(filter);
+    filter.connect(noiseGain);
+
+    // Вивід у динаміки користувача
+    subGain.connect(audioCtx.destination);
+    midGain.connect(audioCtx.destination);
+    noiseGain.connect(audioCtx.destination);
+
+    // СИНХРОННИЙ СТАРТ
+    subOsc.start();
+    midOsc.start();
     lfo.start();
+    noiseSource.start();
   }
 
-  // Звук увімкнеться автоматично після першого кліку гравця в будь-якій точці екрана
+  // Активація звукового ландшафту при першому кліку
   document.addEventListener('click', startAmbientHum, { once: true });
 
-  // Ваша стандартна функція відкриття/закриття інструкції
   function toggleInstruction() {
     const place = document.getElementById('instructionPlace');
     const btn = document.getElementById('infoToggleBtn');
@@ -251,7 +284,6 @@
     }
   }
 
-  // Ваша стандартна функція запуску гри
   function initiateGame() {
     window.location.href = 'Rozmova1.html'; 
   }
