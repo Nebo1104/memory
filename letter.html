@@ -371,7 +371,75 @@
         document.getElementById('finalDiscoveryModal').style.display = 'flex';
     }
 
-    // МЕХАНІКА ПОЛІТУ ТА ПАРАЛЕЛЬНОЇ ПОЯВИ ВЕЛИКИХ ТИТРІВ НА НАЙВИЩОМУ ШАРІ
+  <script>
+    // -------------------------------------------------------------
+    // 1. АУДІОРУШІЙ: СИНТЕЗАТОР ЗЛІТАННЯ ПТАХИ (0 Кб завантаження)
+    // -------------------------------------------------------------
+    function playBirdTransformationSound() {
+        // Перевіряємо наявність глобального контексту або створюємо новий
+        const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
+        
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        const now = ctx.currentTime;
+
+        // Майстер-шина для фінального ефекту
+        const transformGain = ctx.createGain();
+        transformGain.gain.setValueAtTime(0, now);
+        transformGain.gain.linearRampToValueAtTime(0.25, now + 0.15); // Емоційний зліт
+        transformGain.gain.exponentialRampToValueAtTime(0.001, now + 5.0); // Плавне згасання протягом 5с
+        transformGain.connect(ctx.destination);
+
+        // Ефект просторового луння (Delay)
+        const delay = ctx.createDelay();
+        delay.delayTime.setValueAtTime(0.3, now);
+        const delayGain = ctx.createGain();
+        delayGain.gain.setValueAtTime(0.4, now);
+        
+        transformGain.connect(delay);
+        delay.connect(delayGain);
+        delayGain.connect(ctx.destination);
+
+        // ТОН 1: КРИШТАЛЕВИЙ СИНТ (ГЛІССАНДО ВГОРУ)
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(150, now); // Глибокий тон паперу
+        osc1.frequency.exponentialRampToValueAtTime(1700, now + 2.0); // Злітає високо в небо
+        osc1.connect(transformGain);
+
+        // ТОН 2: ТЕКСТУРНИЙ ШУРХІТ КРИЛ (БІЛИЙ ШУМ З КОЛИВАННЯМ ФІЛЬТРА)
+        const bufferSize = ctx.sampleRate * 2.5;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(200, now);
+        filter.frequency.exponentialRampToValueAtTime(2600, now + 0.5); // Різке розкриття крил паперового журавлика
+        filter.frequency.exponentialRampToValueAtTime(100, now + 2.3); // Затихання у висоті
+
+        noise.connect(filter);
+        filter.connect(transformGain);
+
+        // Стартуємо синтез звуку
+        osc1.start(now);
+        noise.start(now);
+
+        // Очищення вузлів у пам'яті
+        osc1.stop(now + 5.0);
+        noise.stop(now + 5.0);
+    }
+
+    // -------------------------------------------------------------
+    // 2. ОНОВЛЕНА ФУНКЦІЯ АНІМАЦІЇ ТРАНСФОРМАЦІЇ З СИНХРОННИМ ЗВУКОМ
+    // -------------------------------------------------------------
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
@@ -379,7 +447,15 @@
         
         if (textContainer) { textContainer.style.opacity = '0'; }
         
+        // Плавне приглушення старого тривожного фонового гулу (якщо він активний)
+        if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
+            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.4); 
+        }
+
         setTimeout(() => {
+            // ЗАПУСК ЗВУКУ ПОЛЬОТУ: Точно в момент, коли картка набуває форми птахи
+            playBirdTransformationSound();
+
             if (card) { card.classList.add('bird-shape'); }
             
             // Поступове занурення квесту на тлі в чорноту
@@ -411,24 +487,24 @@
 
     renderUI(1);
 </script>
+
 <!-- Модальне вікно для перегляду документа НКВС (гілка game) -->
 <div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="https://raw.githubusercontent.com/Nebo1104/memory/game/image00038.jpg" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
 </div>
+
 <script>
   function openDocumentModal() {
     const modal = document.getElementById('documentModal');
     modal.style.display = 'flex';
-    // Блокуємо прокрутку сторінки гри, поки відкрито документ
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Блокуємо прокрутку сторінки гри, поки відкрито документ
   }
 
   function closeDocumentModal() {
     const modal = document.getElementById('documentModal');
     modal.style.display = 'none';
-    // Повертаємо прокрутку сторінки
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = 'auto'; // Повертаємо прокрутку сторінки
   }
 
   // Закриття модального вікна клавішею Escape для зручності
