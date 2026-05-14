@@ -3,102 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <title>The Archive Letter: Bureaucratic Quest</title>
-    <style>
-        body { 
-            background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/game/Gemini_Generated_Image_7ciq5n7ciq5n7ciq.png'); background-size: cover; 
-            background-position: center; 
-            background-attachment: fixed; 
-            font-family: "Courier New", monospace; 
-            font-weight: bold; 
-            color: #261f1a; 
-            margin: 0; 
-            padding: 25px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start; 
-            min-height: 100vh; 
-            box-sizing: border-box;
-            overflow-x: hidden;
-            position: relative;
-            transition: background-color 5s ease-in-out;
+<style>
+
+  body { 
+    /* Інтегровано пряме посилання на ваше зображення з гілки game */
+    background-image: url('https://raw.githubusercontent.com/Nebo1104/memory/game/Gemini_Generated_Image_7ciq5n7ciq5n7ciq.png'); 
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    font-family: "Courier New", monospace; 
+    font-weight: bold; 
+    color: #261f1a; 
+    margin: 0; 
+    padding: 25px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    min-height: 100vh; 
+    box-sizing: border-box;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 5s ease-in-out;
   }
-        .main-container { 
-            display: flex; 
-            flex-direction: row; 
-            gap: 30px; 
-            width: 100%; 
-            max-width: 1200px; 
-            align-items: flex-start; 
-            transition: opacity 5s ease-in-out, filter 5s ease-in-out;
-        }
-        .paper-column { flex: 1.2; position: sticky; top: 20px; }
-        .paper { 
-            background: #fff; 
-            padding: 40px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            position: relative; 
-            background-image: url("https://transparenttextures.com"); 
-            min-height: 650px; 
-            box-sizing: border-box;
-        }
-        .ui-column { flex: 0.8; position: sticky; top: 20px; }
-        .ui-panel { 
-            background: rgba(255,255,255,0.9); 
-            padding: 25px; 
-            border: 1px solid #999; 
-            border-radius: 4px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-            box-sizing: border-box;
-        }
-        #buttons { margin-top: 15px; }
 
-        .stamp { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 6px double #8b0000; color: #8b0000; padding: 15px 30px; font-size: 2.2em; font-weight: bold; text-transform: uppercase; opacity: 0; pointer-events: none; z-index: 10; transition: opacity 0.2s; text-align: center; }
-        button { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #222; color: #eee; border: none; font-family: inherit; cursor: pointer; text-align: left; transition: 0.2s; font-size: 13px; box-sizing: border-box; }
-        button:hover { background: #8b0000; transform: translateX(5px); }
-        
-        .explanation { border-left: 4px solid #2e7d32; background: #f5fff5; color: #1b5e20; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
-        .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
+  
+  /* ЕФЕКТ АТМОСФЕРНОГО МЕРЕХТІННЯ КАЗЕННОЇ ЛАМПИ */
+  body::after {
+    content: " ";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0);
+    pointer-events: none;
+    z-index: 99999;
+    animation: ambientFlicker 10s infinite;
+  }
 
-        /* ПЛАВНІ НАПІВПРОЗОРІ ВІКНА ПОМИЛОК ІЗ СУВОРИМ ТЛОМ (БЕЗ ЗЕЛЕНІ) */
-        .error-modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 8, 8, 0.88); z-index: 15000; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .error-modal-box {
-            max-width: 520px; width: 100%; padding: 25px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: "Courier New", monospace;
-            opacity: 0; transform: translateY(-10px);
-            transition: all 0.3s ease-in-out;
-        }
-        .error-modal-overlay.show .error-modal-box { transform: translateY(0); opacity: 1; }
-        
-        .kgb-arrest { background: rgba(24, 14, 14, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
-        .military-shame { background: rgba(38, 41, 43, 0.98) !important; color: #e5e5e5 !important; border: 4px solid #5d666b !important; } 
-        .party-silence { background: rgba(45, 45, 45, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
-        
-        .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
-        .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
+  @keyframes ambientFlicker {
+    0%, 100% { background-color: rgba(0, 0, 0, 0); }
+    72% { background-color: rgba(0, 0, 0, 0); }
+    73% { background-color: rgba(26, 21, 19, 0.015); }
+    74% { background-color: rgba(0, 0, 0, 0); }
+    75% { background-color: rgba(26, 21, 19, 0.02); }
+    76% { background-color: rgba(0, 0, 0, 0); }
+  }
+  
+  .main-container { 
+    display: flex; 
+    flex-direction: row; 
+    gap: 40px; 
+    width: 100%; 
+    max-width: 1250px; 
+    align-items: flex-start; 
+  }
+  .paper-column { flex: 1.2; position: sticky; top: 25px; }
+  .ui-column { flex: 0.8; position: sticky; top: 25px; }
+  
+  /* АРХІВНИЙ БЛАНК ЗАЯВИ З ЕФЕКТОМ ТОВЩИНИ ПАПЕРУ */
+  .paper { 
+    background: #fdfaf2; 
+    padding: 60px 50px; 
+    box-shadow: 
+      0 1px 3px rgba(0,0,0,0.05), 
+      0 10px 30px rgba(44,37,32,0.08), 
+      4px 4px 0px #b0a48a, 
+      5px 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid #dcd1ba;
+    border-radius: 1px;
+    position: relative; 
+    min-height: 700px; 
+    box-sizing: border-box;
+    transition: filter 5s, background-color 5s; 
+  }
+  
+  /* ТЕКСТУРНИЙ ВОДЯНИЙ ЗНАК СПЕЦФОНДУ НКВС */
+  .paper::before {
+    content: "ГРИФ: СЕКРЕТНО // ФОНД №984";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 40px;
+    font-weight: 900;
+    color: rgba(138, 51, 51, 0.03); 
+    letter-spacing: 5px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  /* КАНЦЕЛЯРСЬКА СТАЛЕВА СКРІПКА В КУТКУ БЛАНКА */
+  .paper::after {
+    content: "";
+    position: absolute;
+    top: -5px; right: 60px;
+    width: 16px; height: 50px;
+    background: transparent;
+    border: 2px solid #8c8270;
+    border-radius: 6px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+    pointer-events: none;
+    opacity: 0.75;
+    z-index: 105;
+  }
+  
+  /* СТИЛІЗАЦІЯ ОФІЦІЙНОГО ШТЕМПЕЛЬНОГО АДРЕСАТА */
+  #letter-head {
+    min-height: 45px; 
+    font-size: 13px; 
+    font-weight: bold; 
+    line-height: 1.4; 
+    margin-bottom: 35px; 
+    border-bottom: 3px double #dcd1ba; 
+    padding-bottom: 12px; 
+    color: #44372e;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  #head-recipient {
+    color: #1a1512;
+    background: rgba(138, 51, 51, 0.04);
+    padding: 2px 6px;
+    border-bottom: 1px dashed #8a3333;
+    font-style: normal;
+    font-weight: 900;
+  }
+  
+  /* ЕЛЕГАНТНА ПАНЕЛЬ КЕРУВАННЯ З ОФІСНИМ ВАЙБОМ */
+  .ui-panel { 
+    background: #f5f2e9; 
+    padding: 35px; 
+    border: 1px solid #c4b7a1; 
+    border-radius: 1px; 
+    box-shadow: 3px 3px 0px #b0a48a, 0 10px 25px rgba(0,0,0,0.05); 
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  #instr {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #544439;
+    border-bottom: 1px dashed #c4b7a1;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  
+  /* КАРБОЛІТОВІ КЛАВІШІ ДРУКАРСЬКОЇ МАШИНКИ */
+  button { 
+    display: block; 
+    width: 100%; 
+    padding: 15px 18px; 
+    margin: 12px 0; 
+    background: #2b2522; 
+    color: #e8e3d7; 
+    border: 1px solid #1f1a18;
+    border-radius: 0;
+    font-family: inherit; 
+    font-weight: bold;
+    cursor: pointer; 
+    text-align: left; 
+    font-size: 12px; 
+    line-height: 1.4;
+    box-sizing: border-box; 
+    box-shadow: 2px 2px 0px #968973;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    transition: background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.1s, box-shadow 0.1s; 
+  }
+  button:hover { 
+    background: #6e4636; 
+    color: #ffffff;
+    transform: translateY(-1px) translateX(2px); 
+    box-shadow: 1px 1px 0px #3d261e;
+  }
+  button:active {
+    transform: translateY(1px) translateX(1px);
+    box-shadow: 0px 0px 0px transparent;
+  }
+  
+  /* ЗЕЛЕНИЙ БЛОК УСПІШНОГО КРОКУ */
+  .explanation { 
+    border-left: 4px solid #3c5e3e; 
+    background: #eef5ee; 
+    color: #192b1a; 
+    padding: 18px; 
+    margin: 15px 0; 
+    display: none; 
+    font-size: 12px; 
+    line-height: 1.5; 
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.01);
+  }
+  
+  /* ЕФЕКТ ФІОЛЕТОВОГО ЧОРНИЛА СТАРОЇ КОПІРКИ З РОЗМИТТЯМ */
+  .filled-text { 
+    font-weight: bold; 
+    color: #1a1c3a; 
+    text-shadow: 0.3px 0.3px 0.5px rgba(26, 28, 58, 0.4); 
+    animation: fadeInDoc 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; 
+    display: block; 
+    margin-bottom: 14px; 
+    line-height: 1.45;
+    position: relative;
+    z-index: 5;
+  }
+  @keyframes fadeInDoc { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+  
+  /* АРХІВНІ СУХІ ШТАМПИ */
+  .stamp { 
+    position: absolute; 
+    top: 45%; 
+    left: 50%; 
+    transform: translate(-50%, -50%) rotate(-10deg); 
+    border: 4px double #783535; 
+    color: #783535; 
+    padding: 12px 26px; 
+    font-size: 2.2em; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    opacity: 0; 
+    pointer-events: none; 
+    z-index: 100; 
+    transition: opacity 0.4s cubic-bezier(0.1, 0.8, 0.3, 1); 
+    text-align: center; 
+    letter-spacing: 2px;
+    background: rgba(253, 250, 242, 0.94);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  
+  .btn-continue { 
+    background: #3c5e3e !important; 
+    color: #ffffff !important; 
+    text-align: center !important; 
+    font-weight: 900 !important; 
+    margin-top: 25px; 
+    border: none !important;
+    box-shadow: 2px 2px 0px #1e301f !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .btn-continue:hover { background: #2b452d !important; }
+  .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        .interlude-modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(17, 14, 13, 0.96); z-index: 9999; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box;
-        }
-        .interlude-content-card {
-            max-width: 560px; width: 100%; background: #fdfbf7; 
-            border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; 
-            padding: 30px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; 
-            color: #2c2523; display: flex; flex-direction: column;
-        }
-        .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
+  /* МЕЛАНХОЛІЙНІ КАРТКИ ОПИСУ ПАСТОК */
+  .error-modal-overlay {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(26, 22, 20, 0.78); 
+    z-index: 15000; 
+    align-items: center; 
+    justify-content: center;
+    padding: 20px; 
+    box-sizing: border-box;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .error-modal-box {
+    max-width: 540px; 
+    width: 100%; 
+    padding: 35px; 
+    border-radius: 1px;
+    background: #fdfcf7 !important; 
+    color: #38302a !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.05); 
+    font-family: "Courier New", monospace;
+    opacity: 0; 
+    transform: translateY(-12px);
+    transition: all 0.35s cubic-bezier(0.1, 0.8, 0.3, 1);
+  }
+  .error-modal-overlay.show .error-modal-box { transform: translateY(0); opacity: 1; }
+  
+  /* ВИШУКАНІ ЛІВІ МАРКЕРИ ДЛЯ ВИЗНАЧЕННЯ ВІДОМСТВ */
+  .kgb-arrest { 
+    border-left: 6px solid #8a3333 !important; 
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  }
+  .military-shame { 
+    border-left: 6px solid #5d666b !important; 
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  } 
+  .party-silence { 
+    border-left: 6px solid #b0a48a !important; 
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  }
+  
+  .error-modal-header { 
+    font-size: 14px; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    margin-bottom: 15px; 
+    border-bottom: 1px dashed #dcd1ba;
+    padding-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .kgb-arrest .error-modal-header { color: #8a3333; }
+  .military-shame .error-modal-header { color: #5d666b; }
+  .party-silence .error-modal-header { color: #968973; }
 
-        @media (max-width: 900px) { .main-container { flex-direction: column; } .paper-column, .ui-column { width: 100%; position: static; } }
-    </style>
+  /* ОВЕРЛЕЙ ФІНАЛЬНОЇ КАРТКИ ВІДКРИТТЯ */
+  .interlude-modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 12, 11, 0.96); z-index: 9999; align-items: center; justify-content: center;
+    padding: 20px; box-sizing: border-box;
+  }
+  .interlude-content-card {
+    max-width: 560px; 
+    width: 100%; 
+    background: #fdfaf2; 
+    border: 1px solid #dcd1ba; 
+    outline: 3px double #8a3333; 
+    outline-offset: -10px; 
+    padding: 40px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 900px) { .main-container { flex-direction: column; } .paper-column, .ui-column { width: 100%; position: static; } }
+</style>
+
+
+
 </head>
 <body>
 
