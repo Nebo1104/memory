@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>The Archive Letter: Bureaucratic Quest</title>
     <style>
+        /* Блокування скролу всієї сторінки */
         body { 
             background: #d3c9b1; 
             font-family: "Courier New", monospace; 
@@ -15,8 +16,6 @@
             height: 100vh; 
             box-sizing: border-box;
             overflow: hidden; 
-            position: relative;
-            transition: background-color 5s ease-in-out;
         }
         
         .main-container { 
@@ -27,9 +26,9 @@
             max-width: 1200px; 
             height: 100%;
             align-items: stretch; 
-            transition: opacity 5s ease-in-out, filter 5s ease-in-out;
         }
         
+        /* Ліва колонка з папером: скрол з'являється тільки всередині неї за потреби */
         .paper-column { 
             flex: 1.2; 
             height: 100%;
@@ -45,9 +44,10 @@
             background-image: url("https://transparenttextures.com"); 
             min-height: 100%; 
             box-sizing: border-box;
-            transition: filter 5s, background-color 5s; 
+            transition: filter 0.5s; 
         }
         
+        /* Права колонка з інтерфейсом: жорстко зафіксована на екрані */
         .ui-column { 
             flex: 0.8; 
             height: 100%;
@@ -68,342 +68,261 @@
         }
         
         #buttons {
-            flex-grow: 1; 
+            flex-grow: 1; /* Змушує блок кнопок займати весь вільний простір */
             overflow-y: auto;
         }
 
         .stamp { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 6px double #8b0000; color: #8b0000; padding: 15px 30px; font-size: 2.2em; font-weight: bold; text-transform: uppercase; opacity: 0; pointer-events: none; z-index: 10; transition: opacity 0.2s; text-align: center; }
         button { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #222; color: #eee; border: none; font-family: inherit; cursor: pointer; text-align: left; transition: 0.2s; font-size: 13px; box-sizing: border-box; }
         button:hover { background: #8b0000; transform: translateX(5px); }
-        
-        .explanation { border-left: 4px solid #2e7d32; background: #f5fff5; color: #1b5e20; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
+        .explanation { border-left: 4px solid #8b0000; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
+        .exp-error { background: #fff5f5; border-color: #8b0000; color: #333; }
+        .exp-correct { background: #f5fff5; border-color: #2e7d32; color: #1b5e20; }
         .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
-
-        /* ПЛАВНІ ВІКНА ПОМИЛОК З АВТЕНТИЧНИМ ТЕМНИМ ТЛОМ */
-        .error-modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 8, 8, 0.88); z-index: 15000; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .error-modal-box {
-            max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: "Courier New", monospace;
-            opacity: 0; transform: translateY(-10px);
-            transition: all 0.3s ease-in-out;
-        }
-        .error-modal-overlay.show .error-modal-box {
-            opacity: 1; transform: translateY(0);
-        }
-        
-        /* СУВОРА КОЛОРИСТИКА ШТРАФІВ (ЗЕЛЕНИЙ ПОВНІСТЮ ВИДАЛЕНО З УСІХ КЛАСІВ) */
-        .kgb-arrest { background: rgba(24, 14, 14, 0.98) !important; color: #ff3333 !important; border: 4px solid #cc0000 !important; }
-        .military-shame { background: rgba(38, 41, 43, 0.98) !important; color: #e5e5e5 !important; border: 4px solid #5d666b !important; } /* Залізо-сірий казенний колір замість хакі */
-        .party-silence { background: rgba(48, 48, 48, 0.98) !important; color: #dddddd !important; border: 4px solid #777777 !important; }
-        
-        .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
-        .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
-
-        /* ІНТЕРЛЮДІЯ ПТАХИ */
-        .interlude-modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(17, 14, 13, 0.96); z-index: 9999; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box;
-            transition: background-color 5s ease-in-out;
-        }
-        .interlude-content-card {
-            max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; 
-            border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; 
-            padding: 30px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; 
-            color: #2c2523; display: flex; flex-direction: column;
-            transition: all 5.0s cubic-bezier(0.3, 0.1, 0.3, 1);
-            position: relative;
-            transform-origin: center center;
-        }
-        .interlude-content-card.bird-shape {
-            max-width: 140px; height: 140px; padding: 0; border: none; outline: none; box-shadow: none;
-            background: #fdfbf7;
-            clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%);
-            animation: flyRightUpLazy 24s forwards cubic-bezier(0.1, 0.2, 0.3, 1), flapWingsLazy 1.6s infinite alternate ease-in-out;
-            animation-delay: 0s, 5.0s; 
-        }
-        @keyframes flyRightUpLazy {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(38vw, -36vh) scale(0.25) rotate(-18deg); opacity: 0.85; }
-        }
-        @keyframes flapWingsLazy {
-            0% { clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%); }
-            100% { clip-path: polygon(40% 12%, 48% 35%, 90% 70%, 62% 60%, 52% 88%, 45% 65%, 25% 68%, 35% 48%, 5% 68%, 32% 38%); }
-        }
+        .shake { animation: shakeAnim 0.3s; }
+        @keyframes shakeAnim { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .kgb-arrest { background: #1a1a1a !important; color: #cc0000 !important; border: 5px solid #cc0000 !important; }
+        .military-shame { background: #2e3b23 !important; color: #e0e0e0 !important; border: 5px solid #4a5d3a !important; }
+        .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
         .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
+
+        @media (max-width: 900px) { 
+            body { overflow: auto; height: auto; }
+            .main-container { flex-direction: column; } 
+            .paper-column, .ui-column { width: 100%; height: auto; } 
+        }
     </style>
 </head>
 <body>
 
-<audio id="finaleTrack" src="elegia.mp3" preload="auto"></audio>
-
-<div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
-    <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 5s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
-        Thank you for walking this path
-    </div>
-</div>
-
-<div id="errorModal" class="error-modal-overlay" onclick="closeErrorModal()">
-    <div id="errorModalBox" class="error-modal-box">
-        <div id="errorModalHeader" class="error-modal-header">System Notification</div>
-        <div id="errorModalText" style="font-size: 13px; line-height: 1.5;"></div>
-        <button onclick="closeErrorModal()" style="background: rgba(255,255,255,0.15); color: inherit; border: 1px solid currentColor; margin-top: 18px; padding: 8px; text-align: center; width: auto; font-size: 11px; margin-left: auto;">[ CLOSE RECORD ]</button>
-    </div>
-</div>
-
-<div class="main-container" id="game-content">
+<div class="main-container">
     <div class="paper-column">
         <div class="paper" id="doc">
             <div class="stamp" id="stamp-bad">REJECTED</div>
             <div class="stamp" id="stamp-ok" style="border-color: green; color: green;">SENT</div>
-            
-            <div id="letter-head" style="min-height: 45px; font-size: 13px; font-weight: bold; line-height: 1.3; margin-bottom: 25px; border-bottom: 2px double #b5a994; padding-bottom: 8px; color: #333;">
-                To: <span id="head-recipient" style="color: #666; font-weight: normal; font-style: italic;">(Pending address selection...)</span>
-            </div>
-
             <div style="text-align: right;"><div id="p-1" style="min-height: 1.2em;">____________________</div>February 25, 1958</div>
-            <h3 style="text-align: center; margin-top: 20px;">STATEMENT</h3>
+            <h3 style="text-align: center; margin-top: 30px;">STATEMENT</h3>
             <div id="p-2"></div><div id="p-3"></div><div id="p-4"></div><div id="p-5"></div>
-            <div style="margin-top: 40px; font-size: 0.9em;">Signature: <span style="text-decoration: underline;">M.P. Neborachko</span><br>Address: Military Unit 54962, Zaporizhzhia city.</div>
+            <div style="margin-top: 50px; font-size: 0.9em;">Signature: <span style="text-decoration: underline;">M.P. Neborachko</span><br>Address: Military Unit 54962, Zaporizhzhia city.</div>
         </div>
     </div>
 
     <div class="ui-column">
-        <div class="ui-panel">
-            <div id="step-title" style="font-weight: bold; font-size: 14px; margin-bottom: 15px; border-bottom: 1px dashed #999; padding-bottom: 8px;">Step 1: Recipient selection:</div>
+        <div class="ui-panel" id="ui">
+            <div id="instr"><b>Step 1:</b> Recipient selection:</div>
+            <div id="explanation-box" class="explanation"></div>
             <div id="buttons"></div>
-            <div class="explanation" id="exp-box"></div>
-        </div>
-    </div>
-</div>
-
-<div id="finalDiscoveryModal" class="interlude-modal-overlay">
-    <div id="modalCard" class="interlude-content-card">
-        <div id="modal-hide-group">
-            <h3 style="text-align: center; margin-top: 0; color: #8a3333; letter-spacing: 1px;">THE FINAL REVELATION</h3>
-            <p style="font-size: 14px; line-height: 1.5; font-style: italic;">
-                During the process of declassifying, translating, and restoring this exact criminal file using AI tools, I stumbled upon a discovery that shattered an 80-year-old family myth.
-            </p>
-            <p style="font-size: 14px; line-height: 1.5;">
-                An <span onclick="openDocumentModal()" style="color: #8a3333; text-decoration: underline; font-weight: bold; cursor: pointer;">internal, classified NKVD service memo dated late 1942</span> states that Petro Neborachko vanished during the evacuation and never reached the Gulag.
-            </p>
-            <p style="font-size: 13px; line-height: 1.5; color: #5e5449; border-top: 1px dashed #d3cbc0; padding-top: 12px; margin-bottom: 25px;">
-                The family had spent decades believing he passed away inside a Soviet labor camp. The bureaucracy kept the silence, but the folklore inherited the truth.
-            </p>
-            <button onclick="animateBirdTransformation()" style="background: #8a3333; color: #fff; text-align: center; font-weight: bold; width: 100%; border: none; padding: 12px; cursor: pointer;">RELEASE MEMORY ➔</button>
+            
+            <!-- Жорстко закріплена кнопка внизу правої панелі -->
+            <button onclick="triggerImmediateFinale()" id="always-visible-skip" style="display: block; width: 100%; margin-top: auto; padding: 14px; background: #8a3333; color: #fff; border: 1px solid #8a3333; text-align: center; font-weight: bold; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15); font-family: inherit;">
+                Skip to Investigation Finale ➔
+            </button>
         </div>
     </div>
 </div>
 
 <script>
+    let currentStep = 1;
+
     const stepsData = {
-        1: {
-            title: "Step 1: Recipient selection:",
-            options: [
-                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "I request a review of the case of my father, Petro Neborachko, convicted in 1942 by the South-Western Front Tribunal.", exp: "Correct. The military prosecutors handle Stalin-era rehabilitation claims.", isCorrect: true, type: "normal", headVal: "Chief Military Prosecutor's Office of the USSR" },
-                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administration has no jurisdiction over criminal military tribunal files. Your letter is ignored and archived without answers.", isCorrect: false, type: "party-silence", header: "BUREAUCRATIC SILENCE" },
-                { text: "Submit an anonymous appeal to the Ministry of Defense", exp: "Guards notice the suspicious lack of sender credentials. You are detained and sent to the local garrison guardhouse (гауптвахта) for a profile check.", isCorrect: false, type: "military-shame", header: "MILITARY DETENTION" },
-                { text: "Address the letter to the General Secretary's Reception", exp: "Your attempt to bypass sub-departments triggers a state security flag. Red alert: Intercepted and arrested by KGB operational agents for anti-Soviet coordination.", isCorrect: false, type: "kgb-arrest", header: "KGB INTERVENTION" }
+        1: { 
+            correctText: "To the Board of the Supreme Court of the USSR", 
+            instr: "Step 1: Recipient selection:",
+            correctExp: "Correct. Legal rehabilitation was the responsibility of the Military Board. This is the only address that forces the bureaucratic machine to work.",
+            btns: [
+                { t: "To the Board of the Supreme Court of the USSR", v: true },
+                { t: "To the Comrades in Moscow", v: false, type: 'guardhouse', e: "Your commander cursed you out on the parade ground for such informal nonsense. Sent to the guardhouse for 10 days." },
+                { t: "To the Communist Party Committee", v: false, type: 'party', e: "No response. Instead, a formal reprimand was sent to your unit for violating hierarchy." },
+                { t: "To the Foreign Press Office", v: false, type: 'arrest', e: "Treason. Attempting to contact international media." }
             ]
         },
-        2: {
-            title: "Step 2: Legal grounds and argumentation:",
-            options: [
-                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of physical evidence", textKey: "p-3", textVal: "The historical conviction under Article 54-10 was based on coerced confessions without any material evidence or anti-state items.", exp: "Correct. Pointing out structural gaps is the strongest legal route.", isCorrect: true, type: "normal" },
-                { text: "Argue based on family's pure moral loyalty and psychological pain", exp: "Rejected. The Soviet system treats emotional claims as ideological weakness. The request is formally denied. File remains locked.", isCorrect: false, type: "party-silence", header: "PETITION DENIED" },
-                { text: "Accuse the 1942 military judges of deliberate treason and corruption", exp: "Accusing Soviet judges is equivalent to insulting the Soviet Army. Demoted, publicly shamed in your unit, and sent to military isolation.", isCorrect: false, type: "military-shame", header: "CONTEMPT OF TRIBUNAL" },
-                { text: "Demand immediate financial compensation for historical injustice", exp: "Demanding currency from the state is classified as capitalist subversion and economic sabotage. The KGB intercepts you at the prosecutor's office doors.", isCorrect: false, type: "kgb-arrest", header: "ECONOMIC SUBVERSION" }
+        2: { 
+            correctText: "On June 29, 1941, in the village of Stav-Sloboda, my father Petro Filippovich Neborachko was arrested for reasons unknown to me.", 
+            instr: "Step 2: Describe the arrest:",
+            correctExp: "Correct. 'Reasons unknown' is a safe formula. It implies you don't judge the state, but simply seek information.",
+            btns: [
+                { t: "In 1941, my father Petro Neborachko was arrested for reasons unknown to me.", v: true },
+                { t: "My father was kidnapped by the NKVD during the war.", v: false, type: 'shame', e: "Ideological mistake. Specifically blaming the NKVD is seen as an insult to state security." },
+                { t: "My father disappeared without a trace in 1941.", v: false, e: "A 'disappearance' implies he might be a deserter. You must acknowledge the arrest." },
+                { t: "I will go to the newspapers if you don't find him.", v: false, type: 'arrest', e: "Anti-Soviet Agitation. Threatening the state with exposure." }
             ]
         },
-        3: {
-            title: "Step 3: Archival verification:",
-            options: [
-                { text: "Attach the 1942 South-Western Front Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence folder issued by the South-Western Front Tribunal repository.", exp: "Correct. Hard documentation forces the archive to pull out the physical case folder.", isCorrect: true, type: "normal" },
-                { text: "Present verbal memories from older village neighbors", exp: "Invalid data. Bureaucratic archives do not record oral histories or village folklore. The verification process stalls indefinitely.", isCorrect: false, type: "party-silence", header: "INVALID PROOF" },
-                { text: "Request defense verification from Western Red Cross channels", exp: "Contacting international organizations during the Cold War is treason. Transferred immediately to a high-security military prison.", isCorrect: false, type: "military-shame", header: "FOREIGN ESPIONAGE" },
-                { text: "Break into the regional Special Archive repository at night", exp: "Silent alarms triggered. Caught red-handed inside the vault by the KGB security unit. Sentenced to hard labor for theft of state secrets.", isCorrect: false, type: "kgb-arrest", header: "ARCHIVAL INTRUSION" }
+        3: { 
+            correctText: "The Radomyshl military office replied that he was 'arrested' and 'repressed'. Where he is now remains unknown.", 
+            instr: "Step 3: State the military office's response:",
+            correctExp: "Correct. Citing the military office (Voenkomat) gives your request legal weight and shows you follow the chain of command.",
+            btns: [
+                { t: "The military office replied with only one word: 'repressed'.", v: true },
+                { t: "The local officials refuse to disclose the truth.", v: false, e: "Attacking local power is a direct confrontation. The Court will always side with officials." },
+                { t: "The state destroyed all documents about him.", v: false, type: 'arrest', e: "Accusing the state of destroying archives is slander. Arrested." },
+                { t: "I'll broadcast this on Radio Free Europe.", v: false, type: 'arrest', e: "Collaboration with foreign intelligence." }
             ]
         },
-        4: {
-            title: "Step 4: The Final Submission:",
-            options: [
-                { text: "Submit the final package and await official service response", textKey: "p-5", textVal: "Therefore, I ask for the official rehabilitation and disclosure of his final fate.", exp: "The letter is officially sealed and processed into the archival system.", isCorrect: true, type: "normal" },
-                { text: "Leave the package on the general office desk without registration", exp: "Unregistered documents are routinely shredded at the end of the shift to clear desks. The trace of your ancestor is gone forever.", isCorrect: false, type: "party-silence", header: "SHREDDED TRACE" },
-                { text: "Force the desk clerk to sign it under threat of exposure", exp: "The clerk covertly presses the emergency button. Military patrols contain you immediately. Detained for assault of a state official.", isCorrect: false, type: "military-shame", header: "GARRISON ARREST" },
-                { text: "Leak the contents of the petition to foreign press correspondents", exp: "Classified as anti-Soviet propaganda and high treason. The KGB closes the case folder by putting you behind bars permanently.", isCorrect: false, type: "kgb-arrest", header: "ANTI-SOVIET PROPAGANDA" }
+        4: { 
+            correctText: "It is known that at that time there were cases of violation of socialist legality, due to the criminal activities of Beria.", 
+            instr: "Step 4: Choose the political argument:",
+            correctExp: "Correct. Blaming 'Beria' was the only safe legal loophole to admit the state was wrong without blaming the system itself.",
+            btns: [
+                { t: "Perhaps he was a victim of Beria's criminal activities.", v: true },
+                { t: "The Great Terror was the biggest mistake of our history.", v: false, type: 'arrest', e: "The term 'Great Terror' is an anti-Soviet Western concept in 1958. Arrested." },
+                { t: "Restore justice or I will write to embassies.", v: false, type: 'arrest', e: "Contacting embassies is an act of defection." },
+                { t: "I demand to know where the bodies are buried.", v: false, e: "Confrontational. Focus on rehabilitation, not on mass graves." }
+            ]
+        },
+        5: { 
+            correctText: "Please clarify the case and send me a certificate needed for my military service.", 
+            instr: "Step 5: Final request:",
+            correctExp: "Correct. Framing this request around your 'military service' gives a clear, practical reason for the bureaucracy to assist a loyal soldier.",
+            btns: [
+                { t: "Please clarify the case and send me a certificate for my military service.", v: true },
+                { t: "Acknowledge the crime of your system immediately.", v: false, type: 'arrest', e: "Direct attack on the regime. Your service record is destroyed, and you are detained." },
+                { t: "Give me money as compensation for my suffering.", v: false, e: "The state does not compensate children of the repressed at this stage. Request denied." }
             ]
         }
     };
 
-    function showCustomErrorModal(text, type, header) {
-        const modal = document.getElementById('errorModal');
-        const box = document.getElementById('errorModalBox');
-        const head = document.getElementById('errorModalHeader');
-        const txt = document.getElementById('errorModalText');
+    function renderUI(step) {
+        currentStep = step;
+        const data = stepsData[step];
+        document.getElementById('instr').innerHTML = `<b>${data.instr}</b>`;
         
-        if(head) head.innerText = header || "System Notification";
-        if(txt) txt.innerText = text;
+        const btnBox = document.getElementById('buttons');
+        btnBox.innerHTML = '';
         
-        if(box) box.className = `error-modal-box ${type}`;
-        
-        if(modal) {
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.classList.add('show'); }, 10);
-        }
-    }
-
-    function closeErrorModal() {
-        const modal = document.getElementById('errorModal');
-        if(modal) {
-            modal.classList.remove('show');
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
-        }
-    }
-
-    function renderUI(stepIndex) {
-        const titleContainer = document.getElementById('step-title');
-        const btnContainer = document.getElementById('buttons');
-        const expBox = document.getElementById('exp-box');
-        
-        if (!btnContainer) return;
-        btnContainer.innerHTML = '';
-        if (expBox) expBox.style.display = 'none';
-
-        const step = stepsData[stepIndex];
-        
-        if (!step) {
-            const okStamp = document.getElementById('stamp-ok');
-            if (okStamp) okStamp.style.opacity = '1';
-            setTimeout(() => {
-                const modal = document.getElementById('finalDiscoveryModal');
-                if (modal) modal.style.display = 'flex';
-            }, 1000);
-            return;
-        }
-
-        if (titleContainer) titleContainer.innerText = step.title;
-
-        step.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => {
-                if (!opt.isCorrect) {
-                    showCustomErrorModal(opt.exp, opt.type, opt.header);
-                    
-                    const badStamp = document.getElementById('stamp-bad');
-                    if (badStamp) {
-                        badStamp.style.opacity = '1';
-                        setTimeout(() => { badStamp.style.opacity = '0'; }, 1800);
-                    }
-                } else {
-                    if (expBox) {
-                        expBox.style.display = 'block';
-                        expBox.innerText = opt.exp;
-                        expBox.className = "explanation exp-correct";
-                    }
-                    
-                    if (opt.headVal) {
-                        const headRecipient = document.getElementById('head-recipient');
-                        if (headRecipient) {
-                            headRecipient.innerText = opt.headVal;
-                            headRecipient.style.color = "black";
-                            headRecipient.style.fontStyle = "normal";
-                        }
-                    }
-
-                    const targetDiv = document.getElementById(opt.textKey);
-                    if (targetDiv) targetDiv.innerHTML = `<span class="filled-text">${opt.textVal}</span>`;
-                    
-                    btnContainer.innerHTML = '';
-                    const nextBtn = document.createElement('button');
-                    nextBtn.className = "btn-continue";
-                    nextBtn.innerText = "CONTINUE QUEST ➔";
-                    nextBtn.onclick = () => { renderUI(stepIndex + 1); };
-                    btnContainer.appendChild(nextBtn);
-                }
-            };
-            btnContainer.appendChild(btn);
+        data.btns.forEach(btn => {
+            const b = document.createElement('button');
+            b.innerText = btn.t;
+            b.onclick = () => handleChoice(btn, data);
+            btnBox.appendChild(b);
         });
     }
 
-    renderUI(1);
-</script>
-
-<script>
-    function animateBirdTransformation() {
-        const textContainer = document.getElementById('modal-hide-group');
-        const card = document.getElementById('modalCard');
-        const overlay = document.getElementById('finalDiscoveryModal');
-        const track = document.getElementById('finaleTrack');
+    function handleChoice(btn, data) {
+        const expBox = document.getElementById('explanation-box');
+        expBox.style.display = 'block';
         
-        if (textContainer) { textContainer.style.opacity = '0'; }
-        
-        if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
-            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5); 
-        }
-
-        setTimeout(() => {
-            if (track) {
-                track.volume = 0.5;
-                track.play().catch(e => console.log("Audio track block:", e));
-            }
-
-            if (card) { card.classList.add('bird-shape'); }
+        if (btn.v) {
+            expBox.className = "explanation exp-correct";
+            expBox.innerText = data.correctExp;
             
-            const gameContent = document.getElementById('game-content');
-            if (gameContent) { gameContent.className = "main-container fade-out"; }
-            document.body.style.backgroundColor = "#080606";
+            document.getElementById(`p-${currentStep}`).innerHTML = `<span class="filled-text">${data.correctText}</span>`;
             
-            if (overlay) {
-                overlay.style.transition = "background-color 4.5s ease-in-out";
-                overlay.style.backgroundColor = "rgba(8, 6, 6, 1)";
-            }
-            
-            setTimeout(() => {
-                const thankyouOverlay = document.getElementById('thankyou-overlay');
-                if (thankyouOverlay) {
-                    thankyouOverlay.style.display = 'flex';
-                    setTimeout(() => {
-                        const text = document.getElementById('finale-text');
-                        if (text) { text.style.opacity = '0.5'; }
-                    }, 100);
+            const btnBox = document.getElementById('buttons');
+            btnBox.innerHTML = '';
+            const nextB = document.createElement('button');
+            nextB.className = "btn-continue";
+            nextB.innerText = currentStep < 5 ? "CONTINUE →" : "SUBMIT PETITION →";
+            nextB.onclick = () => {
+                expBox.style.display = 'none';
+                if (currentStep < 5) {
+                    renderUI(currentStep + 1);
+                } else {
+                    finish();
                 }
-            }, 4500);
-        }, 1200);
+            };
+            btnBox.appendChild(nextB);
+        } else {
+            expBox.className = "explanation exp-error";
+            expBox.innerText = btn.e;
+            document.getElementById('doc').classList.add('shake');
+            setTimeout(() => document.getElementById('doc').classList.remove('shake'), 300);
+            
+            if (btn.type) {
+                document.getElementById('stamp-bad').style.opacity = '1';
+                
+                const skipBtn = document.getElementById('always-visible-skip');
+                if (skipBtn) { skipBtn.style.display = 'none'; }
+
+                const btnBox = document.getElementById('buttons');
+                btnBox.innerHTML = '';
+                
+                let panelClass = 'ui-panel';
+                if (btn.type === 'arrest') panelClass += ' kgb-arrest';
+                if (btn.type === 'guardhouse') panelClass += ' military-shame';
+                if (btn.type === 'party') panelClass += ' party-silence';
+                
+                document.getElementById('ui').className = panelClass;
+                
+                const failB = document.createElement('button');
+                failB.innerText = "TRY AGAIN (RELOAD)";
+                failB.style.background = "#8b0000";
+                failB.onclick = () => location.reload();
+                btnBox.appendChild(failB);
+            }
+        }
     }
-</script>
 
-<div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
-  <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
-  <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
-</div>
-
-<script>
-  function openDocumentModal() {
-    const modal = document.getElementById('documentModal');
-    if (modal) modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; 
-  }
-
-  function closeDocumentModal() {
-    const modal = document.getElementById('documentModal');
-    if (modal) modal.style.display = 'none';
-    document.body.style.overflow = 'auto'; 
-  }
-
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeDocumentModal();
+    function triggerImmediateFinale() {
+        buildModalStructure();
+        showFinalDiscoveryModal();
     }
-  });
+
+    function finish() {
+        localStorage.setItem('gameFinished', 'true'); 
+        
+        const skipBtn = document.getElementById('always-visible-skip');
+        if (skipBtn) { skipBtn.style.display = 'none'; }
+
+        document.getElementById('ui').innerHTML = `
+            <h2 style="color:#2b5c8f; border: 2px solid #2b5c8f; padding: 10px; text-align: center; text-transform: uppercase; font-weight: bold; margin-top: 0;">LETTER SENT</h2>
+            <p style="font-size: 13px; line-height: 1.5; color: #2c2523;">Historical Outcome: The real Petro Neborachko was officially rehabilitated in the late 1950s thanks to this procedural step.</p>
+            
+            <button onclick="showFinalDiscoveryModal()" style="text-align:center; background:#8a3333; border: 2px solid #8a3333; color:#fff; width:100%; padding:14px; font-family:inherit; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; margin-bottom:10px; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); display: block; box-sizing: border-box;">
+                Read the Investigation Finale →
+            </button>
+            
+            <button onclick="location.reload()" style="text-align:center; background:#2c2523; border: 2px solid #2c2523; color:#fdfbf7; width:100%; padding:10px; font-family:inherit; font-size:12px; cursor:pointer; text-transform:uppercase; display: block; box-sizing: border-box;">RESTART</button>
+            <p style="font-size:0.8em; color:#666; text-align:center; margin-top:10px;">(Explanations will be skipped in the next run)</p>
+        `;
+        
+        const stamp = document.getElementById('stamp-ok');
+        if (stamp) { stamp.style.opacity = '1'; }
+        
+        buildModalStructure();
+    }
+
+    function buildModalStructure() {
+        if (!document.getElementById('finalDiscoveryModal')) {
+            const modal = document.createElement('div');
+            modal.id = 'finalDiscoveryModal';
+            modal.style.cssText = `
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(17, 14, 13, 0.97); z-index: 9999; align-items: center; justify-content: center;
+                padding: 20px; box-sizing: border-box; font-family: inherit;
+            `;
+            modal.innerHTML = `
+                <div style="max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; padding: 35px; box-shadow: 15px 15px 0px rgba(0,0,0,0.6); box-sizing: border-box; color: #2c2523; overflow-y: auto; text-align: left; line-height: 1.6;">
+                    <div style="font-size: 16px; color: #8a3333; font-weight: bold; margin-bottom: 20px; border-bottom: 2px dashed #8a3333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                        Author's Note & Document Discovery
+                    </div>
+                    <div style="font-size: 13px; margin-bottom: 18px; padding: 12px; background: rgba(44, 37, 35, 0.04); border-left: 4px solid #2c2523;">
+                        During the process of declassifying, digitizing, and analyzing this criminal file using AI tools, I was in direct contact and shared these archival materials with the living branch of Petro Neborachko's family — including the descendants of Mykola, the son who drafted this exact petition in 1958.
+                    </div>
+                    <div style="font-size: 13px; margin-bottom: 22px; padding: 12px; background: rgba(138, 51, 51, 0.04); border-left: 4px solid #8a3333;">
+                        <strong>THE FINAL REVELATION:</strong><br><br>
+                        The most staggering discovery within the declassified folders was an internal, classified NKVD service memo dated late 1942. It explicitly states that Petro Neborachko vanished completely during the chaotic wartime evacuation, and could not be found anywhere across the Gulag camp system. 
+                        <br><br>
+                        Hearing this, his relatives wept during our conversation. For over 80 years, the family lived with the heavy, absolute certainty that their ancestor had perished behind the barbed wire of a Soviet labor camp. Now, it turns out the historical truth is far more complex, open-ended, and fragmented than anyone believed for almost a century.
+                    </div>
+                    <button onclick="closeFinalDiscoveryModal()" style="width: 100%; background: #2c2523; border: 1px solid #2c2523; color: #fdfbf7; padding: 15px; font-family: inherit; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);">
+                        Close Archive & Complete Journey
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+    }
+
+    function showFinalDiscoveryModal() {
+        document.getElementById('finalDiscoveryModal').style.display = 'flex';
+    }
+
+    function closeFinalDiscoveryModal() {
+        document.getElementById('finalDiscoveryModal').style.display = 'none';
+    }
+
+    renderUI(1);
 </script>
 
 </body>
