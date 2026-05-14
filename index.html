@@ -195,7 +195,47 @@
 
 <script>
   let instructionVisible = false;
+  let audioCtx = null;
 
+  // Безфайловий генератор фонового гулу (важить 0 Кб)
+  function startAmbientHum() {
+    if (audioCtx) return; // Якщо звук уже запущений, нічого не робимо
+
+    // Ініціалізуємо аудіоконтекст
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Головний низький гул
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(55, audioCtx.currentTime); // Низька частота (гудіння ламп)
+
+    // Модулятор для ефекту легкого тремтіння звуку
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.type = 'sawtooth';
+    lfo.frequency.setValueAtTime(0.5, audioCtx.currentTime);
+    lfoGain.gain.setValueAtTime(1.5, audioCtx.currentTime);
+
+    // Гучність фонового звуку (дуже тиха, щоб не заважати)
+    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime); 
+
+    // З'єднуємо компоненти
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Запуск звуку
+    oscillator.start();
+    lfo.start();
+  }
+
+  // Звук увімкнеться автоматично після першого кліку гравця в будь-якій точці екрана
+  document.addEventListener('click', startAmbientHum, { once: true });
+
+  // Ваша стандартна функція відкриття/закриття інструкції
   function toggleInstruction() {
     const place = document.getElementById('instructionPlace');
     const btn = document.getElementById('infoToggleBtn');
@@ -211,6 +251,7 @@
     }
   }
 
+  // Ваша стандартна функція запуску гри
   function initiateGame() {
     window.location.href = 'Rozmova1.html'; 
   }
