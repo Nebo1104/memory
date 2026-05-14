@@ -126,7 +126,7 @@
             animation-delay: 0s, 5.0s; 
         }
 
-        /* НАДЗВИЧАЙНО ПОВІЛЬНИЙ ЛІНИВИЙ ПОЛІТ ВПРАВО-ВГОРУ */
+        /* НАДЗВИЧАЙНО ПОВІЛЬНИЙ LІНИВИЙ ПОЛІТ ВПРАВО-ВГОРУ */
         @keyframes flyRightUpLazy {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
             15% { transform: translate(10px, 15px) scale(0.98) rotate(3deg); }
@@ -198,7 +198,7 @@
     </div>
 </div>
 
-<!-- ВАШ ОРИГІНАЛЬНИЙ СЦЕНАРІЙ КРОКІВ ГРИ (БЕЗ ЗМІН І ВТРАТ) -->
+<!-- ВАШ ОРИГІНАЛЬНИЙ СЦЕНАРІЙ КРОКІВ ГРИ З ПОВНИМИ ПОЯСНЕННЯМИ -->
 <script>
     const stepsData = {
         1: {
@@ -241,7 +241,6 @@
 
         const step = stepsData[stepIndex];
         
-        // Якщо кроки закінчилися — відкриваємо фінальне вікно розкриття таємниці НКВС
         if (!step) {
             const okStamp = document.getElementById('stamp-ok');
             if (okStamp) okStamp.style.opacity = '1';
@@ -289,39 +288,100 @@
         });
     }
 
-    // Первинний запуск
     renderUI(1);
 </script>
 
-<!-- АУДІОПАТЧ ТА ФУНКЦІЇ МОДЕРНІЗАЦІЇ ФІНАЛУ (БЕЗФАЙЛОВИЙ СИНТ) -->
+<!-- ГЛИБОКИЙ НЕОКЛАСИЧНИЙ РЕКВІЄМ (ГЕНЕРАЦІЯ СМУТКУ ТА ВІДПУСКАННЯ ЖИТТЯ КOДОМ) -->
 <script>
-    // 1. СИНТЕЗАТОР ЗЛІТАННЯ ПТАХИ
     function playBirdTransformationSound() {
         const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') { ctx.resume(); }
         const now = ctx.currentTime;
 
-        const transformGain = ctx.createGain();
-        transformGain.gain.setValueAtTime(0, now);
-        transformGain.gain.linearRampToValueAtTime(0.25, now + 0.15); 
-        transformGain.gain.exponentialRampToValueAtTime(0.001, now + 5.0); 
-        transformGain.connect(ctx.destination);
+        // Майстер-гучність всієї музичної сцени
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0, now);
+        masterGain.gain.linearRampToValueAtTime(0.3, now + 0.5); // М'який емоційний вхід музики
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); // Елегія розчиняється протягом 12 секунд
+        masterGain.connect(ctx.destination);
 
+        // Реверберація / Ехо великої порожньої кімнати минулого
         const delay = ctx.createDelay();
-        delay.delayTime.setValueAtTime(0.3, now);
+        delay.delayTime.setValueAtTime(0.4, now);
         const delayGain = ctx.createGain();
-        delayGain.gain.setValueAtTime(0.4, now);
-        transformGain.connect(delay);
+        delayGain.gain.setValueAtTime(0.5, now);
+        masterGain.connect(delay);
         delay.connect(delayGain);
         delayGain.connect(ctx.destination);
 
-        const osc1 = ctx.createOscillator();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(150, now); 
-        osc1.frequency.exponentialRampToValueAtTime(1700, now + 2.0); 
-        osc1.connect(transformGain);
+        // --- ШАР 1: БАС НЕЗВОРOТНОСТІ (ОРГАННИЙ ФУНДАМЕНТ) ---
+        const bass = ctx.createOscillator();
+        bass.type = 'sine';
+        bass.frequency.setValueAtTime(55.00, now); // Глибока поминальна нота Ля (A1)
+        const bassGain = ctx.createGain();
+        bassGain.gain.setValueAtTime(0.3, now);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, now + 8.0);
+        bass.connect(bassGain);
+        bassGain.connect(masterGain);
+        bass.start(now);
+        bass.stop(now + 8.0);
 
-        const bufferSize = ctx.sampleRate * 2.5;
+        // --- ШАР 2: СТРУННИЙ МІНОРНИЙ АКОРД ТУГИ (ПОДOРОЖ ЖИТТЯ, ЩО МИНУЛО) ---
+        // Ноти сумного падучого акорду (A-C-E)
+        const freqs = [110.00, 130.81, 164.81]; 
+        freqs.forEach((freq, idx) => {
+            const stringOsc = ctx.createOscillator();
+            stringOsc.type = 'triangle'; // Насичений, теплий аналоговий звук оркестру
+            stringOsc.frequency.setValueAtTime(freq, now);
+            
+            // Плавне тремтіння (вібрато) струн для живого драматизму
+            const vibrato = ctx.createOscillator();
+            const vibratoGain = ctx.createGain();
+            vibrato.frequency.value = 3.5 + idx; 
+            vibratoGain.gain.value = 0.8;
+            vibrato.connect(vibratoGain);
+            vibratoGain.connect(stringOsc.frequency);
+            vibrato.start(now);
+
+            const stringGain = ctx.createGain();
+            stringGain.gain.setValueAtTime(0, now);
+            stringGain.gain.linearRampToValueAtTime(0.12, now + 0.8);
+            stringGain.gain.exponentialRampToValueAtTime(0.001, now + 10.0 - (idx * 0.5)); // Акорди згасають один за одним
+
+            stringOsc.connect(stringGain);
+            stringGain.connect(masterGain);
+            stringOsc.start(now);
+            stringOsc.stop(now + 10.0);
+            vibrato.stop(now + 10.0);
+        });
+
+        // --- ШАР 3: САМОТНЯ МЕЛOДІЯ НЕРАЛІЗOВАНОЇ МРІЇ (ВІДПУСКАННЯ ЖИТТЯ) ---
+        // Послідовність нот соло-інструменту, що прощається з реальністю
+        const melody = [
+            { note: 329.63, time: 0.6, dur: 1.5 }, // E4 - Усвідомлення
+            { note: 349.23, time: 2.1, dur: 1.2 }, // F4 - Біль втраченого часу
+            { note: 293.66, time: 3.5, dur: 1.8 }, // D4 - Смирення перед невідомим
+            { note: 440.00, time: 5.5, dur: 3.5 }  // A4 - Висока кришталева нота, політ птахи, повна свобода
+        ];
+
+        melody.forEach(m => {
+            const melOsc = ctx.createOscillator();
+            melOsc.type = 'sine'; // Чистий, як спогад, звук
+            melOsc.frequency.setValueAtTime(m.note, now + m.time);
+
+            const melGain = ctx.createGain();
+            melGain.gain.setValueAtTime(0, now + m.time);
+            melGain.gain.linearRampToValueAtTime(0.18, now + m.time + 0.2);
+            melGain.gain.exponentialRampToValueAtTime(0.001, now + m.time + m.dur);
+
+            melOsc.connect(melGain);
+            melGain.connect(masterGain);
+            melOsc.start(now + m.time);
+            melOsc.stop(now + m.time + m.dur);
+        });
+
+        // --- ШАР 4: ШЕЛЕСТ МИНУЛОГО (ПЛАВНИЙ ШУМ КРИЛ ТА ЧАСУ) ---
+        const bufferSize = ctx.sampleRate * 4;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
@@ -330,20 +390,21 @@
 
         const filter = ctx.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(200, now);
-        filter.frequency.exponentialRampToValueAtTime(2600, now + 0.5); 
-        filter.frequency.exponentialRampToValueAtTime(100, now + 2.3); 
+        filter.frequency.setValueAtTime(300, now);
+        filter.frequency.exponentialRampToValueAtTime(1200, now + 1.5); // Шурхіт підіймається разом із фінальною нотою
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.015, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 4.0);
 
         noise.connect(filter);
-        filter.connect(transformGain);
-
-        osc1.start(now);
+        filter.connect(noiseGain);
+        noiseGain.connect(masterGain);
         noise.start(now);
-        osc1.stop(now + 5.0);
-        noise.stop(now + 5.0);
+        noise.stop(now + 4.0);
     }
 
-    // 2. ОРИГІНАЛЬНА ФУНКЦІЯ АНІМАЦІЇ, ПІД КЛЮЧ ОЗВУЧЕНА ПАТЧЕМ
+    // ОНОВЛЕНА ФУНКЦІЯ АНІМАЦІЇ, ПІД КЛЮЧ ОЗВУЧЕНА МЕЛOДІЄЮ РЕКВІЄМУ
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
@@ -351,12 +412,13 @@
         
         if (textContainer) { textContainer.style.opacity = '0'; }
         
+        // Глушимо старий монотонний гул архіву, очищаючи простір для елегії
         if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
-            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.4); 
+            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3); 
         }
 
         setTimeout(() => {
-            playBirdTransformationSound(); // Синхронне включення звуку крил паперу
+            playBirdTransformationSound(); // Запуск глибокої неокласичної мелодії
 
             if (card) { card.classList.add('bird-shape'); }
             
