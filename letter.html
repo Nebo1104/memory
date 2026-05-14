@@ -84,7 +84,9 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .shake { animation: shakeAnim 0.3s; }
         @keyframes shakeAnim { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-        .kgb-arrest { background: #1a1a1a !important; color: #cc0000 !important; border: 5px solid #cc0000 !important; }
+        
+        /* КЛАСИ ДЛЯ СПЕЦИФІЧНИХ РАДЯНСЬКИХ ПОМИЛОК І ЗАДЕРЖАНЬ */
+        .kgb-arrest { background: #1a1a1a !important; color: #cc0000 !important; border: 5px solid #cc0000 !important; font-weight: bold; }
         .military-shame { background: #2e3b23 !important; color: #e0e0e0 !important; border: 5px solid #4a5d3a !important; }
         .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
         .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
@@ -120,13 +122,10 @@
             max-width: 140px; height: 140px; padding: 0; border: none; outline: none; box-shadow: none;
             background: #fdfbf7;
             clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%);
-            
-            /* Політ триває 24 секунди. Журавлик залишається у верхньому правому кутку */
             animation: flyRightUpLazy 24s forwards cubic-bezier(0.1, 0.2, 0.3, 1), flapWingsLazy 1.6s infinite alternate ease-in-out;
             animation-delay: 0s, 5.0s; 
         }
 
-        /* НАДЗВИЧАЙНО ПОВІЛЬНИЙ LІНИВИЙ ПОЛІТ ВПРАВО-ВГОРУ */
         @keyframes flyRightUpLazy {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
             15% { transform: translate(10px, 15px) scale(0.98) rotate(3deg); }
@@ -134,7 +133,6 @@
             100% { transform: translate(38vw, -36vh) scale(0.25) rotate(-18deg); opacity: 0.85; }
         }
 
-        /* ЛЕДАЧИЙ ПОМАХ КРИЛ ЖУРАВЛИКА */
         @keyframes flapWingsLazy {
             0% { clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%); }
             100% { clip-path: polygon(40% 12%, 48% 35%, 90% 70%, 62% 60%, 52% 88%, 45% 65%, 25% 68%, 35% 48%, 5% 68%, 32% 38%); }
@@ -149,9 +147,8 @@
 </head>
 <body>
 
-<!-- Контейнер для титрів, який розташований на найвищому рівні у структурі -->
 <div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
-    <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 4s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
+    <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 5s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
         Thank you for walking this path
     </div>
 </div>
@@ -171,15 +168,12 @@
     <div class="ui-column">
         <div class="ui-panel">
             <div id="step-title" style="font-weight: bold; font-size: 14px; margin-bottom: 15px; border-bottom: 1px dashed #999; padding-bottom: 8px;">Step 1: Recipient selection:</div>
-            <div id="buttons">
-                <!-- Кнопки будуть згенеровані вашим скриптом renderUI автоматично -->
-            </div>
+            <div id="buttons"></div>
             <div class="explanation" id="exp-box"></div>
         </div>
     </div>
 </div>
 
-<!-- ОВЕРЛЕЙ ДЛЯ МЕТАМОРФОЗИ ПТАХИ (ФІНАЛЬНЕ ВІКНО) -->
 <div id="finalDiscoveryModal" class="interlude-modal-overlay">
     <div id="modalCard" class="interlude-content-card">
         <div id="modal-hide-group">
@@ -198,34 +192,43 @@
     </div>
 </div>
 
-<!-- ВАШ ОРИГІНАЛЬНИЙ СЦЕНАРІЙ КРОКІВ ГРИ З ПОВНИМИ ПОЯСНЕННЯМИ -->
 <script>
+    // ПОВНИЙ НАБІР З 4 ВАРІАНТІВ НА КОЖЕН КРОК З КЛАСАМИ РАДЯНСЬКИХ НАСЛІДКІВ
     const stepsData = {
         1: {
             title: "Step 1: Recipient selection:",
             options: [
-                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "To: Chief Military Prosecutor's Office. I request a review of the case of my father, Petro Neborachko, convicted in 1942.", exp: "Correct. The military prosecutors are the primary body handling Stalin-era rehabilitation claims.", isCorrect: true },
-                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administrations have no jurisdiction over criminal military tribunal files. The letter gets lost in bureaucratic cycles.", isCorrect: false }
+                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "To: Chief Military Prosecutor's Office. I request a review of the case of my father, Petro Neborachko, convicted in 1942.", exp: "Correct. The military prosecutors handle Stalin-era rehabilitation claims.", isCorrect: true, type: "normal" },
+                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administration has no jurisdiction over criminal files. Your letter is ignored.", isCorrect: false, type: "party-silence" },
+                { text: "Submit an anonymous appeal to the Ministry of Defense", exp: "Guards notice the breach. You are sent to the local military guardhouse (гауптвахта) for interrogation.", isCorrect: false, type: "military-shame" },
+                { text: "Address the letter to the General Secretary's Reception", exp: "Your boldness triggers a state security flag. Red alert: Arrested by KGB agents for anti-Soviet coordination.", isCorrect: false, type: "kgb-arrest" }
             ]
         },
         2: {
-            title: "Step 2: Legal grounds:",
+            title: "Step 2: Legal grounds and argumentation:",
             options: [
-                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of evidence", textKey: "p-3", textVal: "The conviction under Article 54-10 was based on coerced confessions without any material evidence.", exp: "Correct. Pointing out the lack of procedural evidence is the strongest legal route.", isCorrect: true },
-                { text: "Write an emotional appeal about family loyalty", exp: "Rejected. Soviet bureaucratic machines ignore emotional requests; they require specific archival or legal contradictions.", isCorrect: false }
+                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of physical evidence", textKey: "p-3", textVal: "The conviction under Article 54-10 was based on coerced confessions without material evidence.", exp: "Correct. Pointing out structural gaps is the strongest legal route.", isCorrect: true, type: "normal" },
+                { text: "Argue based on family's pure moral loyalty and pain", exp: "Rejected. The Soviet system treats emotional claims as ideological weakness. File remains locked.", isCorrect: false, type: "party-silence" },
+                { text: "Accuse the 1942 military judges of treason and corruption", exp: "Accusing Soviet judges is equivalent to insulting the Red Army. Demoted, shamed, and sent to military detention.", isCorrect: false, type: "military-shame" },
+                { text: "Demand immediate financial compensation for historical injustice", exp: "Demanding money from the state is classified as capitalist subversion. The KGB intercepts you at the office doors.", isCorrect: false, type: "kgb-arrest" }
             ]
         },
         3: {
             title: "Step 3: Archival verification:",
             options: [
-                { text: "Attach the 1942 Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence issued by the South-Western Front Tribunal.", exp: "Correct. Documented verification forces the archive to reopen the physical file folder.", isCorrect: true },
-                { text: "Rely on verbal testimony of village neighbors", exp: "Error. Witness statements from 1942 are considered secondary and invalid without pre-existing archival entries.", isCorrect: false }
+                { text: "Attach the 1942 South-Western Front Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence issued by the South-Western Front Tribunal.", exp: "Correct. Hard documentation forces the archive to pull out the physical case folder.", isCorrect: true, type: "normal" },
+                { text: "Present verbal memories from older village neighbors", exp: "Invalid. Bureaucratic archives do not record oral history or folklore. The process stalls.", isCorrect: false, type: "party-silence" },
+                { text: "Request defense information from Western Red Cross channels", exp: "Contacting international organizations during the Cold War is treason. Transferred immediately to military prison.", isCorrect: false, type: "military-shame" },
+                { text: "Break into the regional Special Archive repository at night", exp: "Alarms triggered. Caught red-handed by the KGB security unit. Sentenced to hard labor.", isCorrect: false, type: "kgb-arrest" }
             ]
         },
         4: {
             title: "Step 4: The Final Submission:",
             options: [
-                { text: "Submit the petition and await official review", textKey: "p-5", textVal: "Therefore, I ask for the official rehabilitation and disclosure of his final fate.", exp: "The letter is sealed. The bureaucratic gears begin to turn...", isCorrect: true }
+                { text: "Submit the final package and await official service response", textKey: "p-5", textVal: "Therefore, I ask for the official rehabilitation and disclosure of his final fate.", exp: "The letter is officially sealed and processed into the archival system.", isCorrect: true, type: "normal" },
+                { text: "Leave the package on the general office desk without registration", exp: "Unregistered documents are routinely shredded at the end of the shift. The trace is gone forever.", isCorrect: false, type: "party-silence" },
+                { text: "Force the desk clerk to sign it under threat of exposure", exp: "Clerk presses the emergency button. Military patrols contain you immediately. Detained for assault.", isCorrect: false, type: "military-shame" },
+                { text: "Leak the contents of the petition to foreign press correspondents", exp: "Espionage and anti-Soviet propaganda. The KGB closes the case by putting you behind bars permanently.", isCorrect: false, type: "kgb-arrest" }
             ]
         }
     };
@@ -244,7 +247,6 @@
         if (!step) {
             const okStamp = document.getElementById('stamp-ok');
             if (okStamp) okStamp.style.opacity = '1';
-            
             setTimeout(() => {
                 const modal = document.getElementById('finalDiscoveryModal');
                 if (modal) modal.style.display = 'flex';
@@ -261,17 +263,16 @@
                 if (expBox) {
                     expBox.style.display = 'block';
                     expBox.innerText = opt.exp;
-                    expBox.className = opt.isCorrect ? "explanation exp-correct" : "explanation exp-error shake";
                     
                     if (!opt.isCorrect) {
+                        expBox.className = `explanation shake ${opt.type}`;
                         const badStamp = document.getElementById('stamp-bad');
                         if (badStamp) {
                             badStamp.style.opacity = '1';
-                            setTimeout(() => { badStamp.style.opacity = '0'; }, 1500);
+                            setTimeout(() => { badStamp.style.opacity = '0'; }, 1800);
                         }
-                    }
-
-                    if (opt.isCorrect) {
+                    } else {
+                        expBox.className = "explanation exp-correct";
                         const targetDiv = document.getElementById(opt.textKey);
                         if (targetDiv) targetDiv.innerHTML = `<span class="filled-text">${opt.textVal}</span>`;
                         
@@ -291,120 +292,67 @@
     renderUI(1);
 </script>
 
-<!-- ГЛИБОКИЙ НЕОКЛАСИЧНИЙ РЕКВІЄМ (ГЕНЕРАЦІЯ СМУТКУ ТА ВІДПУСКАННЯ ЖИТТЯ КOДОМ) -->
+<!-- ЕЛЕГІЙНИЙ НЕОКЛАСИЧНИЙ АУДІОРУШІЙ ФІНАЛУ (AMBIEМТ PIANO & TAPE ECHO) -->
 <script>
     function playBirdTransformationSound() {
         const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') { ctx.resume(); }
         const now = ctx.currentTime;
 
-        // Майстер-гучність всієї музичної сцени
-        const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(0, now);
-        masterGain.gain.linearRampToValueAtTime(0.3, now + 0.5); // М'який емоційний вхід музики
-        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); // Елегія розчиняється протягом 12 секунд
-        masterGain.connect(ctx.destination);
+        const mainGain = ctx.createGain();
+        mainGain.gain.setValueAtTime(0, now);
+        mainGain.gain.linearRampToValueAtTime(0.3, now + 0.5); 
+        mainGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); // Мелодія плавно тане 12 секунд
+        mainGain.connect(ctx.destination);
 
-        // Реверберація / Ехо великої порожньої кімнати минулого
+        // Ефект теплого аналогового відлуння (Tape Echo) для ностальгії
         const delay = ctx.createDelay();
         delay.delayTime.setValueAtTime(0.4, now);
         const delayGain = ctx.createGain();
         delayGain.gain.setValueAtTime(0.5, now);
-        masterGain.connect(delay);
+        mainGain.connect(delay);
         delay.connect(delayGain);
         delayGain.connect(ctx.destination);
 
-        // --- ШАР 1: БАС НЕЗВОРOТНОСТІ (ОРГАННИЙ ФУНДАМЕНТ) ---
-        const bass = ctx.createOscillator();
-        bass.type = 'sine';
-        bass.frequency.setValueAtTime(55.00, now); // Глибока поминальна нота Ля (A1)
-        const bassGain = ctx.createGain();
-        bassGain.gain.setValueAtTime(0.3, now);
-        bassGain.gain.exponentialRampToValueAtTime(0.001, now + 8.0);
-        bass.connect(bassGain);
-        bassGain.connect(masterGain);
-        bass.start(now);
-        bass.stop(now + 8.0);
+        // Фільтр для пом'якшення звуку, що прибирає цифровий блиск
+        const lpFilter = ctx.createBiquadFilter();
+        lpFilter.type = 'lowpass';
+        lpFilter.frequency.setValueAtTime(700, now);
+        mainGain.connect(lpFilter);
 
-        // --- ШАР 2: СТРУННИЙ МІНОРНИЙ АКОРД ТУГИ (ПОДOРОЖ ЖИТТЯ, ЩО МИНУЛО) ---
-        // Ноти сумного падучого акорду (A-C-E)
-        const freqs = [110.00, 130.81, 164.81]; 
-        freqs.forEach((freq, idx) => {
-            const stringOsc = ctx.createOscillator();
-            stringOsc.type = 'triangle'; // Насичений, теплий аналоговий звук оркестру
-            stringOsc.frequency.setValueAtTime(freq, now);
+        // ФУНКЦІЯ ГЕНЕРАЦІЇ ПЛАВНОЇ ТУЖЛИВОЇ НОТИ ФОРТЕПІАНО
+        function playPianoNote(freq, startTime, duration, volume) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
             
-            // Плавне тремтіння (вібрато) струн для живого драматизму
-            const vibrato = ctx.createOscillator();
-            const vibratoGain = ctx.createGain();
-            vibrato.frequency.value = 3.5 + idx; 
-            vibratoGain.gain.value = 0.8;
-            vibrato.connect(vibratoGain);
-            vibratoGain.connect(stringOsc.frequency);
-            vibrato.start(now);
+            // Налаштування атаки та затухання струни фортепіано
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(volume, startTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(lpFilter);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
 
-            const stringGain = ctx.createGain();
-            stringGain.gain.setValueAtTime(0, now);
-            stringGain.gain.linearRampToValueAtTime(0.12, now + 0.8);
-            stringGain.gain.exponentialRampToValueAtTime(0.001, now + 10.0 - (idx * 0.5)); // Акорди згасають один за одним
-
-            stringOsc.connect(stringGain);
-            stringGain.connect(masterGain);
-            stringOsc.start(now);
-            stringOsc.stop(now + 10.0);
-            vibrato.stop(now + 10.0);
-        });
-
-        // --- ШАР 3: САМОТНЯ МЕЛOДІЯ НЕРАЛІЗOВАНОЇ МРІЇ (ВІДПУСКАННЯ ЖИТТЯ) ---
-        // Послідовність нот соло-інструменту, що прощається з реальністю
-        const melody = [
-            { note: 329.63, time: 0.6, dur: 1.5 }, // E4 - Усвідомлення
-            { note: 349.23, time: 2.1, dur: 1.2 }, // F4 - Біль втраченого часу
-            { note: 293.66, time: 3.5, dur: 1.8 }, // D4 - Смирення перед невідомим
-            { note: 440.00, time: 5.5, dur: 3.5 }  // A4 - Висока кришталева нота, політ птахи, повна свобода
-        ];
-
-        melody.forEach(m => {
-            const melOsc = ctx.createOscillator();
-            melOsc.type = 'sine'; // Чистий, як спогад, звук
-            melOsc.frequency.setValueAtTime(m.note, now + m.time);
-
-            const melGain = ctx.createGain();
-            melGain.gain.setValueAtTime(0, now + m.time);
-            melGain.gain.linearRampToValueAtTime(0.18, now + m.time + 0.2);
-            melGain.gain.exponentialRampToValueAtTime(0.001, now + m.time + m.dur);
-
-            melOsc.connect(melGain);
-            melGain.connect(masterGain);
-            melOsc.start(now + m.time);
-            melOsc.stop(now + m.time + m.dur);
-        });
-
-        // --- ШАР 4: ШЕЛЕСТ МИНУЛОГО (ПЛАВНИЙ ШУМ КРИЛ ТА ЧАСУ) ---
-        const bufferSize = ctx.sampleRate * 4;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(300, now);
-        filter.frequency.exponentialRampToValueAtTime(1200, now + 1.5); // Шурхіт підіймається разом із фінальною нотою
-
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.015, now);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 4.0);
-
-        noise.connect(filter);
-        filter.connect(noiseGain);
-        noiseGain.connect(masterGain);
-        noise.start(now);
-        noise.stop(now + 4.0);
+        // МЕЛАНХОЛІЙНА МЕЛОДІЯ ВІДПУСКАННЯ МИНУЛОГО (Час міг плисти, життя минуло)
+        // Ноти: Ля-мінор / До-мажор еллегія
+        playPianoNote(220.00, now + 0.0, 3.5, 0.25); // Глибока басова струна A3
+        playPianoNote(440.00, now + 0.4, 2.5, 0.15); // Мелодія A4
+        playPianoNote(523.25, now + 1.2, 2.5, 0.15); // C5 (сумна світла надія)
+        playPianoNote(587.33, now + 2.0, 2.0, 0.12); // D5
+        playPianoNote(493.88, now + 2.8, 3.0, 0.15); // B4 (ностальгічне згасання)
+        
+        // Фінальний акорд спокою
+        playPianoNote(164.81, now + 4.0, 6.0, 0.20); // Бас E3
+        playPianoNote(329.63, now + 4.4, 5.0, 0.15); // E4
+        playPianoNote(392.00, now + 4.8, 5.0, 0.15); // G4
+        playPianoNote(523.25, now + 5.2, 5.5, 0.10); // C5
     }
 
-    // ОНОВЛЕНА ФУНКЦІЯ АНІМАЦІЇ, ПІД КЛЮЧ ОЗВУЧЕНА МЕЛOДІЄЮ РЕКВІЄМУ
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
@@ -412,13 +360,12 @@
         
         if (textContainer) { textContainer.style.opacity = '0'; }
         
-        // Глушимо старий монотонний гул архіву, очищаючи простір для елегії
         if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
-            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3); 
+            masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5); 
         }
 
         setTimeout(() => {
-            playBirdTransformationSound(); // Запуск глибокої неокласичної мелодії
+            playBirdTransformationSound(); // Вмикаємо плавну емоційну елегію відпускання життя
 
             if (card) { card.classList.add('bird-shape'); }
             
@@ -445,7 +392,7 @@
     }
 </script>
 
-<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС (ГІЛКА GAME) -->
+<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС -->
 <div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
