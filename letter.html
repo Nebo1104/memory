@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>The Archive Letter: Bureaucratic Quest</title>
     <style>
-        /* Блокування скролу всієї сторінки */
         body { 
             background: #d3c9b1; 
             font-family: "Courier New", monospace; 
@@ -17,7 +16,7 @@
             box-sizing: border-box;
             overflow: hidden; 
             position: relative;
-            transition: background-color 5s ease-in-out; /* Повільне занурення всього тла в темряву */
+            transition: background-color 5s ease-in-out;
         }
         
         .main-container { 
@@ -66,7 +65,6 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            transition: background-color 5s, border-color 5s, box-shadow 5s;
         }
         
         #buttons {
@@ -77,36 +75,43 @@
         .stamp { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 6px double #8b0000; color: #8b0000; padding: 15px 30px; font-size: 2.2em; font-weight: bold; text-transform: uppercase; opacity: 0; pointer-events: none; z-index: 10; transition: opacity 0.2s; text-align: center; }
         button { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #222; color: #eee; border: none; font-family: inherit; cursor: pointer; text-align: left; transition: 0.2s; font-size: 13px; box-sizing: border-box; }
         button:hover { background: #8b0000; transform: translateX(5px); }
-        .explanation { border-left: 4px solid #8b0000; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
-        .exp-error { background: #fff5f5; border-color: #8b0000; color: #333; }
-        .exp-correct { background: #f5fff5; border-color: #2e7d32; color: #1b5e20; }
+        
+        .explanation { border-left: 4px solid #2e7d32; background: #f5fff5; color: #1b5e20; padding: 15px; margin: 10px 0; display: none; font-size: 0.9em; line-height: 1.4; }
         .filled-text { font-weight: bold; color: black; animation: fadeIn 0.8s forwards; display: block; margin-bottom: 10px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .shake { animation: shakeAnim 0.3s; }
-        @keyframes shakeAnim { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
         
-        /* КЛАСИ ДЛЯ СПЕЦИФІЧНИХ РАДЯНСЬКИХ ПОМИЛОК І ЗАДЕРЖАНЬ */
-        .kgb-arrest { background: #1a1a1a !important; color: #cc0000 !important; border: 5px solid #cc0000 !important; font-weight: bold; }
-        .military-shame { background: #2e3b23 !important; color: #e0e0e0 !important; border: 5px solid #4a5d3a !important; }
-        .party-silence { background: #444 !important; color: #aaa !important; border: 5px solid #666 !important; }
-        .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
+        .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        /* ЕФЕКТ ПЛАВНОГО ЗГАСАННЯ ЗАДНЬОГО ПЛАНУ */
-        .fade-out {
-            opacity: 0;
-            filter: brightness(0); 
-            pointer-events: none;
+        /* НАПІВПРОЗОРІ МОВЛЯВНІ ВІКНА ДЛЯ РАДЯНСЬКИХ ПОМИЛОК */
+        .error-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 12, 12, 0.82); z-index: 15000; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
         }
+        .error-modal-box {
+            max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); font-family: "Courier New", monospace;
+            animation: modalShake 0.4s ease-in-out;
+        }
+        @keyframes modalShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .kgb-arrest { background: #1a1a1a; color: #ff3333; border: 4px solid #cc0000; }
+        .military-shame { background: #2e3b23; color: #e0e0e0; border: 4px solid #5a734a; }
+        .party-silence { background: #3d3d3d; color: #ddd; border: 4px solid #777; }
+        
+        .error-modal-header { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
+        .kgb-arrest .error-modal-header { border-bottom-color: rgba(255,0,0,0.3); }
 
-        /* ОВЕРЛЕЙ ДЛЯ МОДАЛЬНОГО ВІКНА */
+        /* ІНТЕРЛЮДІЯ ПТАХИ */
         .interlude-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(17, 14, 13, 0.96); z-index: 9999; align-items: center; justify-content: center;
             padding: 20px; box-sizing: border-box;
             transition: background-color 5s ease-in-out;
         }
-
-        /* КАРТКА, ЩО ПЕРЕТВОРЮЄТЬСЯ НА ПТАХУ */
         .interlude-content-card {
             max-width: 560px; width: 100%; max-height: 85vh; background: #fdfbf7; 
             border: 2px solid #8a3333; outline: 4px double #8a3333; outline-offset: -8px; 
@@ -116,8 +121,6 @@
             position: relative;
             transform-origin: center center;
         }
-
-        /* ЛЕДАЧИЙ СИЛУЕТ ТА БЕЗКІНЕЧНИЙ ПОЛІТ БЕЗ МИТТЄВОГО ЗНИКНЕННЯ */
         .interlude-content-card.bird-shape {
             max-width: 140px; height: 140px; padding: 0; border: none; outline: none; box-shadow: none;
             background: #fdfbf7;
@@ -125,24 +128,15 @@
             animation: flyRightUpLazy 24s forwards cubic-bezier(0.1, 0.2, 0.3, 1), flapWingsLazy 1.6s infinite alternate ease-in-out;
             animation-delay: 0s, 5.0s; 
         }
-
         @keyframes flyRightUpLazy {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            15% { transform: translate(10px, 15px) scale(0.98) rotate(3deg); }
-            45% { transform: translate(250px, -25vh) scale(0.65) rotate(-10deg); }
             100% { transform: translate(38vw, -36vh) scale(0.25) rotate(-18deg); opacity: 0.85; }
         }
-
         @keyframes flapWingsLazy {
             0% { clip-path: polygon(40% 0%, 50% 35%, 100% 15%, 65% 55%, 55% 95%, 45% 65%, 20% 85%, 35% 50%, 0% 45%, 30% 35%); }
             100% { clip-path: polygon(40% 12%, 48% 35%, 90% 70%, 62% 60%, 52% 88%, 45% 65%, 25% 68%, 35% 48%, 5% 68%, 32% 38%); }
         }
-
-        @media (max-width: 900px) { 
-            body { overflow: auto; height: auto; }
-            .main-container { flex-direction: column; } 
-            .paper-column, .ui-column { width: 100%; height: auto; } 
-        }
+        .btn-continue { background: #2e7d32; text-align: center; font-weight: bold; margin-top: 15px; color: white; }
     </style>
 </head>
 <body>
@@ -153,15 +147,30 @@
     </div>
 </div>
 
+<!-- НАПІВПРОЗОРЕ ВІКНО ДЛЯ ВИВОДУ РАДЯНСЬКИХ ПОМИЛОК І ДОПИТІВ -->
+<div id="errorModal" class="error-modal-overlay" onclick="closeErrorModal()">
+    <div id="errorModalBox" class="error-modal-box">
+        <div id="errorModalHeader" class="error-modal-header">System Notification</div>
+        <div id="errorModalText" style="font-size: 13px; line-height: 1.5;"></div>
+        <button onclick="closeErrorModal()" style="background: rgba(255,255,255,0.15); color: inherit; border: 1px solid currentColor; margin-top: 18px; padding: 8px; text-align: center; width: auto; font-size: 11px; margin-left: auto;">[ CLOSE RECORD ]</button>
+    </div>
+</div>
+
 <div class="main-container" id="game-content">
     <div class="paper-column">
         <div class="paper" id="doc">
             <div class="stamp" id="stamp-bad">REJECTED</div>
             <div class="stamp" id="stamp-ok" style="border-color: green; color: green;">SENT</div>
+            
+            <!-- ВЕРХНІЙ БЛОК: КУДИ ТА НА ЧИЄ ІМ'Я НАПРАВЛЯЄТЬСЯ ЛИСТ -->
+            <div id="letter-head" style="min-height: 45px; font-size: 13px; font-weight: bold; line-height: 1.3; margin-bottom: 25px; border-bottom: 2px double #b5a994; padding-bottom: 8px; color: #333;">
+                To: <span id="head-recipient" style="color: #666; font-weight: normal; font-style: italic;">(Pending address selection...)</span>
+            </div>
+
             <div style="text-align: right;"><div id="p-1" style="min-height: 1.2em;">____________________</div>February 25, 1958</div>
-            <h3 style="text-align: center; margin-top: 30px;">STATEMENT</h3>
+            <h3 style="text-align: center; margin-top: 20px;">STATEMENT</h3>
             <div id="p-2"></div><div id="p-3"></div><div id="p-4"></div><div id="p-5"></div>
-            <div style="margin-top: 50px; font-size: 0.9em;">Signature: <span style="text-decoration: underline;">M.P. Neborachko</span><br>Address: Military Unit 54962, Zaporizhzhia city.</div>
+            <div style="margin-top: 40px; font-size: 0.9em;">Signature: <span style="text-decoration: underline;">M.P. Neborachko</span><br>Address: Military Unit 54962, Zaporizhzhia city.</div>
         </div>
     </div>
 
@@ -193,45 +202,61 @@
 </div>
 
 <script>
-    // ПОВНИЙ НАБІР З 4 ВАРІАНТІВ НА КОЖЕН КРОК З КЛАСАМИ РАДЯНСЬКИХ НАСЛІДКІВ
     const stepsData = {
         1: {
             title: "Step 1: Recipient selection:",
             options: [
-                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "To: Chief Military Prosecutor's Office. I request a review of the case of my father, Petro Neborachko, convicted in 1942.", exp: "Correct. The military prosecutors handle Stalin-era rehabilitation claims.", isCorrect: true, type: "normal" },
-                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administration has no jurisdiction over criminal files. Your letter is ignored.", isCorrect: false, type: "party-silence" },
-                { text: "Submit an anonymous appeal to the Ministry of Defense", exp: "Guards notice the breach. You are sent to the local military guardhouse (гауптвахта) for interrogation.", isCorrect: false, type: "military-shame" },
-                { text: "Address the letter to the General Secretary's Reception", exp: "Your boldness triggers a state security flag. Red alert: Arrested by KGB agents for anti-Soviet coordination.", isCorrect: false, type: "kgb-arrest" }
+                { text: "Send to the Chief Military Prosecutor's Office", textKey: "p-2", textVal: "I request a review of the case of my father, Petro Neborachko, convicted in 1942 by the South-Western Front Tribunal.", exp: "Correct. The military prosecutors handle Stalin-era rehabilitation claims.", isCorrect: true, type: "normal", headVal: "Chief Military Prosecutor's Office of the USSR" },
+                { text: "Send directly to the Local Soviet Administration", exp: "Error. Local administration has no jurisdiction over criminal military tribunal files. Your letter is ignored and archived without answers.", isCorrect: false, type: "party-silence", header: "BUREAUCRATIC SILENCE" },
+                { text: "Submit an anonymous appeal to the Ministry of Defense", exp: "Guards notice the suspicious lack of sender credentials. You are detained and sent to the local garrison guardhouse (гауптвахта) for a profile check.", isCorrect: false, type: "military-shame", header: "MILITARY DETENTION" },
+                { text: "Address the letter to the General Secretary's Reception", exp: "Your attempt to bypass sub-departments triggers a state security flag. Red alert: Intercepted and arrested by KGB operational agents for anti-Soviet coordination.", isCorrect: false, type: "kgb-arrest", header: "KGB INTERVENTION" }
             ]
         },
         2: {
             title: "Step 2: Legal grounds and argumentation:",
             options: [
-                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of physical evidence", textKey: "p-3", textVal: "The conviction under Article 54-10 was based on coerced confessions without material evidence.", exp: "Correct. Pointing out structural gaps is the strongest legal route.", isCorrect: true, type: "normal" },
-                { text: "Argue based on family's pure moral loyalty and pain", exp: "Rejected. The Soviet system treats emotional claims as ideological weakness. File remains locked.", isCorrect: false, type: "party-silence" },
-                { text: "Accuse the 1942 military judges of treason and corruption", exp: "Accusing Soviet judges is equivalent to insulting the Red Army. Demoted, shamed, and sent to military detention.", isCorrect: false, type: "military-shame" },
-                { text: "Demand immediate financial compensation for historical injustice", exp: "Demanding money from the state is classified as capitalist subversion. The KGB intercepts you at the office doors.", isCorrect: false, type: "kgb-arrest" }
+                { text: "Cite Article 54-10 (Anti-Soviet agitation) lack of physical evidence", textKey: "p-3", textVal: "The historical conviction under Article 54-10 was based on coerced confessions without any material evidence or anti-state items.", exp: "Correct. Pointing out structural gaps is the strongest legal route.", isCorrect: true, type: "normal" },
+                { text: "Argue based on family's pure moral loyalty and psychological pain", exp: "Rejected. The Soviet system treats emotional claims as ideological weakness. The request is formally denied. File remains locked.", isCorrect: false, type: "party-silence", header: "PETITION DENIED" },
+                { text: "Accuse the 1942 military judges of deliberate treason and corruption", exp: "Accusing Soviet judges is equivalent to insulting the Soviet Army. Demoted, publicly shamed in your unit, and sent to military isolation.", isCorrect: false, type: "military-shame", header: "CONTEMPT OF TRIBUNAL" },
+                { text: "Demand immediate financial compensation for historical injustice", exp: "Demanding currency from the state is classified as capitalist subversion and economic sabotage. The KGB intercepts you at the prosecutor's office doors.", isCorrect: false, type: "kgb-arrest", header: "ECONOMIC SUBVERSION" }
             ]
         },
         3: {
             title: "Step 3: Archival verification:",
             options: [
-                { text: "Attach the 1942 South-Western Front Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence issued by the South-Western Front Tribunal.", exp: "Correct. Hard documentation forces the archive to pull out the physical case folder.", isCorrect: true, type: "normal" },
-                { text: "Present verbal memories from older village neighbors", exp: "Invalid. Bureaucratic archives do not record oral history or folklore. The process stalls.", isCorrect: false, type: "party-silence" },
-                { text: "Request defense information from Western Red Cross channels", exp: "Contacting international organizations during the Cold War is treason. Transferred immediately to military prison.", isCorrect: false, type: "military-shame" },
-                { text: "Break into the regional Special Archive repository at night", exp: "Alarms triggered. Caught red-handed by the KGB security unit. Sentenced to hard labor.", isCorrect: false, type: "kgb-arrest" }
+                { text: "Attach the 1942 South-Western Front Military Tribunal certificate", textKey: "p-4", textVal: "Enclosed: Copy of the original sentence folder issued by the South-Western Front Tribunal repository.", exp: "Correct. Hard documentation forces the archive to pull out the physical case folder.", isCorrect: true, type: "normal" },
+                { text: "Present verbal memories from older village neighbors", exp: "Invalid data. Bureaucratic archives do not record oral histories or village folklore. The verification process stalls indefinitely.", isCorrect: false, type: "party-silence", header: "INVALID PROOF" },
+                { text: "Request defense verification from Western Red Cross channels", exp: "Contacting international organizations during the Cold War is treason. Transferred immediately to a high-security military prison.", isCorrect: false, type: "military-shame", header: "FOREIGN ESPIONAGE" },
+                { text: "Break into the regional Special Archive repository at night", exp: "Silent alarms triggered. Caught red-handed inside the vault by the KGB security unit. Sentenced to hard labor for theft of state secrets.", isCorrect: false, type: "kgb-arrest", header: "ARCHIVAL INTRUSION" }
             ]
         },
         4: {
             title: "Step 4: The Final Submission:",
             options: [
                 { text: "Submit the final package and await official service response", textKey: "p-5", textVal: "Therefore, I ask for the official rehabilitation and disclosure of his final fate.", exp: "The letter is officially sealed and processed into the archival system.", isCorrect: true, type: "normal" },
-                { text: "Leave the package on the general office desk without registration", exp: "Unregistered documents are routinely shredded at the end of the shift. The trace is gone forever.", isCorrect: false, type: "party-silence" },
-                { text: "Force the desk clerk to sign it under threat of exposure", exp: "Clerk presses the emergency button. Military patrols contain you immediately. Detained for assault.", isCorrect: false, type: "military-shame" },
-                { text: "Leak the contents of the petition to foreign press correspondents", exp: "Espionage and anti-Soviet propaganda. The KGB closes the case by putting you behind bars permanently.", isCorrect: false, type: "kgb-arrest" }
+                { text: "Leave the package on the general office desk without registration", exp: "Unregistered documents are routinely shredded at the end of the shift to clear desks. The trace of your ancestor is gone forever.", isCorrect: false, type: "party-silence", header: "SHREDDED TRACE" },
+                { text: "Force the desk clerk to sign it under threat of exposure", exp: "The clerk covertly presses the emergency button. Military patrols contain you immediately. Detained for assault of a state official.", isCorrect: false, type: "military-shame", header: "GARRISON ARREST" },
+                { text: "Leak the contents of the petition to foreign press correspondents", exp: "Classified as anti-Soviet propaganda and high treason. The KGB closes the case folder by putting you behind bars permanently.", isCorrect: false, type: "kgb-arrest", header: "ANTI-SOVIET PROPAGANDA" }
             ]
         }
     };
+
+    function showCustomErrorModal(text, type, header) {
+        const modal = document.getElementById('errorModal');
+        const box = document.getElementById('errorModalBox');
+        const head = document.getElementById('errorModalHeader');
+        const txt = document.getElementById('errorModalText');
+        
+        if(head) head.innerText = header || "System Notification";
+        if(txt) txt.innerText = text;
+        if(box) box.className = `error-modal-box ${type}`;
+        if(modal) modal.style.display = 'flex';
+    }
+
+    function closeErrorModal() {
+        const modal = document.getElementById('errorModal');
+        if(modal) modal.style.display = 'none';
+    }
 
     function renderUI(stepIndex) {
         const titleContainer = document.getElementById('step-title');
@@ -260,29 +285,41 @@
             const btn = document.createElement('button');
             btn.innerText = opt.text;
             btn.onclick = () => {
-                if (expBox) {
-                    expBox.style.display = 'block';
-                    expBox.innerText = opt.exp;
+                if (!opt.isCorrect) {
+                    // ВИВІД ПОМИЛКИ У НАПІВПРОЗОРЕ ВІКНО ПОВЕРХ ЕКРАНА
+                    showCustomErrorModal(opt.exp, opt.type, opt.header);
                     
-                    if (!opt.isCorrect) {
-                        expBox.className = `explanation shake ${opt.type}`;
-                        const badStamp = document.getElementById('stamp-bad');
-                        if (badStamp) {
-                            badStamp.style.opacity = '1';
-                            setTimeout(() => { badStamp.style.opacity = '0'; }, 1800);
-                        }
-                    } else {
-                        expBox.className = "explanation exp-correct";
-                        const targetDiv = document.getElementById(opt.textKey);
-                        if (targetDiv) targetDiv.innerHTML = `<span class="filled-text">${opt.textVal}</span>`;
-                        
-                        btnContainer.innerHTML = '';
-                        const nextBtn = document.createElement('button');
-                        nextBtn.className = "btn-continue";
-                        nextBtn.innerText = "CONTINUE QUEST ➔";
-                        nextBtn.onclick = () => { renderUI(stepIndex + 1); };
-                        btnContainer.appendChild(nextBtn);
+                    const badStamp = document.getElementById('stamp-bad');
+                    if (badStamp) {
+                        badStamp.style.opacity = '1';
+                        setTimeout(() => { badStamp.style.opacity = '0'; }, 1800);
                     }
+                } else {
+                    if (expBox) {
+                        expBox.style.display = 'block';
+                        expBox.innerText = opt.exp;
+                        expBox.className = "explanation exp-correct";
+                    }
+                    
+                    // Заповнюємо верхній блок адресата (тільки на Кроці 1)
+                    if (opt.headVal) {
+                        const headRecipient = document.getElementById('head-recipient');
+                        if (headRecipient) {
+                            headRecipient.innerText = opt.headVal;
+                            headRecipient.style.color = "black";
+                            headRecipient.style.fontStyle = "normal";
+                        }
+                    }
+
+                    const targetDiv = document.getElementById(opt.textKey);
+                    if (targetDiv) targetDiv.innerHTML = `<span class="filled-text">${opt.textVal}</span>`;
+                    
+                    btnContainer.innerHTML = '';
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = "btn-continue";
+                    nextBtn.innerText = "CONTINUE QUEST ➔";
+                    nextBtn.onclick = () => { renderUI(stepIndex + 1); };
+                    btnContainer.appendChild(nextBtn);
                 }
             };
             btnContainer.appendChild(btn);
@@ -292,8 +329,8 @@
     renderUI(1);
 </script>
 
-<!-- ЕЛЕГІЙНИЙ НЕОКЛАСИЧНИЙ АУДІОРУШІЙ ФІНАЛУ (AMBIEМТ PIANO & TAPE ECHO) -->
 <script>
+    // НЕОКЛАСИЧНА ЕЛЕМБІЄНТ-МУЗИКА ДЛЯ ФІНАЛУ
     function playBirdTransformationSound() {
         const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') { ctx.resume(); }
@@ -302,10 +339,9 @@
         const mainGain = ctx.createGain();
         mainGain.gain.setValueAtTime(0, now);
         mainGain.gain.linearRampToValueAtTime(0.3, now + 0.5); 
-        mainGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); // Мелодія плавно тане 12 секунд
+        mainGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); 
         mainGain.connect(ctx.destination);
 
-        // Ефект теплого аналогового відлуння (Tape Echo) для ностальгії
         const delay = ctx.createDelay();
         delay.delayTime.setValueAtTime(0.4, now);
         const delayGain = ctx.createGain();
@@ -314,43 +350,36 @@
         delay.connect(delayGain);
         delayGain.connect(ctx.destination);
 
-        // Фільтр для пом'якшення звуку, що прибирає цифровий блиск
         const lpFilter = ctx.createBiquadFilter();
         lpFilter.type = 'lowpass';
         lpFilter.frequency.setValueAtTime(700, now);
         mainGain.connect(lpFilter);
 
-        // ФУНКЦІЯ ГЕНЕРАЦІЇ ПЛАВНОЇ ТУЖЛИВОЇ НОТИ ФОРТЕПІАНО
         function playPianoNote(freq, startTime, duration, volume) {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, startTime);
-            
-            // Налаштування атаки та затухання струни фортепіано
             gain.gain.setValueAtTime(0, startTime);
             gain.gain.linearRampToValueAtTime(volume, startTime + 0.08);
             gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-            
             osc.connect(gain);
             gain.connect(lpFilter);
             osc.start(startTime);
             osc.stop(startTime + duration);
         }
 
-        // МЕЛАНХОЛІЙНА МЕЛОДІЯ ВІДПУСКАННЯ МИНУЛОГО (Час міг плисти, життя минуло)
-        // Ноти: Ля-мінор / До-мажор еллегія
-        playPianoNote(220.00, now + 0.0, 3.5, 0.25); // Глибока басова струна A3
-        playPianoNote(440.00, now + 0.4, 2.5, 0.15); // Мелодія A4
-        playPianoNote(523.25, now + 1.2, 2.5, 0.15); // C5 (сумна світла надія)
-        playPianoNote(587.33, now + 2.0, 2.0, 0.12); // D5
-        playPianoNote(493.88, now + 2.8, 3.0, 0.15); // B4 (ностальгічне згасання)
+        // Сумні тужливі акорди усвідомлення прожитого життя
+        playPianoNote(220.00, now + 0.0, 3.5, 0.25); 
+        playPianoNote(440.00, now + 0.4, 2.5, 0.15); 
+        playPianoNote(523.25, now + 1.2, 2.5, 0.15); 
+        playPianoNote(587.33, now + 2.0, 2.0, 0.12); 
+        playPianoNote(493.88, now + 2.8, 3.0, 0.15); 
         
-        // Фінальний акорд спокою
-        playPianoNote(164.81, now + 4.0, 6.0, 0.20); // Бас E3
-        playPianoNote(329.63, now + 4.4, 5.0, 0.15); // E4
-        playPianoNote(392.00, now + 4.8, 5.0, 0.15); // G4
-        playPianoNote(523.25, now + 5.2, 5.5, 0.10); // C5
+        playPianoNote(164.81, now + 4.0, 6.0, 0.20); 
+        playPianoNote(329.63, now + 4.4, 5.0, 0.15); 
+        playPianoNote(392.00, now + 4.8, 5.0, 0.15); 
+        playPianoNote(523.25, now + 5.2, 5.5, 0.10); 
     }
 
     function animateBirdTransformation() {
@@ -365,7 +394,7 @@
         }
 
         setTimeout(() => {
-            playBirdTransformationSound(); // Вмикаємо плавну емоційну елегію відпускання життя
+            playBirdTransformationSound();
 
             if (card) { card.classList.add('bird-shape'); }
             
@@ -392,8 +421,8 @@
     }
 </script>
 
-<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС -->
-<div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
+<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС (ГІЛКА GAME) -->
+<div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
 </div>
