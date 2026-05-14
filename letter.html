@@ -82,22 +82,24 @@
         
         .fade-out { opacity: 0; filter: brightness(0); pointer-events: none; }
 
-        /* НАПІВПРОЗОРІ МОВЛЯВНІ ВІКНА ДЛЯ РАДЯНСЬКИХ ПОМИЛОК */
+        /* НАПІВПРОЗОРІ ВІКНА ПОМИЛОК БЕЗ ЕФЕКТУ СТРУСУ */
         .error-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 12, 12, 0.82); z-index: 15000; align-items: center; justify-content: center;
+            background: rgba(15, 12, 12, 0.85); z-index: 15000; align-items: center; justify-content: center;
             padding: 20px; box-sizing: border-box;
+            transition: opacity 0.3s ease-in-out;
         }
         .error-modal-box {
             max-width: 450px; width: 100%; padding: 25px; border-radius: 4px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); font-family: "Courier New", monospace;
-            animation: modalShake 0.4s ease-in-out;
+            opacity: 0; transform: translateY(-10px);
+            transition: all 0.3s ease-in-out;
         }
-        @keyframes modalShake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
+        /* Клас для плавної появи вікна помилки */
+        .error-modal-overlay.show .error-modal-box {
+            opacity: 1; transform: translateY(0);
         }
+        
         .kgb-arrest { background: #1a1a1a; color: #ff3333; border: 4px solid #cc0000; }
         .military-shame { background: #2e3b23; color: #e0e0e0; border: 4px solid #5a734a; }
         .party-silence { background: #3d3d3d; color: #ddd; border: 4px solid #777; }
@@ -141,13 +143,16 @@
 </head>
 <body>
 
+<!-- ТЕГ ДЛЯ ВАШОГО ОРИГІНАЛЬНОГО МУЗИЧНОГО ТРЕКУ -->
+<audio id="finaleTrack" src="githubusercontent.com" preload="auto"></audio>
+
 <div id="thankyou-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; align-items: center; justify-content: center; pointer-events: none;">
     <div style="text-align: center; color: #6e5e5a; font-size: 39px; letter-spacing: 3px; text-transform: uppercase; opacity: 0; transition: opacity 5s ease-in-out; padding: 20px; line-height: 1.4;" id="finale-text">
         Thank you for walking this path
     </div>
 </div>
 
-<!-- НАПІВПРОЗОРЕ ВІКНО ДЛЯ ВИВОДУ РАДЯНСЬКИХ ПОМИЛОК І ДОПИТІВ -->
+<!-- НАПІВПРОЗОРЕ ВІКНО ДЛЯ ВИВОДУ РАДЯНСЬКИХ ПОМИЛОК (ПЛАВНА ПОЯВА) -->
 <div id="errorModal" class="error-modal-overlay" onclick="closeErrorModal()">
     <div id="errorModalBox" class="error-modal-box">
         <div id="errorModalHeader" class="error-modal-header">System Notification</div>
@@ -162,7 +167,6 @@
             <div class="stamp" id="stamp-bad">REJECTED</div>
             <div class="stamp" id="stamp-ok" style="border-color: green; color: green;">SENT</div>
             
-            <!-- ВЕРХНІЙ БЛОК: КУДИ ТА НА ЧИЄ ІМ'Я НАПРАВЛЯЄТЬСЯ ЛИСТ -->
             <div id="letter-head" style="min-height: 45px; font-size: 13px; font-weight: bold; line-height: 1.3; margin-bottom: 25px; border-bottom: 2px double #b5a994; padding-bottom: 8px; color: #333;">
                 To: <span id="head-recipient" style="color: #666; font-weight: normal; font-style: italic;">(Pending address selection...)</span>
             </div>
@@ -250,12 +254,19 @@
         if(head) head.innerText = header || "System Notification";
         if(txt) txt.innerText = text;
         if(box) box.className = `error-modal-box ${type}`;
-        if(modal) modal.style.display = 'flex';
+        
+        if(modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.add('show'); }, 10);
+        }
     }
 
     function closeErrorModal() {
         const modal = document.getElementById('errorModal');
-        if(modal) modal.style.display = 'none';
+        if(modal) {
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
     }
 
     function renderUI(stepIndex) {
@@ -286,7 +297,6 @@
             btn.innerText = opt.text;
             btn.onclick = () => {
                 if (!opt.isCorrect) {
-                    // ВИВІД ПОМИЛКИ У НАПІВПРОЗОРЕ ВІКНО ПОВЕРХ ЕКРАНА
                     showCustomErrorModal(opt.exp, opt.type, opt.header);
                     
                     const badStamp = document.getElementById('stamp-bad');
@@ -301,7 +311,6 @@
                         expBox.className = "explanation exp-correct";
                     }
                     
-                    // Заповнюємо верхній блок адресата (тільки на Кроці 1)
                     if (opt.headVal) {
                         const headRecipient = document.getElementById('head-recipient');
                         if (headRecipient) {
@@ -330,71 +339,26 @@
 </script>
 
 <script>
-    // НЕОКЛАСИЧНА ЕЛЕМБІЄНТ-МУЗИКА ДЛЯ ФІНАЛУ
-    function playBirdTransformationSound() {
-        const ctx = (typeof audioCtx !== 'undefined' && audioCtx) ? audioCtx : new (window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') { ctx.resume(); }
-        const now = ctx.currentTime;
-
-        const mainGain = ctx.createGain();
-        mainGain.gain.setValueAtTime(0, now);
-        mainGain.gain.linearRampToValueAtTime(0.3, now + 0.5); 
-        mainGain.gain.exponentialRampToValueAtTime(0.001, now + 12.0); 
-        mainGain.connect(ctx.destination);
-
-        const delay = ctx.createDelay();
-        delay.delayTime.setValueAtTime(0.4, now);
-        const delayGain = ctx.createGain();
-        delayGain.gain.setValueAtTime(0.5, now);
-        mainGain.connect(delay);
-        delay.connect(delayGain);
-        delayGain.connect(ctx.destination);
-
-        const lpFilter = ctx.createBiquadFilter();
-        lpFilter.type = 'lowpass';
-        lpFilter.frequency.setValueAtTime(700, now);
-        mainGain.connect(lpFilter);
-
-        function playPianoNote(freq, startTime, duration, volume) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(volume, startTime + 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-            osc.connect(gain);
-            gain.connect(lpFilter);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
-
-        // Сумні тужливі акорди усвідомлення прожитого життя
-        playPianoNote(220.00, now + 0.0, 3.5, 0.25); 
-        playPianoNote(440.00, now + 0.4, 2.5, 0.15); 
-        playPianoNote(523.25, now + 1.2, 2.5, 0.15); 
-        playPianoNote(587.33, now + 2.0, 2.0, 0.12); 
-        playPianoNote(493.88, now + 2.8, 3.0, 0.15); 
-        
-        playPianoNote(164.81, now + 4.0, 6.0, 0.20); 
-        playPianoNote(329.63, now + 4.4, 5.0, 0.15); 
-        playPianoNote(392.00, now + 4.8, 5.0, 0.15); 
-        playPianoNote(523.25, now + 5.2, 5.5, 0.10); 
-    }
-
+    // АНІМАЦІЯ ПТАХИ ТА ЗАПУСК ВАШОГО ЗАВАНТАЖЕНОГО ТРЕКУ `elegia.mp3`
     function animateBirdTransformation() {
         const textContainer = document.getElementById('modal-hide-group');
         const card = document.getElementById('modalCard');
         const overlay = document.getElementById('finalDiscoveryModal');
+        const track = document.getElementById('finaleTrack');
         
         if (textContainer) { textContainer.style.opacity = '0'; }
         
+        // Повністю затишаємо фоновий шум меню перед стартом вашої музики
         if (typeof audioCtx !== 'undefined' && audioCtx && typeof masterGain !== 'undefined' && masterGain) {
             masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5); 
         }
 
         setTimeout(() => {
-            playBirdTransformationSound();
+            // ЗАПУСК ВАШОГО ТРЕКУ: Музика увімкнеться плавно разом із трансформацією
+            if (track) {
+                track.volume = 0.5; // Базова гучність
+                track.play().catch(e => console.log("Music track block:", e));
+            }
 
             if (card) { card.classList.add('bird-shape'); }
             
@@ -421,7 +385,7 @@
     }
 </script>
 
-<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС (ГІЛКА GAME) -->
+<!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПЕРЕГЛЯДУ ДОКУМЕНТА НКВС -->
 <div id="documentModal" onclick="closeDocumentModal()" style="display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; cursor: pointer;">
   <span style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; font-family: monospace; cursor: pointer;">&times;</span>
   <img src="githubusercontent.com" alt="NKVD Memo" style="max-width: 90%; max-height: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s;">
