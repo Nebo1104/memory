@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>80 YEARS OF SEARCH - Finale</title>
+    <style>
+        /* Очищення відступів та чорне тло для кінематографічного ефекту */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #080606;
+            overflow: hidden;
+            font-family: "Courier New", monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Повноекранне відео без елементів керування браузера */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Відео заповнює весь екран як шпалери */
+            opacity: 0;
+            transition: opacity 2s ease-in-out; /* Плавна поява відео з темряви */
+        }
+
+        /* Оверлей для фінальних титрів на найвищому шарі */
+        .credits-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(8, 6, 6, 0); /* Спочатку прозорий */
+            transition: background-color 4s ease-in-out;
+            pointer-events: none; /* Не заважає клікам, якщо вони потрібні */
+        }
+
+        .credits-text {
+            color: #6e5e5a;
+            font-size: 36px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.4;
+            transition: opacity 4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<div class="video-container">
+    <!-- Посилання на пряме завантаження вашого mp4 ролика з GitHub -->
+    <video id="finaleVideo" src="https://raw.githubusercontent.com/Nebo1104/memory/game/Atmospheric_Tone_and_Visual_La.mp4" preload="auto"></video>
+</div>
+
+<div class="credits-overlay" id="creditsOverlay">
+    <div class="credits-text" id="creditsText">
+        Thank you for walking this path
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('finaleVideo');
+        const overlay = document.getElementById('creditsOverlay');
+        const text = document.getElementById('creditsText');
+
+        if (!video) return;
+
+        // 1. Починаємо відтворення (браузер дозволить, бо гравець уже взаємодіяв з letter.html)
+        video.play().then(() => {
+            // Плавно проявляємо відео з темряви
+            video.style.opacity = '1';
+            
+            // Налаштовуємо тихий старт для ефекту нерухомості без боротьби
+            video.volume = 0.05; 
+
+            // 2. Плавне наростання музики та емоційного тону прийняття протягом перших 8 секунд
+            let fadeInterval = setInterval(() => {
+                if (video.volume < 0.6) {
+                    video.volume = Math.min(0.6, video.volume + 0.02);
+                } else {
+                    clearInterval(fadeInterval);
+                }
+            }, 250); // Кожні 250мс звук стає трішки гучнішим
+            
+        }).catch(error => {
+            console.log("Autoplay caught, waiting for user click:", error);
+            // Запасний варіант, якщо браузер все ж заблокував старт
+            document.body.addEventListener('click', () => {
+                video.play();
+                video.style.opacity = '1';
+            }, { once: true });
+        });
+
+        // 3. Відслідковуємо фінал ролика: коли птах розчиняється в сонці
+        video.addEventListener('ended', () => {
+            // Плавно ховаємо саме відео в темряву
+            video.style.opacity = '0';
+            
+            // Робимо підкладку повністю темною
+            if (overlay) overlay.style.backgroundColor = "rgba(8, 6, 6, 1)";
+            
+            // Через невелику паузу плавно виводимо слова прощення й прощання
+            setTimeout(() => {
+                if (text) text.style.opacity = '0.5'; // Текст проростає напівпрозоро
+            }, 1000);
+        });
+    });
+</script>
+
+</body>
+</html>
